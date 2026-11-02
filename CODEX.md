@@ -319,6 +319,10 @@ Ao final, informar o que cada agente realizou, os testes e revisões executados,
 
 ## 11. Guardrails permanentes de qualidade segurança e custo
 
+### Controle do Git e do GitHub
+
+Preferência explícita do responsável: commits, criação/troca de branches, push, Pull Requests, merges e demais alterações no Git/GitHub ficam a cargo dele. O agente pode editar os arquivos autorizados e consultar o Git em modo somente leitura para preparar a revisão, mas não deve executar operações que alterem o Git nem criar recursos no GitHub sem solicitação explícita posterior. Entregar as mudanças para o responsável revisar e versionar.
+
 Economia solicitada pelo responsável: preferir consultas focadas, respostas curtas, testes afetados e documentação sem duplicação. Para tarefas pequenas, o coordenador executa e revisa sem subagentes; delegar somente quando o risco ou o trabalho independente justificar. Preservar as pausas de TDD e não reduzir verificações necessárias para economizar tokens.
 
 ### Qualidade e revisão do diff
