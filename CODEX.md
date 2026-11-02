@@ -321,7 +321,7 @@ Ao final, informar o que cada agente realizou, os testes e revisões executados,
 
 ### Controle do Git e do GitHub
 
-Preferência explícita do responsável: commits, criação/troca de branches, push, Pull Requests, merges e demais alterações no Git/GitHub ficam a cargo dele. O agente pode editar os arquivos autorizados e consultar o Git em modo somente leitura para preparar a revisão, mas não deve executar operações que alterem o Git nem criar recursos no GitHub sem solicitação explícita posterior. Entregar as mudanças para o responsável revisar e versionar.
+Git e GitHub são operados pelo responsável. O agente deve somente fornecer os comandos para ele executar; não executar comandos git/gh, criar ou trocar branches, preparar staging, fazer commits, push, Pull Requests ou merges. Expressões como “vamos commitar” ou “criar a branch” significam orientar com os comandos, não autorização para executá-los. Editar somente os arquivos solicitados e entregar as alterações para revisão. Essa preferência permanece até o responsável mudá-la explicitamente.
 
 Economia solicitada pelo responsável: preferir consultas focadas, respostas curtas, testes afetados e documentação sem duplicação. Para tarefas pequenas, o coordenador executa e revisa sem subagentes; delegar somente quando o risco ou o trabalho independente justificar. Preservar as pausas de TDD e não reduzir verificações necessárias para economizar tokens.
 
