@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Trama.Desktop.ViewModels"
+             x:Class="Trama.Desktop.Views.NoteEditorView"
+             x:DataType="vm:NoteEditorViewModel">
+  <Border Background="{DynamicResource TramaSurfaceBrush}" CornerRadius="16"
+          BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" Padding="22">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+      <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+        <StackPanel Spacing="5">
+          <TextBlock Text="Nova nota" FontSize="18" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TramaTextBrush}" />
+          <TextBlock Text="Comece pelo que você não quer esquecer." FontSize="12"
+                     Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+        <Border Grid.Column="1" Background="{DynamicResource TramaRaisedBrush}" CornerRadius="7"
+                Padding="9,6" VerticalAlignment="Top" Margin="12,0,0,0">
+          <TextBlock Text="NOTA LIVRE" FontSize="9" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TramaMutedBrush}" />
+        </Border>
+      </Grid>
+
+      <StackPanel Grid.Row="1" Spacing="9" Margin="0,0,0,16">
+        <TextBlock Text="TÍTULO" Classes="trama-label" />
+        <TextBox x:Name="TitleInput" Classes="trama-input" Text="{Binding Title, Mode=TwoWay}"
+                 Watermark="Qual é a ideia?" IsEnabled="{Binding !IsSaving}" />
+      </StackPanel>
+      <Grid Grid.Row="2" RowDefinitions="Auto,*" Margin="0,0,0,16">
+        <TextBlock Text="CONTEÚDO" Classes="trama-label" Margin="0,0,0,9" />
+        <TextBox Grid.Row="1" x:Name="BodyInput" Classes="trama-input" Text="{Binding Body, Mode=TwoWay}"
+                 AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" LineHeight="23"
+                 VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 Watermark="Uma ideia, uma anotação de estudo ou aquele trecho de código…"
+                 IsEnabled="{Binding !IsSaving}" />
+      </Grid>
+
+      <Border Grid.Row="3" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="0,16,0,0">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="6" VerticalAlignment="Center" Margin="0,0,18,0">
+          <TextBlock x:Name="SaveFeedback" Text="{Binding Feedback}" FontSize="13"
+                     Foreground="{DynamicResource TramaTextBrush}" TextWrapping="Wrap" />
+          <TextBlock Text="Preencha pelo menos um dos campos." FontSize="11"
+                     Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+        <Button Grid.Column="1" x:Name="SaveButton" Content="Salvar nota  →"
+                Classes="trama-primary" Command="{Binding SaveCommand}" VerticalAlignment="Center" />
+      </Grid>
+      </Border>
+    </Grid>
+  </Border>
+</UserControl>

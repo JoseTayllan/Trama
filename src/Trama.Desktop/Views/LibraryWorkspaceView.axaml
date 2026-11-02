@@ -1,0 +1,248 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Trama.Desktop.ViewModels"
+             xmlns:views="using:Trama.Desktop.Views"
+             xmlns:knowledge="using:Trama.Application.Knowledge"
+             x:Class="Trama.Desktop.Views.LibraryWorkspaceView"
+             x:Name="WorkspaceRoot" x:DataType="vm:LibraryViewModel">
+  <UserControl.Styles>
+    <Style Selector="Expander.sidebar-create">
+      <Setter Property="Padding" Value="0,6,34,6" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <StackPanel x:CompileBindings="False">
+            <ToggleButton Classes="sidebar-create-toggle" HorizontalAlignment="Stretch" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                          Background="Transparent" BorderThickness="0" Padding="{TemplateBinding Padding}" HorizontalContentAlignment="Stretch"
+                          Foreground="{DynamicResource TramaMutedBrush}">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="{TemplateBinding Header}" FontSize="10" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="+" FontSize="16" VerticalAlignment="Center" />
+              </Grid>
+            </ToggleButton>
+            <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                              IsVisible="{TemplateBinding IsExpanded}" Margin="0,6,0,10" />
+          </StackPanel>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="ToggleButton.sidebar-create-toggle:checked /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.sidebar-create-toggle:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TramaRaisedBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" />
+    </Style>
+    <Style Selector="Expander.sidebar-filters /template/ Border">
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Expander">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="{DynamicResource TramaMutedBrush}" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="Expander /template/ ToggleButton">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="{DynamicResource TramaMutedBrush}" />
+      <Setter Property="Padding" Value="8,10" />
+    </Style>
+    <Style Selector="ListBox.reference-parent ListBoxItem">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="Padding" Value="8,9" />
+    </Style>
+    <Style Selector="ListBox.reference-parent ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TramaAccentSoftBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="ListBox.library-list ListBoxItem:selected">
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaAccentBrush}" />
+      <Setter Property="BorderThickness" Value="3,0,0,0" />
+    </Style>
+  </UserControl.Styles>
+  <Grid x:Name="WorkspaceLayout" RowDefinitions="*,Auto" ColumnDefinitions="260,*" Background="{DynamicResource TramaNotebookPaperBrush}">
+    <Border x:Name="LibrarySidebar" Background="{DynamicResource TramaSidebarBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,0,1,0">
+      <Grid RowDefinitions="*,Auto" Margin="18,20,14,12">
+        <ScrollViewer x:Name="LibrarySidebarScroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+        <StackPanel Spacing="6" Margin="0,0,0,24">
+          <TextBlock Text="Trama" FontSize="28" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
+          <TextBlock Text="SEU ACERVO" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TramaSubtleBrush}" />
+          <TextBox x:Name="SearchQueryInput" Text="{Binding SearchQuery, Mode=TwoWay}" Classes="trama-input"
+                   Watermark="Buscar no acervo…" KeyDown="SearchKeyDown" Padding="12,11" FontSize="13"
+                   ToolTip.Tip="Buscar conteúdo e tags. Pressione Enter." Margin="0,14,0,0" IsEnabled="{Binding CanSearch}" />
+          <Expander Classes="sidebar-create sidebar-filters" Header="TAG EXATA" FontSize="11" HorizontalAlignment="Stretch">
+            <StackPanel Spacing="7" IsEnabled="{Binding CanSearch}">
+              <TextBox x:Name="SearchTagInput" Text="{Binding SearchTag, Mode=TwoWay}" Classes="trama-input"
+                       Watermark="Tag exata (opcional)" KeyDown="SearchKeyDown" Padding="12,11" FontSize="13"
+                       ToolTip.Tip="Ignora caixa; junto ao texto, os dois critérios precisam corresponder." />
+              <WrapPanel>
+                <Button x:Name="SearchButton" Content="Buscar" Classes="notebook-tool" Command="{Binding SearchCommand}" />
+                <Button x:Name="CloseSearchButton" Content="Fechar busca" Classes="notebook-tool"
+                        Command="{Binding ClearSearchCommand}" IsVisible="{Binding IsSearchOpen}" />
+              </WrapPanel>
+            </StackPanel>
+          </Expander>
+        </StackPanel>
+          <StackPanel IsEnabled="{Binding CanNavigate}">
+            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,4">
+              <Expander Classes="sidebar-create" Header="ESPAÇO" Padding="0,6,88,6" HorizontalAlignment="Stretch" Grid.ColumnSpan="3">
+              <StackPanel Spacing="6">
+                <TextBox x:Name="NewSpaceTitleInput" Text="{Binding NewSpaceTitle, Mode=TwoWay}" Classes="trama-input"
+                         Watermark="Nome do espaço" Padding="12,11" FontSize="13" />
+                <Button x:Name="CreateSpaceButton" Content="Criar espaço" Classes="notebook-tool" HorizontalAlignment="Right"
+                        Command="{Binding CreateSpaceCommand}" FontSize="11" />
+              </StackPanel>
+            </Expander>
+              <Button Grid.Column="1" x:Name="RenameSpaceButton" Content="···" Classes="notebook-tool"
+                      VerticalAlignment="Top" IsEnabled="{Binding CanManageSpace}" Click="RenameSpaceClicked" ToolTip.Tip="Renomear espaço" />
+              <Button Grid.Column="2" x:Name="MoveSpaceToTrashButton" Content="Excluir" FontSize="10" Classes="notebook-tool" VerticalAlignment="Top"
+                      Click="TrashSpaceClicked" IsEnabled="{Binding CanTrashSpace}" IsVisible="{Binding HasTrash}" ToolTip.Tip="Enviar o espaço e seu conteúdo para a lixeira" />
+            </Grid>
+            <ListBox x:Name="SpaceList" Classes="library-list reference-parent" ItemsSource="{Binding Spaces}"
+                     SelectedItem="{Binding SelectedSpace, Mode=OneWay}" SelectionChanged="SpaceSelectionChanged"
+                     MinHeight="35" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,16">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="knowledge:KnowledgeSpace">
+                  <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Title}" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <Border BorderBrush="{DynamicResource TramaNotebookMarginBrush}" BorderThickness="1,0,0,0" Margin="12,0,0,0" Padding="12,0,0,8">
+              <StackPanel>
+                <Grid ColumnDefinitions="*,Auto,Auto">
+                  <Expander Classes="sidebar-create" Header="CADERNO" Padding="0,6,88,6" HorizontalAlignment="Stretch" Grid.ColumnSpan="3">
+              <StackPanel Spacing="6">
+                <TextBox x:Name="NewNotebookTitleInput" Text="{Binding NewNotebookTitle, Mode=TwoWay}" Classes="trama-input"
+                         Watermark="Nome do caderno" Padding="12,11" FontSize="13" />
+                <Button x:Name="CreateNotebookButton" Content="Criar caderno" Classes="notebook-tool" HorizontalAlignment="Right"
+                        Command="{Binding CreateNotebookCommand}" FontSize="11" />
+              </StackPanel>
+            </Expander>
+                  <Button Grid.Column="1" x:Name="RenameNotebookButton" Content="···" Classes="notebook-tool"
+                          VerticalAlignment="Top" IsEnabled="{Binding CanManageNotebook}" Click="RenameNotebookClicked" ToolTip.Tip="Renomear caderno" />
+                  <Button Grid.Column="2" x:Name="MoveNotebookToTrashButton" Content="Excluir" FontSize="10" Classes="notebook-tool" VerticalAlignment="Top"
+                          Click="TrashNotebookClicked" IsEnabled="{Binding CanTrashNotebook}" IsVisible="{Binding HasTrash}" ToolTip.Tip="Enviar o caderno e suas páginas para a lixeira" />
+                </Grid>
+                <ListBox x:Name="NotebookList" Classes="library-list reference-parent" ItemsSource="{Binding Notebooks}"
+                         SelectedItem="{Binding SelectedNotebook, Mode=OneWay}" SelectionChanged="NotebookSelectionChanged"
+                         MinHeight="35" ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,10">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="knowledge:NotebookInfo">
+                      <TextBlock Text="{Binding Title}" FontSize="15" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Title}" />
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+                <Border BorderBrush="{DynamicResource TramaNotebookMarginBrush}" BorderThickness="1,0,0,0" Margin="12,0,0,0" Padding="10,0,0,0">
+                  <StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                      <TextBlock Text="PÁGINAS" Classes="trama-label" FontSize="10" VerticalAlignment="Center" />
+                      <Button Grid.Column="1" x:Name="NewPageButton" Content="+" Classes="notebook-tool" Command="{Binding NewPageCommand}" ToolTip.Tip="Nova página neste caderno" />
+                    </Grid>
+                    <ListBox x:Name="PageList" Classes="library-list reference-pages" ItemsSource="{Binding Pages}"
+                             SelectedItem="{Binding SelectedPage, Mode=OneWay}" SelectionChanged="PageSelectionChanged" MinHeight="45"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                      <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="knowledge:KnowledgePageSummary">
+                          <TextBlock Text="{Binding Title}" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" FontSize="13" ToolTip.Tip="{Binding Title}" />
+                        </DataTemplate>
+                      </ListBox.ItemTemplate>
+                    </ListBox>
+                    <WrapPanel Margin="0,8,0,0">
+                      <Button x:Name="RenamePageButton" Content="Renomear" Classes="notebook-tool" FontSize="10"
+                              IsEnabled="{Binding CanManagePage}" Click="RenamePageClicked" />
+                      <Button x:Name="MovePageButton" Content="Mover" Classes="notebook-tool" FontSize="10"
+                              IsEnabled="{Binding CanManagePage}" Click="MovePageClicked" />
+                      <Button x:Name="EditTagsButton" Content="Tags" Classes="notebook-tool" FontSize="10"
+                              IsEnabled="{Binding CanEditTags}" Click="EditTagsClicked" />
+                      <Button x:Name="MovePageToTrashButton" Content="Excluir" Classes="notebook-tool" FontSize="10" Click="TrashPageClicked"
+                              IsEnabled="{Binding CanTrashPage}" IsVisible="{Binding HasTrash}" ToolTip.Tip="Enviar a página para a lixeira" />
+                    </WrapPanel>
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Border>
+            <Button Content="Não organizadas" Command="{Binding ShowUnfiledCommand}" Classes="notebook-add" HorizontalContentAlignment="Left" Margin="0,12,0,0" FontSize="12" />
+          </StackPanel>
+        </StackPanel>
+        </ScrollViewer>
+        <StackPanel Grid.Row="1" Spacing="4" Margin="0,14,0,0">
+          <Border BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Margin="0,0,0,8" />
+          <TextBlock Text="Local · seus arquivos" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12"
+                     ToolTip.Tip="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).DataDirectory}" />
+          <WrapPanel>
+            <Button x:Name="LibraryBackupButton" Content="Backup" Click="LibraryBackupClicked" Classes="notebook-tool" FontSize="11"
+                    IsEnabled="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).HasBackup}" />
+            <Button x:Name="OpenTrashButton" Content="Lixeira" Click="OpenTrashClicked" Classes="notebook-tool" FontSize="11" IsEnabled="{Binding CanNavigate}" IsVisible="{Binding HasTrash}" />
+            <Button Content="Atualizar" Command="{Binding RefreshCommand}" Classes="notebook-tool" FontSize="11" />
+          </WrapPanel>
+        </StackPanel>
+      </Grid>
+    </Border>
+    <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*" Margin="28,16,24,0">
+      <Border x:Name="PageContextTrail" Padding="0,4,0,16" Margin="0,0,0,18"
+              BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,0,0,1">
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <Button x:Name="ToggleLibraryButton" Content="Acervo" Classes="notebook-tool" Focusable="False" Click="ToggleLibraryClicked" ToolTip.Tip="Abrir ou recolher acervo" VerticalAlignment="Center" Margin="0,0,12,0" />
+          <WrapPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <StackPanel Width="110" Spacing="5" Margin="0,4,14,4">
+              <TextBlock x:Name="SpaceContextHeading" Text="ESPAÇO" FontSize="9" FontWeight="SemiBold" Foreground="{DynamicResource TramaSubtleBrush}" />
+              <TextBlock x:Name="CurrentSpaceLabel" Text="{Binding ContextSpaceTitle}" ToolTip.Tip="{Binding ContextSpaceTitle}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" />
+            </StackPanel>
+            <StackPanel Width="125" Spacing="5" Margin="0,4,14,4">
+              <TextBlock x:Name="NotebookContextHeading" Text="CADERNO" FontSize="9" FontWeight="SemiBold" Foreground="{DynamicResource TramaSubtleBrush}" />
+              <TextBlock x:Name="CurrentNotebookLabel" Text="{Binding ContextNotebookTitle}" ToolTip.Tip="{Binding ContextNotebookTitle}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" />
+            </StackPanel>
+            <StackPanel Width="210" Spacing="5" Margin="0,4,8,4">
+              <TextBlock x:Name="PageContextHeading" Text="PÁGINA" FontSize="9" FontWeight="SemiBold" Foreground="{DynamicResource TramaSubtleBrush}" />
+              <TextBlock x:Name="CurrentPageLabel" Text="{Binding ContextPageTitle}" ToolTip.Tip="{Binding ContextPageTitle}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TramaAccentBrush}" FontSize="12" FontWeight="SemiBold" />
+            </StackPanel>
+          </WrapPanel>
+          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <Border Background="{DynamicResource TramaRaisedBrush}" CornerRadius="8" Padding="12,8">
+              <StackPanel>
+                <TextBlock Text="Em andamento" IsVisible="{Binding Editor.IsBusy}" Foreground="{DynamicResource TramaMutedBrush}" FontSize="11" />
+                <StackPanel IsVisible="{Binding !Editor.IsBusy}">
+                  <TextBlock Text="Não salvo" IsVisible="{Binding Editor.HasUnsavedChanges}" Foreground="{DynamicResource TramaAccentBrush}" FontSize="11" />
+                  <TextBlock Text="Pronto" IsVisible="{Binding !Editor.HasUnsavedChanges}" Foreground="{DynamicResource TramaAccentBrush}" FontSize="11" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+            <Button x:Name="HeaderSavePageButton" Content="Salvar" Classes="trama-primary" Command="{Binding Editor.SaveCommand}"
+                    IsVisible="{Binding CanShowEditor}" Padding="22,9" ToolTip.Tip="{Binding Editor.SaveModeLabel}" />
+          </StackPanel>
+        </Grid>
+      </Border>
+      <Border Grid.Row="1" IsVisible="{Binding IsSearchOpen}" Background="{DynamicResource TramaSidebarBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,0,0,14" Padding="12">
+        <Grid RowDefinitions="Auto,Auto">
+          <TextBlock Text="{Binding SearchSummary}" Foreground="{DynamicResource TramaMutedBrush}" FontSize="11" Margin="0,0,0,6" />
+          <ListBox Grid.Row="1" x:Name="SearchResultList" Classes="library-list" ItemsSource="{Binding SearchResults}" SelectionChanged="SearchResultSelected" MaxHeight="150" IsEnabled="{Binding CanNavigate}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="knowledge:PageSearchResult">
+                <StackPanel Spacing="3">
+                  <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" FontSize="13" />
+                  <TextBlock Text="{Binding LocationLabel}" Foreground="{DynamicResource TramaSubtleBrush}" TextTrimming="CharacterEllipsis" FontSize="11" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </Border>
+      <Border Grid.Row="2" IsEnabled="{Binding CanEdit}" IsVisible="{Binding CanShowEditor}">
+        <views:NotebookEditorView x:Name="CurrentPageEditor" DataContext="{Binding Editor}" UseHostHeader="True"
+             SectionCaption="{Binding #WorkspaceRoot.((vm:LibraryViewModel)DataContext).ContextNotebookTitle}"
+             TagSummary="{Binding #WorkspaceRoot.((vm:LibraryViewModel)DataContext).TagsSummary}" />
+      </Border>
+      <StackPanel Grid.Row="2" IsVisible="{Binding !CanShowEditor}" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12" Margin="24">
+        <TextBlock Text="Um caderno para cada assunto." Foreground="{DynamicResource TramaTextBrush}" FontSize="24" TextWrapping="Wrap" />
+        <TextBlock Text="Escolha ou crie um caderno à esquerda para começar a escrever." Foreground="{DynamicResource TramaMutedBrush}" FontSize="14" TextWrapping="Wrap" />
+      </StackPanel>
+    </Grid>
+    <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="16,7">
+      <TextBlock Text="{Binding Feedback}" Foreground="{DynamicResource TramaSubtleBrush}" FontSize="10" TextWrapping="Wrap" />
+    </Border>
+  </Grid>
+</UserControl>

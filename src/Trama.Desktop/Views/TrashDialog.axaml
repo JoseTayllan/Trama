@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Trama.Desktop.ViewModels" x:Class="Trama.Desktop.Views.TrashDialog" x:DataType="vm:TrashViewModel"
+        Title="Lixeira" Width="640" Height="520" MinWidth="420" MinHeight="330" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" Background="{DynamicResource TramaWindowBrush}">
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="24">
+    <TextBlock Text="Lixeira" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
+    <TextBlock Grid.Row="1" Text="Espaços e cadernos restauram os itens enviados junto deles."
+               Margin="0,8,0,14" FontSize="13" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+    <ListBox Grid.Row="2" x:Name="TrashEntriesList" Classes="library-list" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
+             IsEnabled="{Binding !IsBusy}">
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="vm:TrashItemViewModel">
+          <StackPanel Spacing="5" Margin="2,5">
+            <TextBlock Text="{Binding Title}" FontSize="16" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <TextBlock Text="{Binding KindLabel}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" />
+              <TextBlock Text="{Binding DeletedLabel}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" />
+            </StackPanel>
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <TextBlock Grid.Row="3" x:Name="TrashFeedback" Text="{Binding Feedback}" Margin="0,14" FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button Content="Fechar" Classes="notebook-add" IsCancel="True" Click="CloseClicked" IsEnabled="{Binding !IsBusy}" />
+      <Button x:Name="RestoreTrashEntryButton" Content="Restaurar" Classes="trama-primary" Command="{Binding RestoreCommand}" IsEnabled="{Binding CanRestore}" Padding="18,10" />
+    </StackPanel>
+  </Grid>
+</Window>

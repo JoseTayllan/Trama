@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Trama.Desktop.ViewModels" x:Class="Trama.Desktop.Views.MarkdownExportDialog" x:DataType="vm:MarkdownExportViewModel"
+        x:Name="ExportMarkdownDialog" Title="Exportar página" Width="620" Height="420" MinWidth="320" MinHeight="340"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Background="{DynamicResource TramaWindowBrush}">
+  <Grid RowDefinitions="*,Auto" Margin="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Spacing="14">
+        <TextBlock Text="Sua página, além do Trama." FontSize="25" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" TextWrapping="Wrap" />
+        <TextBlock Text="Exporte a versão aberta, incluindo o que ainda não foi salvo. Texto, listas, código e imagens ficam juntos."
+                   TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+        <TextBlock Text="Pasta nova de destino" FontSize="12" Foreground="{DynamicResource TramaAccentBrush}" />
+        <Grid ColumnDefinitions="*,Auto" IsEnabled="{Binding CanExport}">
+          <TextBox x:Name="ExportDestinationInput" Text="{Binding Destination, Mode=TwoWay}" Watermark="Caminho completo de uma pasta nova" Classes="trama-input" />
+          <Button Grid.Column="1" Content="Escolher…" Click="ChooseDestinationClicked" Margin="8,0,0,0" />
+        </Grid>
+        <TextBlock Text="Formato Markdown · cores, tamanho e marca-texto ficam no Trama. A exportação não substitui o backup."
+                   TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource TramaSubtleBrush}" />
+        <TextBlock x:Name="ExportFeedback" Text="{Binding Feedback}" TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+      </StackPanel>
+    </ScrollViewer>
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,18,0,0">
+      <Button x:Name="CancelExportButton" Content="Cancelar" Click="CancelExportClicked" />
+      <Button x:Name="ConfirmExportButton" Content="Exportar página" Classes="trama-primary" IsEnabled="{Binding CanExport}" Click="ConfirmExportClicked" />
+    </StackPanel>
+  </Grid>
+</Window>

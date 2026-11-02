@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Trama.Desktop.Views.UnsavedChangesDialog"
+        Title="Alterações não salvas" Width="540" Height="230" CanResize="False"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource TramaWindowBrush}">
+  <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+    <TextBlock Text="Salvar antes de continuar?" FontSize="22" FontWeight="SemiBold"
+               Foreground="{DynamicResource TramaTextBrush}" />
+    <TextBlock Grid.Row="1" Text="Esta página tem alterações não salvas. Você pode salvá-las, descartá-las ou continuar aqui."
+               TextWrapping="Wrap" FontSize="14" Margin="0,16" Foreground="{DynamicResource TramaMutedBrush}" />
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button x:Name="CancelButton" Content="Cancelar" Classes="notebook-add" Click="CancelClicked" IsCancel="True" IsDefault="True" />
+      <Button x:Name="DiscardButton" Content="Descartar" Classes="notebook-add" Click="DiscardClicked" />
+      <Button x:Name="SaveAndContinueButton" Content="Salvar e continuar" Classes="trama-primary" Click="SaveClicked" Padding="16,10" />
+    </StackPanel>
+  </Grid>
+</Window>

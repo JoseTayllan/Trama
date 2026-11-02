@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Trama.Desktop.Views.RenameEntryDialog"
+        Title="Renomear" Width="520" Height="270" CanResize="False"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource TramaWindowBrush}">
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="24">
+    <TextBlock x:Name="Heading" Text="Renomear" FontSize="22" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
+    <TextBlock Grid.Row="1" Text="O conteúdo e a organização serão preservados." Margin="0,8,0,16"
+               Foreground="{DynamicResource TramaMutedBrush}" FontSize="13" />
+    <TextBox Grid.Row="2" x:Name="EntryTitleInput" Classes="trama-input" Watermark="Novo nome" TextChanged="TitleChanged" />
+    <TextBlock Grid.Row="3" x:Name="ValidationMessage" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" Margin="0,8,0,0" />
+    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+      <Button x:Name="CancelRenameButton" Content="Cancelar" Classes="notebook-add" Click="CancelClicked" IsCancel="True" />
+      <Button x:Name="ConfirmRenameButton" Content="Renomear" Classes="trama-primary" Click="ConfirmClicked" IsDefault="True" IsEnabled="False" Padding="16,10" />
+    </StackPanel>
+  </Grid>
+</Window>

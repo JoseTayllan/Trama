@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Trama.Desktop.ViewModels"
+        xmlns:views="using:Trama.Desktop.Views"
+        x:Class="Trama.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Trama" Width="1200" Height="800" MinWidth="860" MinHeight="680"
+        WindowStartupLocation="CenterScreen" Background="{DynamicResource TramaWindowBrush}">
+  <Window.DataTemplates>
+    <DataTemplate DataType="vm:NotebookEditorViewModel">
+      <views:NotebookEditorView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:LibraryViewModel">
+      <views:LibraryWorkspaceView />
+    </DataTemplate>
+  </Window.DataTemplates>
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,0,0,1" Padding="16,12" IsVisible="{Binding !HasLibrary}">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Border Background="{DynamicResource TramaBrandPlateBrush}" CornerRadius="8" Padding="10,5" Margin="0,0,22,0">
+          <Image Source="avares://Trama.Desktop/Assets/trama-logo.png" Width="108" Height="33" />
+        </Border>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <TextBlock Text="{Binding Heading}" Foreground="{DynamicResource TramaSubtleBrush}" FontSize="12" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12">
+          <Button x:Name="OpenBackupButton" Content="Backup" Classes="notebook-add" Click="OpenBackupClicked" IsEnabled="{Binding HasBackup}" />
+        <Border Background="{DynamicResource TramaSurfaceBrush}" CornerRadius="16" ToolTip.Tip="{Binding DataDirectory}"
+                BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" Padding="12,7" VerticalAlignment="Center">
+          <TextBlock Text="Armazenamento local" Foreground="{DynamicResource TramaMutedBrush}" FontSize="11" />
+        </Border>
+        </StackPanel>
+      </Grid>
+    </Border>
+    <ContentControl Grid.Row="1" Content="{Binding Workspace}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" />
+    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="16,8">
+      <TextBlock Text="{Binding Status}" Foreground="{DynamicResource TramaSubtleBrush}" FontSize="10" TextWrapping="Wrap" />
+      <TextBlock Grid.Column="1" Text="TRAMA" Foreground="{DynamicResource TramaSubtleBrush}" FontSize="10" Margin="16,0,0,0" />
+    </Grid>
+  </Grid>
+</Window>

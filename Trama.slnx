@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Trama.Domain/Trama.Domain.csproj" />
+    <Project Path="src/Trama.Application/Trama.Application.csproj" />
+    <Project Path="src/Trama.Infrastructure/Trama.Infrastructure.csproj" />
+    <Project Path="src/Trama.Desktop/Trama.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Trama.UnitTests/Trama.UnitTests.csproj" />
+    <Project Path="tests/Trama.IntegrationTests/Trama.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

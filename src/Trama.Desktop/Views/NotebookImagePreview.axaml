@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Trama.Desktop.Views.NotebookImagePreview">
+  <Border Background="{DynamicResource TramaInputBrush}" CornerRadius="10" Padding="12"
+          BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1">
+    <Grid>
+      <TextBlock x:Name="ImageMessage" Text="Abrindo imagem…" Margin="10" TextWrapping="Wrap"
+                 Foreground="{DynamicResource TramaMutedBrush}" />
+      <Image x:Name="PreviewImage" Stretch="Uniform" MaxHeight="420" HorizontalAlignment="Left" />
+    </Grid>
+  </Border>
+</UserControl>

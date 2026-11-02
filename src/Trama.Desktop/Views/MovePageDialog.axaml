@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Trama.Desktop.ViewModels"
+        x:Class="Trama.Desktop.Views.MovePageDialog"
+        Title="Mover página" Width="560" Height="420" MinWidth="440" MinHeight="340"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource TramaWindowBrush}">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="24">
+    <TextBlock Text="Mover página" FontSize="22" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
+    <TextBlock Grid.Row="1" x:Name="DestinationHint" Text="Escolha o espaço e o caderno de destino." Margin="0,10,0,16"
+               Foreground="{DynamicResource TramaMutedBrush}" FontSize="13" TextWrapping="Wrap" />
+    <ListBox Grid.Row="2" x:Name="DestinationList" Classes="library-list" SelectionChanged="DestinationChanged">
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="vm:NotebookDestination">
+          <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,16,0,0">
+      <Button x:Name="CancelMoveButton" Content="Cancelar" Classes="notebook-add" Click="CancelClicked" IsCancel="True" IsDefault="True" />
+      <Button x:Name="ConfirmMoveButton" Content="Mover página" Classes="trama-primary" Click="ConfirmClicked" IsEnabled="False" Padding="16,10" />
+    </StackPanel>
+  </Grid>
+</Window>

@@ -1,0 +1,148 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Style Selector="Window">
+    <Setter Property="FontFamily" Value="Segoe UI" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" />
+  </Style>
+  <Style Selector="ScrollBar:vertical">
+    <Setter Property="Width" Value="6" />
+    <Setter Property="MinWidth" Value="6" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="ScrollBar:horizontal">
+    <Setter Property="Height" Value="6" />
+    <Setter Property="MinHeight" Value="6" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="ScrollBar /template/ Thumb /template/ Border">
+    <Setter Property="Background" Value="{DynamicResource TramaSubtleBrush}" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Opacity" Value="0.5" />
+  </Style>
+  <Style Selector="TextBlock.trama-label">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaMutedBrush}" />
+  </Style>
+  <Style Selector="TextBox.trama-input">
+    <Setter Property="Background" Value="{DynamicResource TramaInputBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" />
+    <Setter Property="CaretBrush" Value="{DynamicResource TramaAccentBrush}" />
+    <Setter Property="SelectionBrush" Value="{DynamicResource TramaAccentSoftBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="16,13" />
+    <Setter Property="FontSize" Value="15" />
+  </Style>
+  <Style Selector="TextBox.trama-input /template/ TextBlock#PART_Watermark">
+    <Setter Property="Foreground" Value="{DynamicResource TramaSubtleBrush}" />
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+  <Style Selector="TextBox.trama-input:pointerover, TextBox.trama-input:focus">
+    <Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" />
+  </Style>
+  <Style Selector="TextBox.trama-input:pointerover /template/ TextBlock#PART_Watermark">
+    <Setter Property="Foreground" Value="{DynamicResource TramaSubtleBrush}" />
+  </Style>
+  <Style Selector="TextBox.trama-input:pointerover /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource TramaInputBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource TramaMutedBrush}" />
+  </Style>
+  <Style Selector="TextBox.trama-input:focus /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource TramaInputBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource TramaAccentBrush}" />
+    <Setter Property="BorderThickness" Value="1.5" />
+  </Style>
+  <Style Selector="TextBox.trama-input:focus /template/ TextBlock#PART_Watermark">
+    <Setter Property="Foreground" Value="{DynamicResource TramaSubtleBrush}" />
+  </Style>
+  <Style Selector="TextBox.trama-input:disabled /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="{DynamicResource TramaInputBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" />
+    <Setter Property="Opacity" Value="0.65" />
+  </Style>
+  <Style Selector="Button.trama-primary">
+    <Setter Property="Background" Value="{DynamicResource TramaAccentBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaOnAccentBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="24,14" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.trama-primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource TramaAccentHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaOnAccentBrush}" />
+  </Style>
+  <Style Selector="Button.trama-primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource TramaAccentPressedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaOnAccentBrush}" />
+  </Style>
+  <Style Selector="Button.trama-primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource TramaAccentSoftBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaMutedBrush}" />
+  </Style>
+  <Style Selector="TextBox.notebook-writing, TextBox.notebook-title, TextBox.notebook-language">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" />
+    <Setter Property="CaretBrush" Value="{DynamicResource TramaAccentBrush}" />
+    <Setter Property="SelectionBrush" Value="{DynamicResource TramaAccentSoftBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="10,8" />
+  </Style>
+  <Style Selector="TextBox.notebook-writing /template/ TextBlock#PART_Watermark, TextBox.notebook-title /template/ TextBlock#PART_Watermark">
+    <Setter Property="Foreground" Value="{DynamicResource TramaSubtleBrush}" />
+  </Style>
+  <Style Selector="TextBox.notebook-writing:pointerover, TextBox.notebook-writing:focus, TextBox.notebook-title:pointerover, TextBox.notebook-title:focus, TextBox.notebook-language:pointerover, TextBox.notebook-language:focus">
+    <Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" />
+  </Style>
+  <Style Selector="TextBox.notebook-writing:pointerover /template/ Border#PART_BorderElement, TextBox.notebook-writing:focus /template/ Border#PART_BorderElement, TextBox.notebook-title:pointerover /template/ Border#PART_BorderElement, TextBox.notebook-title:focus /template/ Border#PART_BorderElement, TextBox.notebook-language:focus /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+  <Style Selector="Button.notebook-tool, Button.notebook-add">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaMutedBrush}" />
+    <Setter Property="CornerRadius" Value="7" />
+    <Setter Property="Padding" Value="12,8" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.notebook-tool">
+    <Setter Property="Padding" Value="9,3" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+  <Style Selector="StackPanel.notebook-block-actions">
+    <Setter Property="Opacity" Value="0.45" />
+  </Style>
+  <Style Selector="Border.notebook-block:pointerover StackPanel.notebook-block-actions, Border.notebook-block:focus-within StackPanel.notebook-block-actions">
+    <Setter Property="Opacity" Value="1" />
+  </Style>
+  <Style Selector="Button.notebook-add:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.notebook-tool:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource TramaRaisedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" />
+  </Style>
+  <Style Selector="ListBox.library-list">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+  <Style Selector="ListBox.library-list ListBoxItem">
+    <Setter Property="Foreground" Value="{DynamicResource TramaMutedBrush}" />
+    <Setter Property="Padding" Value="10,8" />
+    <Setter Property="CornerRadius" Value="7" />
+  </Style>
+  <Style Selector="ListBox.library-list ListBoxItem:selected">
+    <Setter Property="Background" Value="{DynamicResource TramaAccentSoftBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" />
+  </Style>
+  <Style Selector="ListBox.library-list ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter, ListBox.library-list ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter, ListBox.library-list ListBoxItem:selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource TramaAccentSoftBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" />
+  </Style>
+  <Style Selector="ListBox.library-list ListBoxItem:pointerover:not(:selected) /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource TramaRaisedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" />
+  </Style>
+</Styles>

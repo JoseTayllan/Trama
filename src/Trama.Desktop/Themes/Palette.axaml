@@ -1,0 +1,74 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Semantic colors are the customization contract. Views consume brushes, never hex values. -->
+  <Color x:Key="TramaColorWindow">#0B111B</Color>
+  <Color x:Key="TramaColorSidebar">#0E1520</Color>
+  <Color x:Key="TramaColorSurface">#131D2B</Color>
+  <Color x:Key="TramaColorRaised">#182536</Color>
+  <Color x:Key="TramaColorInput">#0F1825</Color>
+  <Color x:Key="TramaColorBorder">#2A3A4F</Color>
+  <Color x:Key="TramaColorText">#EDF3FA</Color>
+  <Color x:Key="TramaColorMuted">#ACBCD0</Color>
+  <Color x:Key="TramaColorSubtle">#8597AF</Color>
+  <Color x:Key="TramaColorAccent">#74E4D2</Color>
+  <Color x:Key="TramaColorAccentHover">#9BEFDF</Color>
+  <Color x:Key="TramaColorAccentPressed">#5BCAB9</Color>
+  <Color x:Key="TramaColorAccentSoft">#173B3E</Color>
+  <Color x:Key="TramaColorOnAccent">#082B2D</Color>
+  <Color x:Key="TramaColorPositive">#8BE1BB</Color>
+  <Color x:Key="TramaColorError">#FFB4AB</Color>
+  <Color x:Key="TramaColorBrandPlate">#EEF5F8</Color>
+  <Color x:Key="TramaColorNotebookPaper">#101A26</Color>
+  <Color x:Key="TramaColorNotebookMargin">#2E5655</Color>
+  <SolidColorBrush x:Key="TramaNotebookPaperBrush" Color="{DynamicResource TramaColorNotebookPaper}" />
+  <SolidColorBrush x:Key="TramaNotebookMarginBrush" Color="{DynamicResource TramaColorNotebookMargin}" />
+  <Color x:Key="TramaColorSyntaxKeyword">#C5B3FF</Color>
+  <Color x:Key="TramaColorSyntaxString">#B5DE9E</Color>
+  <Color x:Key="TramaColorSyntaxNumber">#EAB685</Color>
+  <Color x:Key="TramaColorSyntaxComment">#92A6BF</Color>
+  <Color x:Key="TramaColorSyntaxFunction">#F5D88C</Color>
+  <Color x:Key="TramaColorSyntaxType">#70CFF0</Color>
+  <Color x:Key="TramaColorProseHighlightAmber">#473B21</Color>
+  <Color x:Key="TramaColorProseHighlightGreen">#193E34</Color>
+  <Color x:Key="TramaColorProseHighlightBlue">#203851</Color>
+  <Color x:Key="TramaColorProseHighlightViolet">#342B4F</Color>
+
+  <SolidColorBrush x:Key="TramaProseForegroundTealBrush" Color="{DynamicResource TramaColorAccent}" />
+  <SolidColorBrush x:Key="TramaProseForegroundBlueBrush" Color="{DynamicResource TramaColorSyntaxType}" />
+  <SolidColorBrush x:Key="TramaProseForegroundVioletBrush" Color="{DynamicResource TramaColorSyntaxKeyword}" />
+  <SolidColorBrush x:Key="TramaProseForegroundAmberBrush" Color="{DynamicResource TramaColorSyntaxFunction}" />
+  <SolidColorBrush x:Key="TramaProseForegroundCoralBrush" Color="{DynamicResource TramaColorError}" />
+  <SolidColorBrush x:Key="TramaProseHighlightAmberBrush" Color="{DynamicResource TramaColorProseHighlightAmber}" />
+  <SolidColorBrush x:Key="TramaProseHighlightGreenBrush" Color="{DynamicResource TramaColorProseHighlightGreen}" />
+  <SolidColorBrush x:Key="TramaProseHighlightBlueBrush" Color="{DynamicResource TramaColorProseHighlightBlue}" />
+  <SolidColorBrush x:Key="TramaProseHighlightVioletBrush" Color="{DynamicResource TramaColorProseHighlightViolet}" />
+
+  <SolidColorBrush x:Key="TramaWindowBrush" Color="{DynamicResource TramaColorWindow}" />
+  <SolidColorBrush x:Key="TramaSidebarBrush" Color="{DynamicResource TramaColorSidebar}" />
+  <SolidColorBrush x:Key="TramaSurfaceBrush" Color="{DynamicResource TramaColorSurface}" />
+  <SolidColorBrush x:Key="TramaRaisedBrush" Color="{DynamicResource TramaColorRaised}" />
+  <SolidColorBrush x:Key="TramaInputBrush" Color="{DynamicResource TramaColorInput}" />
+  <SolidColorBrush x:Key="TramaBorderBrush" Color="{DynamicResource TramaColorBorder}" />
+  <SolidColorBrush x:Key="TramaTextBrush" Color="{DynamicResource TramaColorText}" />
+  <SolidColorBrush x:Key="TramaMutedBrush" Color="{DynamicResource TramaColorMuted}" />
+  <SolidColorBrush x:Key="TramaSubtleBrush" Color="{DynamicResource TramaColorSubtle}" />
+  <SolidColorBrush x:Key="TramaAccentBrush" Color="{DynamicResource TramaColorAccent}" />
+  <SolidColorBrush x:Key="TramaAccentHoverBrush" Color="{DynamicResource TramaColorAccentHover}" />
+  <SolidColorBrush x:Key="TramaAccentPressedBrush" Color="{DynamicResource TramaColorAccentPressed}" />
+  <SolidColorBrush x:Key="TramaAccentSoftBrush" Color="{DynamicResource TramaColorAccentSoft}" />
+  <SolidColorBrush x:Key="TramaOnAccentBrush" Color="{DynamicResource TramaColorOnAccent}" />
+  <SolidColorBrush x:Key="TramaPositiveBrush" Color="{DynamicResource TramaColorPositive}" />
+  <SolidColorBrush x:Key="TramaErrorBrush" Color="{DynamicResource TramaColorError}" />
+  <SolidColorBrush x:Key="TramaBrandPlateBrush" Color="{DynamicResource TramaColorBrandPlate}" />
+  <SolidColorBrush x:Key="TramaSyntaxKeywordBrush" Color="{DynamicResource TramaColorSyntaxKeyword}" />
+  <SolidColorBrush x:Key="TramaSyntaxStringBrush" Color="{DynamicResource TramaColorSyntaxString}" />
+  <SolidColorBrush x:Key="TramaSyntaxNumberBrush" Color="{DynamicResource TramaColorSyntaxNumber}" />
+  <SolidColorBrush x:Key="TramaSyntaxCommentBrush" Color="{DynamicResource TramaColorSyntaxComment}" />
+  <SolidColorBrush x:Key="TramaSyntaxFunctionBrush" Color="{DynamicResource TramaColorSyntaxFunction}" />
+  <SolidColorBrush x:Key="TramaSyntaxTypeBrush" Color="{DynamicResource TramaColorSyntaxType}" />
+
+  <LinearGradientBrush x:Key="TramaHeaderBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+    <GradientStop Offset="0" Color="{DynamicResource TramaColorRaised}" />
+    <GradientStop Offset="1" Color="{DynamicResource TramaColorSurface}" />
+  </LinearGradientBrush>
+</ResourceDictionary>

@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Trama.Desktop.ViewModels" x:Class="Trama.Desktop.Views.BackupDialog" x:DataType="vm:BackupViewModel"
+        Title="Backup e restauração" Width="740" Height="650" MinWidth="620" MinHeight="560"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Background="{DynamicResource TramaWindowBrush}">
+  <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="24">
+    <StackPanel Spacing="10" Margin="0,0,0,18">
+      <TextBlock Text="Backup e restauração" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
+      <TextBlock Text="Inclui somente dados salvos e imagens usadas nas páginas. Salve seu rascunho antes de criar a cópia."
+                 Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <StackPanel x:Name="BackupActions" Spacing="10" IsEnabled="{Binding !IsBusy}">
+        <TextBlock Text="CRIAR CÓPIA" Classes="trama-label" FontSize="11" />
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBox x:Name="ArchiveOutputInput" Classes="trama-input" Watermark="Caminho do novo arquivo .trama-backup" />
+          <Button Grid.Column="1" x:Name="ChooseBackupFileButton" Content="Escolher…" Classes="notebook-tool" Click="ChooseOutputClicked" Margin="8,0,0,0" />
+        </Grid>
+        <Button x:Name="CreateBackupButton" Content="Criar backup" Classes="trama-primary" Click="CreateClicked" HorizontalAlignment="Left" Padding="16,10" />
+        <TextBox Text="{Binding LastBackupPath, Mode=OneWay}" IsReadOnly="True" Classes="trama-input" Watermark="O caminho aparecerá após a conclusão" FontSize="12" />
+        <Border Background="{DynamicResource TramaBorderBrush}" Height="1" Margin="0,10" />
+        <TextBlock Text="RESTAURAR EM PASTA NOVA" Classes="trama-label" FontSize="11" />
+        <TextBlock Text="Sua biblioteca atual continuará aberta. Arquivos e pastas existentes não serão substituídos."
+                   Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" FontSize="12" />
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBox x:Name="RestoreArchiveInput" Classes="trama-input" Watermark="Arquivo .trama-backup para restaurar" />
+          <Button Grid.Column="1" x:Name="ChooseRestoreFileButton" Content="Escolher…" Classes="notebook-tool" Click="ChooseArchiveClicked" Margin="8,0,0,0" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBox x:Name="RestoreDirectoryInput" Classes="trama-input" Watermark="Caminho de uma pasta nova para a biblioteca" />
+          <Button Grid.Column="1" x:Name="ChooseRestoreFolderButton" Content="Escolher…" Classes="notebook-tool" Click="ChooseFolderClicked" Margin="8,0,0,0" />
+        </Grid>
+        <Button x:Name="RestoreBackupButton" Content="Restaurar cópia" Classes="notebook-add" Click="RestoreClicked" HorizontalAlignment="Left" />
+        <TextBox Text="{Binding LastRestoredDirectory, Mode=OneWay}" IsReadOnly="True" Classes="trama-input" Watermark="A pasta aparecerá após a conclusão" FontSize="12" />
+        <TextBlock Text="Para abrir a cópia, inicie o Trama com --data-directory seguido do caminho da pasta entre aspas."
+                   Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" FontSize="12" />
+      </StackPanel>
+    </ScrollViewer>
+    <TextBlock Grid.Row="2" Text="{Binding Feedback}" TextWrapping="Wrap" Foreground="{DynamicResource TramaAccentBrush}" FontSize="12" Margin="0,16" />
+    <Button Grid.Row="3" x:Name="CloseBackupButton" Content="Fechar" Classes="notebook-add" Click="CloseClicked"
+            IsEnabled="{Binding !IsBusy}" IsCancel="True" HorizontalAlignment="Right" />
+  </Grid>
+</Window>

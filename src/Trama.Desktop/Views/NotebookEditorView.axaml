@@ -1,0 +1,159 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Trama.Desktop.ViewModels"
+             xmlns:views="using:Trama.Desktop.Views"
+             x:Class="Trama.Desktop.Views.NotebookEditorView"
+             x:Name="NotebookEditorRoot" x:DataType="vm:NotebookEditorViewModel">
+  <UserControl.Styles>
+    <Style Selector="ComboBox.notebook-format"><Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Padding" Value="8,6" /></Style>
+  </UserControl.Styles>
+  <Grid RowDefinitions="Auto,*,Auto">
+    <StackPanel>
+    <Grid ColumnDefinitions="*,Auto" Margin="20,0,20,14" IsVisible="{Binding !#NotebookEditorRoot.UseHostHeader}">
+      <WrapPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+        <TextBlock Text="ESCRITA LIVRE" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,3,10,3" />
+        <TextBlock Text="{Binding SaveModeLabel}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" Margin="0,3,10,3" />
+        <TextBlock Text="Não salvo" IsVisible="{Binding HasUnsavedChanges}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,3,10,3" />
+      </WrapPanel>
+      <Button Grid.Column="1" x:Name="SaveNotebookButton" Content="Salvar página" Classes="trama-primary"
+              Command="{Binding SaveCommand}" Padding="20,10" />
+    </Grid>
+    <Border x:Name="ProseFormattingBar" Margin="20,0,20,10" Padding="10,8" CornerRadius="10"
+            Background="{DynamicResource TramaRaisedBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1"
+            IsEnabled="{Binding CanEditContent}">
+      <Grid ColumnDefinitions="Auto,*">
+      <Button x:Name="ToggleFormattingButton" Content="Texto · formatação" Classes="notebook-tool" Focusable="False" Click="ToggleFormattingClicked" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip.Tip="Abrir ou recolher ferramentas de texto" />
+      <WrapPanel Grid.Column="1" x:Name="ProseFormattingTools" IsEnabled="False" Orientation="Horizontal">
+        <Button Content="N" Classes="notebook-tool" FontWeight="Bold" Focusable="False" ToolTip.Tip="Negrito na seleção (Ctrl+B)" Click="BoldClicked" Margin="0,4" />
+        <Button Content="I" Classes="notebook-tool" FontStyle="Italic" Focusable="False" ToolTip.Tip="Itálico na seleção (Ctrl+I)" Click="ItalicClicked" Margin="0,4,10,4" />
+        <ComboBox x:Name="ProseFontSizePicker" Classes="notebook-format" Width="100" Margin="0,3,8,3" PlaceholderText="Tamanho"
+                  ToolTip.Tip="Tamanho do texto selecionado · unidades lógicas" SelectionChanged="FormattingChoiceChanged">
+          <ComboBoxItem Content="Padrão" Tag="default" />
+          <ComboBoxItem Content="12" Tag="12" /><ComboBoxItem Content="14" Tag="14" />
+          <ComboBoxItem Content="16" Tag="16" /><ComboBoxItem Content="18" Tag="18" />
+          <ComboBoxItem Content="24" Tag="24" /><ComboBoxItem Content="32" Tag="32" />
+        </ComboBox>
+        <TextBlock Text="A" FontSize="18" FontWeight="SemiBold" TextDecorations="Underline" Foreground="{DynamicResource TramaAccentBrush}" VerticalAlignment="Center" Margin="2,0,2,0" />
+        <ComboBox x:Name="ProseForegroundPicker" Classes="notebook-format" Width="165" Margin="0,3,8,3" PlaceholderText="Cor da letra"
+                  ToolTip.Tip="Cor da letra na seleção" SelectionChanged="FormattingChoiceChanged">
+          <ComboBoxItem Content="Cor automática" Tag="default" />
+          <ComboBoxItem Content="Verde-água" Tag="teal" /><ComboBoxItem Content="Azul" Tag="blue" />
+          <ComboBoxItem Content="Violeta" Tag="violet" /><ComboBoxItem Content="Âmbar" Tag="amber" />
+          <ComboBoxItem Content="Coral" Tag="coral" />
+        </ComboBox>
+        <Border Background="{DynamicResource TramaSyntaxFunctionBrush}" Width="14" Height="14" CornerRadius="3" VerticalAlignment="Center" Margin="2,0,4,0" />
+        <ComboBox x:Name="ProseHighlightPicker" Classes="notebook-format" Width="156" Margin="0,3,8,3" PlaceholderText="Marca-texto"
+                  ToolTip.Tip="Marca-texto na seleção" SelectionChanged="FormattingChoiceChanged">
+          <ComboBoxItem Content="Sem destaque" Tag="none" />
+          <ComboBoxItem Content="Destaque âmbar" Tag="amber" /><ComboBoxItem Content="Destaque verde" Tag="green" />
+          <ComboBoxItem Content="Destaque azul" Tag="blue" /><ComboBoxItem Content="Destaque violeta" Tag="violet" />
+        </ComboBox>
+        <ComboBox x:Name="ProseListPicker" Classes="notebook-format" Width="155" Margin="0,3,8,3" PlaceholderText="Lista"
+                  ToolTip.Tip="Lista nos parágrafos selecionados" SelectionChanged="FormattingChoiceChanged">
+          <ComboBoxItem Content="Sem lista" Tag="none" />
+          <ComboBoxItem Content="• Marcadores" Tag="bullet" />
+          <ComboBoxItem Content="1. Numerada" Tag="numbered" />
+        </ComboBox>
+        <Button x:Name="ClearProseFormattingButton" Content="Limpar" Classes="notebook-tool" Focusable="False"
+                ToolTip.Tip="Remover toda a formatação apenas da seleção" Click="ClearProseFormattingClicked" Margin="0,4,14,4" />
+        <Button x:Name="UndoProseButton" Content="Desfazer" Classes="notebook-tool" Focusable="False" Click="UndoProseClicked" ToolTip.Tip="Desfazer (Ctrl+Z)" />
+        <Button x:Name="RedoProseButton" Content="Refazer" Classes="notebook-tool" Focusable="False" Click="RedoProseClicked" ToolTip.Tip="Refazer (Ctrl+Y)" />
+      </WrapPanel>
+      </Grid>
+    </Border>
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" x:Name="PageScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <Border x:Name="NotebookPaper" MaxWidth="1040" Margin="20,20,20,30" Padding="0,10,10,24" Background="Transparent">
+      <Grid ColumnDefinitions="44,*">
+      <Border x:Name="NotebookMarginLine" Width="1" HorizontalAlignment="Center" Background="{DynamicResource TramaNotebookMarginBrush}" />
+      <StackPanel Grid.Column="1" Spacing="20" HorizontalAlignment="Stretch">
+        <StackPanel Spacing="12" IsEnabled="{Binding CanEditContent}">
+          <StackPanel Orientation="Horizontal" IsVisible="{Binding #NotebookEditorRoot.UseHostHeader}" Margin="10,0,0,8">
+            <TextBlock Text="{Binding #NotebookEditorRoot.SectionCaption}" MaxWidth="290" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding #NotebookEditorRoot.SectionCaption}" Foreground="{DynamicResource TramaAccentBrush}" FontSize="10" FontWeight="SemiBold" />
+            <TextBlock Text=" / PÁGINA DE ESTUDO" Foreground="{DynamicResource TramaAccentBrush}" FontSize="10" FontWeight="SemiBold" />
+          </StackPanel>
+          <TextBox x:Name="NotebookTitleInput" Text="{Binding Title, Mode=TwoWay}" Classes="notebook-title"
+                   Watermark="Sem título" FontSize="34" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <Border HorizontalAlignment="Left" Background="{DynamicResource TramaRaisedBrush}" CornerRadius="7" Padding="10,6" Margin="10,0,0,8" IsVisible="{Binding #NotebookEditorRoot.UseHostHeader}">
+            <TextBlock Text="{Binding #NotebookEditorRoot.TagSummary}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" />
+          </Border>
+        </StackPanel>
+        <ItemsControl Margin="-44,0,0,0" ItemsSource="{Binding Blocks}" IsEnabled="{Binding CanEditContent}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:NotebookBlockEditor">
+              <Border Classes="notebook-block" Margin="0,0,0,18">
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="44,*">
+                  <Grid Grid.Row="1" VerticalAlignment="Top" Margin="0,8,0,0">
+                    <TextBlock x:Name="BlockOrderLabel" Text="01" FontSize="10" HorizontalAlignment="Left" Foreground="{DynamicResource TramaSubtleBrush}" />
+                    <Border x:Name="BlockMarkerDot" Width="7" Height="7" CornerRadius="4" Background="{DynamicResource TramaAccentBrush}" HorizontalAlignment="Center" Margin="0,15,0,0" />
+                  </Grid>
+                  <Button Grid.Column="1" x:Name="BlockActionsButton" Content="Bloco ···" Classes="notebook-tool" HorizontalAlignment="Right" Margin="0,0,0,3" ToolTip.Tip="Organizar este bloco" AttachedToVisualTree="BlockActionsAttached" />
+                  <Grid Grid.Row="1" Grid.Column="1">
+                    <ContentControl IsVisible="{Binding IsText}" Content="{Binding}" HorizontalContentAlignment="Stretch">
+                      <ContentControl.ContentTemplate>
+                        <DataTemplate x:DataType="vm:NotebookBlockEditor">
+                          <Border Classes="notebook-prose">
+                            <views:NotebookProseEditor Background="Transparent" Foreground="{DynamicResource TramaTextBrush}" />
+                          </Border>
+                        </DataTemplate>
+                      </ContentControl.ContentTemplate>
+                    </ContentControl>
+                    <ContentControl IsVisible="{Binding IsCode}" Content="{Binding}" HorizontalContentAlignment="Stretch">
+                    <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="vm:NotebookBlockEditor">
+                    <Border CornerRadius="10" Background="{DynamicResource TramaInputBrush}"
+                            BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1">
+                      <Grid RowDefinitions="Auto,Auto">
+                        <Grid ColumnDefinitions="*,Auto" Margin="12,4">
+                          
+                          <TextBox Classes="notebook-language" Text="{Binding Language, Mode=TwoWay}" Watermark="Linguagem" FontSize="12" Padding="8,9" />
+                          <TextBlock Grid.Column="1" Text="EXEMPLO" Foreground="{DynamicResource TramaSubtleBrush}" FontSize="9" VerticalAlignment="Center" Margin="16,0" />
+                        </Grid>
+                        <views:NotebookCodeEditor Grid.Row="1" Margin="12,12,12,10" FontSize="16" FontFamily="Cascadia Code,Consolas,DejaVu Sans Mono,monospace" CodeText="{Binding Text, Mode=TwoWay}" Language="{Binding Language}"
+                            Background="{DynamicResource TramaInputBrush}" Foreground="{DynamicResource TramaTextBrush}"
+                            LineNumbersForeground="{DynamicResource TramaSubtleBrush}"
+                            KeywordBrush="{DynamicResource TramaSyntaxKeywordBrush}" StringBrush="{DynamicResource TramaSyntaxStringBrush}"
+                            NumberBrush="{DynamicResource TramaSyntaxNumberBrush}" CommentBrush="{DynamicResource TramaSyntaxCommentBrush}"
+                            FunctionBrush="{DynamicResource TramaSyntaxFunctionBrush}" TypeBrush="{DynamicResource TramaSyntaxTypeBrush}" />
+                      </Grid>
+                    </Border>
+                    </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                    </ContentControl>
+                    <ContentControl IsVisible="{Binding IsImage}" Content="{Binding}" HorizontalContentAlignment="Stretch">
+                    <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="vm:NotebookBlockEditor">
+                    <StackPanel Spacing="8">
+                      <views:NotebookImagePreview AttachmentId="{Binding AttachmentId}" />
+                      <TextBox Classes="notebook-writing" Text="{Binding Text, Mode=TwoWay}" Watermark="Adicionar uma legenda…"
+                               FontSize="13" TextWrapping="Wrap" Padding="10,6" />
+                    </StackPanel>
+                    </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                    </ContentControl>
+                  </Grid>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Border BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="0,16,0,0">
+          <WrapPanel Orientation="Horizontal">
+            <Button x:Name="AddTextButton" Content="+ Texto" Classes="notebook-add" Command="{Binding AddTextCommand}" />
+            <Button x:Name="ExportMarkdownButton" Content="Exportar página" Classes="notebook-add" Click="ExportMarkdownClicked"
+                    IsEnabled="{Binding !IsBusy}" IsVisible="{Binding SupportsMarkdownExport}" ToolTip.Tip="Exportar a página aberta em Markdown com imagens" />
+            <Button x:Name="AddCodeButton" Content="+ Código" Classes="notebook-add" Command="{Binding AddCodeCommand}" />
+            <Button x:Name="ImportImageButton" Content="+ Imagem" Classes="notebook-add" Click="ImportImageClicked" IsEnabled="{Binding !IsBusy}" />
+            <Button x:Name="PasteImageButton" Content="Colar print" Classes="notebook-add" Click="PasteImageClicked"
+                    ToolTip.Tip="Colar imagem da área de transferência (Ctrl+Shift+V)" IsEnabled="{Binding !IsBusy}" />
+          </WrapPanel>
+        </Border>
+      </StackPanel>
+      </Grid>
+      </Border>
+    </ScrollViewer>
+    <Border Grid.Row="2" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="20,12">
+      <TextBlock Text="{Binding Feedback}" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" TextWrapping="Wrap" />
+    </Border>
+  </Grid>
+</UserControl>
