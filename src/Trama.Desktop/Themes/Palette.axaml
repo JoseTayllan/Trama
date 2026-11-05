@@ -17,6 +17,9 @@
   <Color x:Key="TramaColorOnAccent">#082B2D</Color>
   <Color x:Key="TramaColorPositive">#8BE1BB</Color>
   <Color x:Key="TramaColorError">#FFB4AB</Color>
+  <SolidColorBrush x:Key="TramaAgendaWorkBrush" Color="{DynamicResource TramaColorSyntaxType}" />
+  <SolidColorBrush x:Key="TramaAgendaStudyBrush" Color="{DynamicResource TramaColorAccent}" />
+  <SolidColorBrush x:Key="TramaAgendaPersonalBrush" Color="{DynamicResource TramaColorSyntaxFunction}" />
   <Color x:Key="TramaColorBrandPlate">#EEF5F8</Color>
   <Color x:Key="TramaColorNotebookPaper">#101A26</Color>
   <Color x:Key="TramaColorNotebookMargin">#2E5655</Color>

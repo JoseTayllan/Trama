@@ -57,6 +57,40 @@ Os procedimentos de ambiente e distribuição ficam separados na [central de ope
 | 45 | [Listas implementadas](45-listas-implementadas.md) | Metadados de parágrafo, histórico, Enter, margem visual, conteúdo versão 4 e 486 testes aprovados |
 | 46 | [Exportação Markdown: especificação](46-exportacao-markdown-especificacao.md) | Página aberta e imagens relativas; 26 casos para revisão, portabilidade, rascunho e recuperação de falhas |
 | 47 | [Exportação e painel implementados](47-exportacao-markdown-e-painel.md) | Snapshot do rascunho, Markdown/imagens, publicação de arquivos, painel offline e 512 testes aprovados |
+| 48 | [Início e integração dos módulos](48-inicio-e-integracao-dos-modulos.md) | Proposta da navegação entre Início, Cadernos e Agenda; continuidade da edição, vínculos e etapas |
+| 49 | [Início e navegação: especificação](49-inicio-navegacao-especificacao.md) | 17 casos para revisão; editor preservado, autosave oculto, fechamento, backup e compatibilidade |
+| 50 | [Início e navegação implementados](50-inicio-e-navegacao-implementados.md) | Barra global, acervo preservado, continuidade da página, autosave e 529 testes aprovados |
+| 51 | [Rolagem e seleção nos blocos](51-rolagem-e-selecao-nos-blocos.md) | Roda sobre os editores, geometria do cursor, seleção sem salto e 535 testes aprovados |
+| 52 | [Refinamento visual do Início](52-refinamento-visual-do-inicio.md) | Ícones vetoriais, cartões, paleta semântica, contexto real e janela compacta |
+| 53 | [Agenda: regras das tarefas](53-agenda-regras-das-tarefas.md) | Especificação aprovada dos 24 casos; horários, estados, categorias, espera e cancelamento |
+| 54 | [Agenda: regras implementadas](54-agenda-regras-implementadas.md) | Validação, escrita aguardada, falhas e cancelamento; 101 unitários aprovados, SQLite ainda pendente |
+| 55 | [Agenda: especificação de persistência](55-agenda-persistencia-especificacao.md) | 24 casos aprovados para SQLite, migração, consultas e recuperação; histórico RED |
+| 56 | [Agenda: SQLite e recuperação](56-agenda-sqlite-e-recuperacao.md) | Sétima migração, repositório, validação e backup; 583 testes aprovados no WSL |
+| 57 | [Agenda: especificação do serviço](57-agenda-servico-especificacao.md) | 15 casos aprovados para fachada, composição, isolamento e ciclo de vida dos contextos |
+| 58 | [Agenda: serviço implementado](58-agenda-servico-implementado.md) | Contexto por operação e registro na composição; 598 testes aprovados no WSL |
+| 59 | [Agenda: formulário em revisão](59-agenda-formulario-especificacao.md) | Especificação aprovada; histórico RED preservado |
+| 60 | [Agenda: formulário implementado](60-agenda-formulario-e-navegacao.md) | Lista diária, rascunhos e fechamento coordenado; 632 testes aprovados |
+| 61 | [Agenda: tarefas abertas](61-agenda-tarefas-abertas-especificacao.md) | Início sem fim e cadastro em sequência; nove casos em revisão, seis RED e três proteções passando |
+| 62 | [Agenda: tarefas abertas implementadas](62-agenda-tarefas-abertas-implementadas.md) | Início sem fim, cadastro em sequência e 640 testes aprovados |
+| 63 | [Agenda: formulário e encerramento](63-encerramento-e-refino-da-agenda.md) | Refino visual conferido; 17 casos de encerramento em RED, 640 anteriores aprovados |
+| 64 | [Agenda: regras de encerramento implementadas](64-regras-de-encerramento-implementadas.md) | Seleção validada, instante real e seletores refinados; 657 testes aprovados |
+| 65 | [Agenda: formulário compacto](65-formulario-compacto-da-agenda.md) | Campos menores, data/horários em linha e 43 casos afetados aprovados |
+| 66 | [Agenda: encerramento no SQLite em revisão](66-encerramento-sqlite-especificacao.md) | 22 casos para migração, último encerramento, lote atômico e backup; 21 RED e uma guarda passando |
+| 67 | [Agenda: encerramento persistido](67-encerramento-sqlite-implementado.md) | Oitava migração, lote atômico e backup/legados; 679 testes aprovados |
+| 68 | [Agenda: serviço de encerramento em revisão](68-servico-de-encerramento-especificacao.md) | 24 casos para candidatas, contexto por operação e composição; 20 RED e quatro proteções passando |
+| 69 | [Agenda: serviço de encerramento implementado](69-servico-de-encerramento-implementado.md) | Candidatas, contexto por operação e composição; 703 testes aprovados |
+| 70 | [Agenda: fechamento coordenado em revisão](70-fechamento-coordenado-especificacao.md) | Seleção, diálogo e proteção de editores/autosave; 35 casos, 33 RED e duas guardas passando |
+| 71 | [Agenda: fechamento coordenado implementado](71-fechamento-coordenado-implementado.md) | Diálogo real, seleção e proteção de rascunhos/autosave; 738 testes aprovados |
+| 72 | [Agenda: lixeira em revisão](72-lixeira-da-agenda-especificacao.md) | 31 casos de exclusão lógica, restauração, visibilidade e backup; 27 RED e quatro guardas passando |
+| 73 | [Agenda: lixeira persistida](73-lixeira-da-agenda-persistida.md) | Nona migração, exclusão lógica, recuperação e backup; 769 testes aprovados |
+| 74 | [Agenda: datas de término em revisão](74-datas-de-termino-especificacao.md) | Término planejado entre dias e instante real informado; 18 casos, oito RED e dez proteções |
+| 75 | [Agenda: regras de término implementadas](75-datas-de-termino-regras-implementadas.md) | Datas planejadas entre dias e instante real encaminhado; 787 testes aprovados; armazenamento/campos pendentes |
+| 76 | [Agenda: persistência da data final em revisão](76-data-final-persistencia-especificacao.md) | Décima migração proposta e backup 1; 24 casos, 22 RED e duas proteções |
+| 77 | [Agenda: data final persistida](77-data-final-persistida.md) | Décima migração, SQLite e backup 1; 811 testes aprovados; campos visuais pendentes |
+| 78 | [Agenda: campos de datas e horários em revisão](78-campos-de-datas-e-horarios-especificacao.md) | Entradas HH:mm, fim planejado e conclusão informada; 33 casos, 31 RED e duas proteções |
+| 79 | [Agenda: campos de datas e horários implementados](79-campos-de-datas-e-horarios-implementados.md) | Horários HH:mm, fim planejado e conclusão informada; 844 testes e QA SQLite/Skia |
+| 80 | [Agenda: fluxo da lixeira em revisão](80-lixeira-agenda-fluxo-especificacao.md) | Confirmação, rascunhos e restauração; 21 casos, 20 RED e uma guarda |
+| 81 | [Agenda: fluxo da lixeira implementado](81-lixeira-agenda-fluxo-implementado.md) | Confirmação, rascunhos e restauração conectados ao ViewModel; 865 testes; tela pendente |
 
 Leia os capítulos na ordem na primeira passagem. Depois, use os links para revisar um assunto enquanto examina o código correspondente. Aprovar testes de uma funcionalidade não significa que persistência, editor e todos os módulos previstos já estejam entregues.
 

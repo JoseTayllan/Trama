@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Trama.Application.Agenda;
 using Trama.Application.Knowledge;
 using Trama.Application.Storage;
 using Trama.Desktop.ViewModels;
@@ -18,6 +19,9 @@ public static class DesktopComposition
         var databasePath = await LocalDatabase.InitializeAsync(dataDirectory, cancellationToken);
         var images = new LocalImageAttachmentStore(dataDirectory);
         return new ServiceCollection()
+            .AddSingleton<IAgendaActions>(new SqliteAgendaActions(databasePath))
+            .AddSingleton<IAgendaCompletionActions>(new SqliteAgendaCompletionActions(databasePath))
+            .AddSingleton<IAgendaTrashActions>(new SqliteAgendaTrashActions(databasePath))
             .AddSingleton<ICreateNote>(new SqliteNoteService(databasePath))
             .AddTransient<NoteEditorViewModel>()
             .AddSingleton<INotebookActions>(new SqliteNotebookActions(databasePath, images))
@@ -31,6 +35,8 @@ public static class DesktopComposition
             .AddSingleton<ILibraryTrashActions>(new SqliteLibraryTrashActions(databasePath))
             .AddSingleton<ILibraryManagementActions>(new SqliteLibraryManagement(databasePath))
             .AddSingleton<IUnsavedChangesPrompt>(unsavedChangesPrompt ?? new CancelUnsavedChangesPrompt())
+            .AddTransient(services => new AgendaViewModel(services.GetRequiredService<IAgendaActions>(),
+                services.GetRequiredService<IUnsavedChangesPrompt>(), services.GetRequiredService<IAgendaTrashActions>(), TimeProvider.System))
             .AddTransient(services => new LibraryViewModel(services.GetRequiredService<ILibraryActions>(),
                 services.GetRequiredService<IUnsavedChangesPrompt>(), services.GetRequiredService<ILibraryManagementActions>(),
                 services.GetRequiredService<IKnowledgeDiscovery>(), enableAutoSave ? TimeProvider.System : null,

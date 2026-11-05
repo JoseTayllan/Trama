@@ -26,6 +26,7 @@ public sealed partial class NotebookProseEditor : TextEditor
     public event EventHandler? FormattingStateChanged;
     public NotebookProseEditor()
     {
+        NotebookBlockScrolling.Attach(this);
         WordWrap = true;
         ShowLineNumbers = false;
         FontSize = 16;

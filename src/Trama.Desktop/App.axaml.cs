@@ -41,6 +41,15 @@ public sealed partial class App : Avalonia.Application
                     await library.InitializeAsync();
                     if (_shutdown.IsCancellationRequested) return;
                     viewModel.Library = library;
+                    var agenda = new AgendaViewModel(services.GetRequiredService<Trama.Application.Agenda.IAgendaActions>(),
+                        new WindowUnsavedChangesPrompt(window, "Esta tarefa da Agenda tem alterações não salvas. Deseja salvá-las antes de continuar?"),
+                        services.GetRequiredService<Trama.Application.Agenda.IAgendaTrashActions>(), TimeProvider.System);
+                    await agenda.InitializeAsync(DateOnly.FromDateTime(DateTime.Today));
+                    if (_shutdown.IsCancellationRequested) return;
+                    viewModel.Agenda = agenda;
+                    viewModel.Closing = new ApplicationCloseCoordinator(library, agenda,
+                        services.GetRequiredService<Trama.Application.Agenda.IAgendaCompletionActions>(),
+                        new WindowAgendaCompletionPrompt(window), TimeProvider.System);
                     viewModel.Backup = services.GetRequiredService<BackupViewModel>();
                     viewModel.DataDirectory = directory;
                     viewModel.Status = "Pronto · armazenamento local";

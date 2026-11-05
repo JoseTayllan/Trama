@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Trama.Desktop.ViewModels;
 
-public sealed class MainWindowViewModel : ObservableObject
+public sealed partial class MainWindowViewModel : ObservableObject
 {
     private NoteEditorViewModel? _editor;
     private NotebookEditorViewModel? _notebook;
@@ -19,22 +19,33 @@ public sealed class MainWindowViewModel : ObservableObject
     public NotebookEditorViewModel? Notebook
     {
         get => _notebook;
-        set { if (SetProperty(ref _notebook, value)) OnPropertyChanged(nameof(Workspace)); }
+        set
+        {
+            if (SetProperty(ref _notebook, value))
+            {
+                OnPropertyChanged(nameof(Workspace));
+                OnPropertyChanged(nameof(IsPreparingWorkspace));
+            }
+        }
     }
     public LibraryViewModel? Library
     {
         get => _library;
         set
         {
+            var previous = _library;
             if (SetProperty(ref _library, value))
             {
+                ObserveLibraryNavigation(previous, value);
                 OnPropertyChanged(nameof(Workspace));
+                OnPropertyChanged(nameof(IsPreparingWorkspace));
                 OnPropertyChanged(nameof(HasLibrary));
             }
         }
     }
     public bool HasLibrary => Library is not null;
     public object? Workspace => (object?)Library ?? Notebook;
+    public bool IsPreparingWorkspace => Workspace is null;
     public bool HasBackup => Backup is not null;
     public BackupViewModel? Backup
     {

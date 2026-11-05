@@ -69,7 +69,7 @@
         <ScrollViewer x:Name="LibrarySidebarScroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel>
         <StackPanel Spacing="6" Margin="0,0,0,24">
-          <TextBlock Text="Trama" FontSize="28" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
+          <TextBlock Text="Trama" IsVisible="{Binding !#WorkspaceRoot.UseModuleShell}" FontSize="28" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
           <TextBlock Text="SEU ACERVO" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TramaSubtleBrush}" />
           <TextBox x:Name="SearchQueryInput" Text="{Binding SearchQuery, Mode=TwoWay}" Classes="trama-input"
                    Watermark="Buscar no acervo…" KeyDown="SearchKeyDown" Padding="12,11" FontSize="13"
@@ -174,7 +174,7 @@
           <TextBlock Text="Local · seus arquivos" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12"
                      ToolTip.Tip="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).DataDirectory}" />
           <WrapPanel>
-            <Button x:Name="LibraryBackupButton" Content="Backup" Click="LibraryBackupClicked" Classes="notebook-tool" FontSize="11"
+            <Button x:Name="LibraryBackupButton" Content="Backup" Click="LibraryBackupClicked" Classes="notebook-tool" FontSize="11" IsVisible="{Binding !#WorkspaceRoot.UseModuleShell}"
                     IsEnabled="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).HasBackup}" />
             <Button x:Name="OpenTrashButton" Content="Lixeira" Click="OpenTrashClicked" Classes="notebook-tool" FontSize="11" IsEnabled="{Binding CanNavigate}" IsVisible="{Binding HasTrash}" />
             <Button Content="Atualizar" Command="{Binding RefreshCommand}" Classes="notebook-tool" FontSize="11" />

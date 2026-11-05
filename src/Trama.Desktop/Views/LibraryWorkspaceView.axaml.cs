@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -8,6 +9,9 @@ namespace Trama.Desktop.Views;
 
 public sealed partial class LibraryWorkspaceView : UserControl
 {
+    public static readonly StyledProperty<bool> UseModuleShellProperty =
+        AvaloniaProperty.Register<LibraryWorkspaceView, bool>(nameof(UseModuleShell));
+    public bool UseModuleShell { get => GetValue(UseModuleShellProperty); set => SetValue(UseModuleShellProperty, value); }
     private bool _changingSelection;
     private bool _managementDialogOpen;
     private bool? _compactSidebar;

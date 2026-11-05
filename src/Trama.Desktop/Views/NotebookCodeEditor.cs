@@ -34,6 +34,7 @@ public sealed class NotebookCodeEditor : TextEditor
 
     public NotebookCodeEditor()
     {
+        NotebookBlockScrolling.Attach(this);
         ShowLineNumbers = true;
         FontFamily = new FontFamily("Cascadia Code,Consolas,monospace");
         FontSize = 14;

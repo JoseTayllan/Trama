@@ -1,0 +1,72 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Trama.Desktop.ViewModels" xmlns:views="using:Trama.Desktop.Views"
+        x:Class="Trama.Desktop.Views.AgendaCompletionDialog" x:DataType="vm:AgendaCompletionDialogViewModel"
+        Title="Antes de sair · Trama" Width="700" Height="540" MinWidth="520" MinHeight="360"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Background="{DynamicResource TramaWindowBrush}">
+  <Window.Resources><views:AgendaPresentationConverter x:Key="AgendaPresentation" /></Window.Resources>
+  <Window.Styles>
+    <Style Selector="DatePicker.completion-date"><Setter Property="MinWidth" Value="0" /><Setter Property="FontSize" Value="12" /></Style>
+    <Style Selector="DatePicker.completion-date /template/ Button#PART_FlyoutButton">
+      <Setter Property="MinWidth" Value="0" /><Setter Property="MinHeight" Value="32" /><Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Background" Value="{DynamicResource TramaSurfaceBrush}" /><Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" /><Setter Property="BorderThickness" Value="1" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="CheckBox.completion-task"><Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Padding" Value="8" /><Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" /></Style>
+    <Style Selector="Border.completion-card"><Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" /><Setter Property="BorderThickness" Value="1" /><Setter Property="CornerRadius" Value="8" /><Setter Property="Background" Value="{DynamicResource TramaInputBrush}" /></Style>
+    <Style Selector="CheckBox.completion-task:checked Border.completion-card"><Setter Property="BorderBrush" Value="{DynamicResource TramaAccentBrush}" /></Style>
+  </Window.Styles>
+  <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+    <StackPanel Spacing="9" Margin="0,0,0,14">
+      <TextBlock Text="AGENDA / ENCERRAR O DIA" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TramaAccentBrush}" LetterSpacing="1" />
+      <TextBlock Text="Antes de sair" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
+      <TextBlock Text="Há tarefas pendentes ou em andamento até hoje. Selecione apenas as que deseja concluir agora." FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+      <WrapPanel Orientation="Horizontal">
+        <Button Content="Selecionar todas" Command="{Binding SelectAllCommand}" Classes="notebook-tool" Padding="0,5" Margin="0,0,16,0" />
+        <Button Content="Limpar seleção" Command="{Binding ClearSelectionCommand}" Classes="notebook-tool" Padding="0,5" />
+      </WrapPanel>
+    </StackPanel>
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Spacing="12">
+        <StackPanel Spacing="6">
+          <CheckBox x:Name="AgendaCustomCompletionToggle" Content="Informar data e hora · padrão: agora" IsChecked="{Binding UseCustomCompletionTime, Mode=TwoWay}" Foreground="{DynamicResource TramaTextBrush}" />
+          <WrapPanel IsVisible="{Binding UseCustomCompletionTime}" Orientation="Horizontal">
+            <StackPanel Spacing="4" Width="190" Margin="0,0,10,0"><TextBlock Text="Quando terminou" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" /><DatePicker x:Name="AgendaCompletionDateInput" Classes="completion-date" SelectedDate="{Binding CompletionDate, Mode=TwoWay}" DayFormat="dd" MonthFormat="MMM" YearFormat="yyyy" HorizontalAlignment="Stretch" /></StackPanel>
+            <StackPanel Spacing="4" Width="84"><TextBlock Text="Horário" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" /><TextBox x:Name="AgendaCompletionTimeInput" Text="{Binding CompletionTimeText, Mode=TwoWay}" Classes="trama-input" Watermark="HH:mm" MaxLength="5" MinHeight="32" Height="32" Padding="8,5" ToolTip.Tip="Digite o horário real em HH:mm" /></StackPanel>
+          </WrapPanel>
+          <TextBlock Text="{Binding CompletionInputHint}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" />
+        </StackPanel>
+      <ItemsControl x:Name="AgendaCompletionList" ItemsSource="{Binding Items}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:AgendaCompletionItemViewModel">
+            <CheckBox Classes="completion-task" IsChecked="{Binding IsSelected, Mode=TwoWay}" Margin="0,0,0,8">
+              <Border Classes="completion-card" Padding="12" HorizontalAlignment="Stretch">
+                <StackPanel Spacing="5">
+                  <TextBlock Text="{Binding Task.Title}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding Task.Description}" FontSize="12" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Task.Description}" />
+                  <WrapPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Task.PlannedDate, StringFormat='{}{0:dd/MM/yyyy}'}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" Margin="0,0,12,0" />
+                    <TextBlock Text="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=category}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,12,0" />
+                    <TextBlock Text="{Binding Task.Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" />
+                  </WrapPanel>
+                </StackPanel>
+              </Border>
+            </CheckBox>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+    <Border Grid.Row="2" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="0,12,0,0" Margin="0,12,0,0">
+      <StackPanel Spacing="9">
+        <TextBlock Text="{Binding SelectionLabel}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" />
+        <TextBlock Text="A conclusão registra o horário real e preserva o planejamento." FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" />
+        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
+          <Button x:Name="CancelCompletionButton" Content="Cancelar" Classes="notebook-add" IsCancel="True" IsDefault="True" Click="CancelClicked" Padding="12,9" Margin="0,0,8,0" />
+          <Button x:Name="KeepOpenButton" Content="Sair mantendo abertas" Classes="notebook-add" Click="KeepOpenClicked" Padding="12,9" Margin="0,0,8,0" />
+          <Button x:Name="CompleteSelectedButton" Content="Encerrar selecionadas e sair" Classes="trama-primary" IsEnabled="{Binding CanCompleteSelected}" Click="CompleteClicked" Padding="12,9" />
+        </WrapPanel>
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

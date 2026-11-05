@@ -1,0 +1,137 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Trama.Desktop.ViewModels" xmlns:agenda="using:Trama.Application.Agenda"
+             xmlns:views="using:Trama.Desktop.Views" x:Class="Trama.Desktop.Views.AgendaWorkspaceView"
+             x:Name="AgendaRoot" x:DataType="vm:AgendaViewModel">
+  <UserControl.Resources><views:AgendaPresentationConverter x:Key="AgendaPresentation" /></UserControl.Resources>
+  <UserControl.Styles>
+    <Style Selector="Border.agenda-card"><Setter Property="Background" Value="{DynamicResource TramaSurfaceBrush}" /><Setter Property="CornerRadius" Value="12" /><Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" /><Setter Property="BorderThickness" Value="1" /></Style>
+    <Style Selector="Button.task-row"><Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" /><Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Padding" Value="0" /></Style>
+    <Style Selector="Border.category-spine"><Setter Property="Background" Value="{DynamicResource TramaAgendaPersonalBrush}" /></Style>
+    <Style Selector="Border.category-spine.work"><Setter Property="Background" Value="{DynamicResource TramaAgendaWorkBrush}" /></Style>
+    <Style Selector="Border.category-spine.study"><Setter Property="Background" Value="{DynamicResource TramaAgendaStudyBrush}" /></Style>
+    <Style Selector="TextBlock.agenda-section"><Setter Property="FontSize" Value="10" /><Setter Property="FontWeight" Value="SemiBold" /><Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" /><Setter Property="LetterSpacing" Value="1" /></Style>
+    <Style Selector="Border.agenda-field-group"><Setter Property="Background" Value="Transparent" /><Setter Property="Padding" Value="0" /></Style>
+    <Style Selector="DatePicker.agenda-picker, TimePicker.agenda-picker">
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style Selector="DatePicker.agenda-picker /template/ Button#PART_FlyoutButton, TimePicker.agenda-picker /template/ Button#PART_FlyoutButton">
+      <Setter Property="Background" Value="{DynamicResource TramaSurfaceBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TramaTextBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="DatePicker#AgendaDayPicker"><Setter Property="Width" Value="212" /></Style>
+    <Style Selector="DatePicker.agenda-picker:pointerover /template/ Button#PART_FlyoutButton, TimePicker.agenda-picker:pointerover /template/ Button#PART_FlyoutButton">
+      <Setter Property="Background" Value="{DynamicResource TramaRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaAccentBrush}" />
+    </Style>
+    <Style Selector="DatePicker.agenda-picker:focus-within /template/ Button#PART_FlyoutButton, TimePicker.agenda-picker:focus-within /template/ Button#PART_FlyoutButton">
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaAccentBrush}" />
+    </Style>
+    <Style Selector="DatePicker.agenda-picker /template/ Rectangle, TimePicker.agenda-picker /template/ Rectangle">
+      <Setter Property="Fill" Value="{DynamicResource TramaBorderBrush}" />
+      <Setter Property="Opacity" Value="0.5" />
+    </Style>
+    <Style Selector="TimePicker.agenda-picker /template/ Border#PART_FirstPickerHost, TimePicker.agenda-picker /template/ Border#PART_SecondPickerHost">
+      <Setter Property="MinWidth" Value="0" />
+    </Style>
+  </UserControl.Styles>
+  <Grid RowDefinitions="Auto,*,Auto" Margin="24,20,24,12">
+    <StackPanel Spacing="12" Margin="0,0,0,16">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+        <StackPanel Spacing="5"><TextBlock Text="AGENDA / SEU DIA" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TramaAccentBrush}" /><TextBlock Text="{Binding DayLabel}" FontSize="25" FontWeight="SemiBold" TextWrapping="Wrap" /></StackPanel>
+        <Button Grid.Column="1" x:Name="AgendaNewTaskButton" Content="+ Nova tarefa" Classes="trama-primary" Command="{Binding NewTaskCommand}" VerticalAlignment="Center" Padding="16,10" />
+      </Grid>
+      <WrapPanel Orientation="Horizontal" IsEnabled="{Binding CanEdit}">
+        <Button Content="Dia anterior" Classes="notebook-tool" Click="PreviousDayClicked" Margin="0,0,8,0" />
+        <DatePicker x:Name="AgendaDayPicker" Classes="agenda-picker" SelectedDate="{Binding SelectedDayDate, Mode=OneWay}" SelectedDateChanged="DayChanged" DayFormat="dd" MonthFormat="MMM" YearFormat="yyyy" />
+        <Button Content="Próximo dia" Classes="notebook-tool" Click="NextDayClicked" Margin="8,0" />
+        <Button Content="Atualizar" Classes="notebook-tool" Command="{Binding ReloadCommand}" />
+      </WrapPanel>
+    </StackPanel>
+    <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="18">
+      <Border Classes="agenda-card" Padding="18">
+        <Grid RowDefinitions="Auto,*">
+          <StackPanel Spacing="6" Margin="0,0,0,16"><TextBlock Text="Tarefas do dia" FontSize="18" FontWeight="SemiBold" /><TextBlock Text="Abra uma tarefa para editar ou reagendar." FontSize="12" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" /></StackPanel>
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="12">
+              <TextBlock Text="A lista pode estar desatualizada. Use Atualizar para consultar novamente." IsVisible="{Binding HasListError}" Foreground="{DynamicResource TramaErrorBrush}" TextWrapping="Wrap" />
+              <StackPanel IsVisible="{Binding IsEmpty}" Spacing="8" Margin="0,18,0,0"><TextBlock Text="Seu dia está em aberto." FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Crie sua primeira tarefa para organizar trabalho, estudo ou tempo pessoal." Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" /></StackPanel>
+              <ItemsControl x:Name="AgendaTaskList" ItemsSource="{Binding Tasks}" IsEnabled="{Binding CanEdit}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="agenda:AgendaTaskSnapshot">
+                    <Button Classes="task-row" Margin="0,0,0,10" Click="TaskClicked" ToolTip.Tip="Abrir tarefa para edição">
+                      <Border Background="{DynamicResource TramaInputBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" CornerRadius="9" Padding="12">
+                        <Grid ColumnDefinitions="3,*" ColumnSpacing="12">
+                          <Border Classes="category-spine" CornerRadius="2" Classes.work="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=work}" Classes.study="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=study}" />
+                          <StackPanel Grid.Column="1" Spacing="7">
+                            <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=time}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" />
+                            <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
+                            <WrapPanel Orientation="Horizontal"><TextBlock Text="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=category}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,12,0" /><TextBlock Text="{Binding Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status}" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" /></WrapPanel>
+                          </StackPanel>
+                        </Grid>
+                      </Border>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </ScrollViewer>
+        </Grid>
+      </Border>
+      <Border Grid.Column="1" Classes="agenda-card" Padding="18">
+        <Grid RowDefinitions="Auto,*,Auto">
+          <Grid ColumnDefinitions="3,*" ColumnSpacing="10" Margin="0,0,0,12">
+            <Border Background="{DynamicResource TramaAccentBrush}" CornerRadius="2" />
+            <StackPanel Grid.Column="1" Spacing="5">
+              <TextBlock Text="{Binding FormHeading}" FontSize="20" FontWeight="SemiBold" />
+              <TextBlock Text="Alterações não salvas" IsVisible="{Binding HasUnsavedChanges}" Foreground="{DynamicResource TramaMutedBrush}" FontSize="11" />
+            </StackPanel>
+          </Grid>
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="12" IsEnabled="{Binding CanEdit}" Margin="0,0,6,8">
+              <StackPanel Spacing="6">
+                <TextBlock Text="Título" Classes="trama-label" />
+                <TextBox x:Name="AgendaTitleInput" Text="{Binding Title, Mode=TwoWay}" Classes="trama-input" FontSize="14" MinHeight="36" Padding="10,7" Watermark="O que você pretende fazer?" />
+                <TextBlock Text="Descrição · opcional" Classes="trama-label" Margin="0,4,0,0" />
+                <TextBox x:Name="AgendaDescriptionInput" Text="{Binding Description, Mode=TwoWay}" Classes="trama-input" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="64" Padding="10,7" Watermark="Detalhes, objetivos ou próximos passos…" />
+              </StackPanel>
+              <Border Classes="agenda-field-group">
+                <StackPanel Spacing="8">
+                  <WrapPanel Orientation="Horizontal">
+                    <StackPanel Spacing="5" Width="180" Margin="0,0,10,8"><TextBlock Text="Dia de início" Classes="trama-label" /><DatePicker x:Name="AgendaDateInput" Classes="agenda-picker" SelectedDate="{Binding PlannedDate, Mode=TwoWay}" DayFormat="dd" MonthFormat="MMM" YearFormat="yyyy" /></StackPanel>
+                    <StackPanel Spacing="5" Width="84" Margin="0,0,0,8"><TextBlock Text="Horário" Classes="trama-label" /><TextBox x:Name="AgendaStartTimeInput" Text="{Binding StartTimeText, Mode=TwoWay}" Classes="trama-input" Watermark="HH:mm" MaxLength="5" MinHeight="32" Height="32" Padding="8,5" FontSize="13" ToolTip.Tip="Digite o início em HH:mm, por exemplo 09:30" /></StackPanel>
+                  </WrapPanel>
+                  <WrapPanel Orientation="Horizontal">
+                    <StackPanel Spacing="5" Width="180" Margin="0,0,10,8"><TextBlock Text="Dia final · opcional" Classes="trama-label" /><DatePicker x:Name="AgendaEndDateInput" Classes="agenda-picker" SelectedDate="{Binding PlannedEndDate, Mode=TwoWay}" DayFormat="dd" MonthFormat="MMM" YearFormat="yyyy" /></StackPanel>
+                    <StackPanel Spacing="5" Width="84" Margin="0,0,0,8"><TextBlock Text="Horário" Classes="trama-label" /><TextBox x:Name="AgendaEndTimeInput" Text="{Binding EndTimeText, Mode=TwoWay}" Classes="trama-input" Watermark="HH:mm" MaxLength="5" MinHeight="32" Height="32" Padding="8,5" FontSize="13" ToolTip.Tip="Digite o fim em HH:mm, por exemplo 18:00" /></StackPanel>
+                  </WrapPanel>
+                  <TextBlock Text="Horários opcionais. Sem dia final, vale o mesmo dia; o fim pode ficar em aberto." FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" />
+                  <WrapPanel Orientation="Horizontal"><Button Content="Sem data final" Click="ClearEndDateClicked" Classes="notebook-tool" Padding="0,2" Margin="0,0,16,0" /><Button Content="Limpar horários" Click="ClearTimeClicked" Classes="notebook-tool" Padding="0,2" /></WrapPanel>
+                </StackPanel>
+              </Border>
+              <StackPanel Spacing="6">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                  <StackPanel Spacing="6"><TextBlock Text="Categoria" Classes="trama-label" /><ComboBox x:Name="AgendaCategoryPicker" ItemsSource="{Binding CategoryChoices}" SelectedIndex="{Binding CategoryIndex, Mode=TwoWay}" HorizontalAlignment="Stretch" /></StackPanel>
+                  <StackPanel Grid.Column="1" Spacing="6"><TextBlock Text="Estado" Classes="trama-label" /><ComboBox x:Name="AgendaStatusPicker" ItemsSource="{Binding StatusChoices}" SelectedIndex="{Binding StatusIndex, Mode=TwoWay}" HorizontalAlignment="Stretch" /></StackPanel>
+                </Grid>
+              </StackPanel>
+            </StackPanel>
+          </ScrollViewer>
+          <Border Grid.Row="2" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12"><StackPanel VerticalAlignment="Center" Spacing="3"><TextBlock Text="Salva neste computador" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" /><TextBlock Text="Salvar não conclui a tarefa." FontSize="10" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" /></StackPanel><Button Grid.Column="1" x:Name="AgendaSaveButton" Content="Salvar tarefa" Classes="trama-primary" Command="{Binding SaveCommand}" Padding="18,10" /></Grid>
+          </Border>
+        </Grid>
+      </Border>
+    </Grid>
+    <TextBlock Grid.Row="2" Text="{Binding Feedback}" TextWrapping="Wrap" Foreground="{DynamicResource TramaAccentBrush}" FontSize="12" MinHeight="18" Margin="0,12,0,0" />
+  </Grid>
+</UserControl>

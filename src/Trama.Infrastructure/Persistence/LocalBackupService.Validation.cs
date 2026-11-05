@@ -94,6 +94,7 @@ public sealed partial class LocalBackupService
                 if (await reader.ReadStoredForBackupAsync(id, cancellationToken) is null)
                     throw new InvalidDataException("Missing stored page.");
             await ValidateTrashAsync(context, cancellationToken);
+            await new SqliteAgendaTaskRepository(context).ValidateForBackupAsync(cancellationToken);
             if (await context.Set<PageTagRecord>().AnyAsync(tag =>
                 !context.Set<NotebookPageRecord>().Any(page => page.Id == tag.PageId) &&
                 !context.Set<NoteRecord>().Any(note => note.Id == tag.PageId), cancellationToken))
@@ -114,6 +115,10 @@ public sealed partial class LocalBackupService
         catch (Trama.Application.Knowledge.NotePersistenceException exception)
         {
             throw new InvalidDataException("The backup contains invalid page data.", exception);
+        }
+        catch (Trama.Application.Agenda.AgendaPersistenceException exception)
+        {
+            throw new InvalidDataException("The backup contains invalid agenda data.", exception);
         }
     }
 

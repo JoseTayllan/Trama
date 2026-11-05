@@ -20,24 +20,28 @@
 </aside>
 <main>
 <section id="visao">
-  <div class="topline"><span>PROJETO / PRIMEIRA VERSÃO DOS CADERNOS</span><button class="quiet" id="theme" type="button" aria-label="Alternar tema claro e escuro">Alternar tema</button></div>
-  <h1>Cadernos, na reta final.</h1>
+  <div class="topline"><span id="module-context">PROJETO TRAMA</span><button class="quiet" id="theme" type="button" aria-label="Alternar tema claro e escuro">Alternar tema</button></div>
+  <h1 id="module-title">Acompanhar o projeto</h1>
   <p class="intro">O que já funciona, o que estamos construindo e o que falta para fechar esta versão. Implementação, validação de uso e revisão são acompanhadas separadamente.</p>
-  <div class="focus"><div><span class="eyebrow">Entrega em foco</span><h2 id="focus-title"></h2><p id="focus-state"></p><p><a href="docs/estudos/47-exportacao-markdown-e-painel.md">Ver implementação e critérios ↗</a></p></div><div class="focus-aside"><small>Critérios de fechamento</small><strong id="acceptance-count"></strong><div class="bar" role="progressbar" aria-label="Critérios de fechamento concluídos" id="progress"><div class="fill" id="progress-fill"></div></div><small>Contagem dos critérios desta versão.<br>Não representa todo o projeto Trama.</small></div></div>
-  <div class="stats"><div class="stat"><strong id="test-count">—</strong><span>testes da última suíte completa</span></div><div class="stat"><strong id="area-count">—</strong><span>áreas disponíveis no módulo</span></div><div class="stat"><strong id="updated">—</strong><span>última atualização da fonte</span></div></div>
+  <div class="focus"><div><span class="eyebrow">Entrega em foco</span><h2 id="focus-title"></h2><p id="focus-state"></p><p><a id="focus-link" href="docs/estudos/README.md">Ver especificação e critérios ↗</a></p></div><div class="focus-aside"><small>Critérios de fechamento</small><strong id="acceptance-count"></strong><div class="bar" role="progressbar" aria-label="Critérios de fechamento concluídos" id="progress"><div class="fill" id="progress-fill"></div></div><small>Contagem dos critérios desta versão.<br>Não representa todo o projeto Trama.</small></div></div>
+  <div class="stats"><div class="stat"><strong id="test-count">—</strong><span>testes da última suíte completa</span></div><div class="stat"><strong id="area-count">—</strong><span>áreas disponíveis no aplicativo</span></div><div class="stat"><strong id="updated">—</strong><span>última atualização da fonte</span></div></div>
 </section>
-<section id="entregas"><div class="section-head"><div><h2>Rota de entrega</h2><p>Quatro marcos para encerrar a primeira versão.</p></div><span class="pill" id="result-count" aria-live="polite"></span></div>
+<section id="entregas"><div class="section-head"><div><h2>Rota de entrega</h2><p><span id="stage-description">Etapas do módulo atual.</span></p></div><span class="pill" id="result-count" aria-live="polite"></span></div>
 <div class="filters" aria-label="Filtrar entregas"><button type="button" data-filter="all" aria-pressed="true">Todas</button><button type="button" data-filter="validated" aria-pressed="false">Uso validado</button><button type="button" data-filter="review" aria-pressed="false">Em revisão</button><button type="button" data-filter="active" aria-pressed="false">Em andamento</button><button type="button" data-filter="planned" aria-pressed="false">A iniciar</button><input class="search" id="search" type="search" aria-label="Buscar nas entregas" placeholder="Buscar uma entrega…"></div>
 <div class="stages" id="stages"></div><p class="empty" id="empty" hidden>Nenhuma entrega corresponde a esses filtros.</p></section>
 <section id="checklists" class="split"><div class="panel"><h2>O trabalho de agora</h2><p class="hint" id="task-count"></p><ul class="checklist" id="tasks"></ul></div><div><div class="panel"><h2>Pronto para encerrar?</h2><p class="hint">Critérios de aceite registrados no roadmap.</p><ul class="checklist" id="acceptance"></ul></div><div class="panel" style="margin-top:20px"><h2>Seu acompanhamento</h2><p class="hint">Anotações pessoais neste navegador. Não alteram os status oficiais nem o Markdown.</p><label class="hint" for="notes">O que você quer conferir na próxima rodada?</label><textarea id="notes" class="notes" placeholder="Ex.: validar a exportação com uma página de estudo…"></textarea><div class="note-status" id="notes-status" role="status"></div></div></div></section>
 <section id="disponivel"><div class="section-head"><div><h2>Já faz parte do Trama</h2><p>Recursos implementados, dentro dos limites documentados.</p></div></div><div class="catalog" id="available"></div></section>
 <section id="futuro"><div class="section-head"><div><h2>Próximos horizontes</h2><p>Planejamento futuro. Estes módulos não entram na contagem de fechamento dos cadernos.</p></div></div><details class="details"><summary>Explorar os próximos módulos</summary><div class="catalog" id="future"></div></details><details class="details"><summary>Pendências técnicas e limites conhecidos</summary><div class="catalog" id="technical"></div></details></section>
-<footer><div>Gerado de <a href="rodmap.md">rodmap.md</a> · <span id="footer-date"></span><br>Os dados mudam quando o painel é regenerado; não é um monitor em tempo real.</div><div class="links"><a href="CODEX.md">Convenções</a><a href="docs/estudos/README.md">Estudos</a><a href="docs/reviews/055-markdown-export-green.md">Revisão atual</a></div></footer>
+<footer><div>Gerado de <a href="rodmap.md">rodmap.md</a> · <span id="footer-date"></span><br>Os dados mudam quando o painel é regenerado; não é um monitor em tempo real.</div><div class="links"><a href="CODEX.md">Convenções</a><a href="docs/estudos/README.md">Estudos</a><a id="review-link" href="docs/estudos/README.md">Revisão atual</a></div></footer>
 </main></div>
 <script id="roadmap-data" type="application/json">__ROADMAP_DATA__</script>
 <script>
 'use strict';
 const data=JSON.parse(document.getElementById('roadmap-data').textContent);
+document.getElementById('module-title').textContent=data.module||data.now.Foco||'Projeto Trama';
+document.getElementById('module-context').textContent='PROJETO / '+(data.module||'TRAMA').toLocaleUpperCase('pt-BR');
+document.getElementById('stage-description').textContent=`${data.stages.length} marcos no módulo atual.`;
+for(const [id,reference] of [['focus-link',data.reference],['review-link',data.review]]){if(reference){const link=document.getElementById(id);link.textContent=reference.label+' ↗';link.setAttribute('href',reference.href);}}
 const $=id=>document.getElementById(id);
 const text=(tag,value,className)=>{const node=document.createElement(tag);node.textContent=value;if(className)node.className=className;return node;};
 const normalize=value=>value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();

@@ -14,6 +14,7 @@ public sealed partial class NotebookEditorView : UserControl
     public NotebookEditorView()
     {
         InitializeComponent();
+        PageScroll.AddHandler(PointerWheelChangedEvent, ScrollOverBlock, RoutingStrategies.Tunnel);
         DragDrop.SetAllowDrop(this, true);
         AddHandler(DragDrop.DragOverEvent, ImageDragOver);
         AddHandler(DragDrop.DropEvent, ImagesDropped);

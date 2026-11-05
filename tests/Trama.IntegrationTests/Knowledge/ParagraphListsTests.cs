@@ -394,8 +394,8 @@ public sealed class ParagraphListsTests
         }
         public static async Task UntilAsync(Func<bool> ready)
         {
-            var end = DateTime.UtcNow.AddSeconds(5);
-            while (!ready()) { Assert.True(DateTime.UtcNow < end, "O autosave não concluiu no prazo do teste."); Dispatcher.UIThread.RunJobs(); await Task.Delay(10); }
+            var started = System.Diagnostics.Stopwatch.GetTimestamp();
+            while (!ready()) { Assert.True(System.Diagnostics.Stopwatch.GetElapsedTime(started) < TimeSpan.FromSeconds(5), "O autosave não concluiu no prazo do teste."); Dispatcher.UIThread.RunJobs(); await Task.Delay(10); }
             Dispatcher.UIThread.RunJobs();
         }
         public void Dispose()

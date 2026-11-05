@@ -17,6 +17,50 @@ namespace Trama.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
+            modelBuilder.Entity("Trama.Infrastructure.Persistence.AgendaTaskRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("LastCompletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("PlannedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly?>("PlannedEndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlannedDate", "StartTime");
+
+                    b.ToTable("AgendaTasks", (string)null);
+                });
+
             modelBuilder.Entity("Trama.Infrastructure.Persistence.KnowledgeSpaceRecord", b =>
                 {
                     b.Property<Guid>("Id")

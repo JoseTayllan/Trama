@@ -156,6 +156,8 @@ public sealed partial class LibraryViewModel : ObservableObject, IDisposable
 
     public Task<bool> RequestCloseAsync() => NavigateAsync(() => Task.FromResult(true), closing: true);
 
+    internal Task<bool> PrepareCloseAsync() => NavigateAsync(() => Task.FromResult(true), closing: true, disposeOnClose: false);
+
     public bool CanManageSpace => CanNavigate && _management is not null && SelectedSpace is not null;
     public bool CanManageNotebook => CanNavigate && _management is not null && SelectedNotebook is not null;
     public bool CanManagePage => CanNavigate && _management is not null && SelectedPage is not null;
@@ -412,7 +414,7 @@ public sealed partial class LibraryViewModel : ObservableObject, IDisposable
         });
     }
 
-    private async Task<bool> NavigateAsync(Func<Task<bool>> navigate, bool closing = false, bool resolveChanges = true)
+    private async Task<bool> NavigateAsync(Func<Task<bool>> navigate, bool closing = false, bool resolveChanges = true, bool disposeOnClose = true)
     {
         if (!CanNavigate) return false;
         using var autoSavePause = Editor.PauseAutoSave();
@@ -441,7 +443,7 @@ public sealed partial class LibraryViewModel : ObservableObject, IDisposable
             }
 
             var completed = await navigate();
-            if (completed && closing) Editor.Dispose();
+            if (completed && closing && disposeOnClose) Editor.Dispose();
             return completed;
         }
         catch (ArgumentException)

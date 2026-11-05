@@ -8,6 +8,24 @@ public sealed class TramaDbContext(DbContextOptions<TramaDbContext> options) : D
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<AgendaTaskRecord>(task =>
+        {
+            task.ToTable("AgendaTasks");
+            task.HasKey(record => record.Id);
+            task.Property(record => record.Id).HasColumnType("TEXT").ValueGeneratedNever();
+            task.Property(record => record.Title).HasColumnType("TEXT").IsRequired();
+            task.Property(record => record.Description).HasColumnType("TEXT").IsRequired();
+            task.Property(record => record.PlannedDate).HasColumnType("TEXT").IsRequired();
+            task.Property(record => record.PlannedEndDate).HasColumnType("TEXT");
+            task.Property(record => record.StartTime).HasColumnType("TEXT");
+            task.Property(record => record.EndTime).HasColumnType("TEXT");
+            task.Property(record => record.Category).HasConversion<int>().IsRequired();
+            task.Property(record => record.Status).HasConversion<int>().IsRequired();
+            task.Property(record => record.LastCompletedAt).HasColumnType("TEXT");
+            task.Property(record => record.DeletedAt).HasColumnType("TEXT");
+            task.HasIndex(record => new { record.PlannedDate, record.StartTime });
+        });
+
         modelBuilder.Entity<LibraryTrashRecord>(trash =>
         {
             trash.ToTable("LibraryTrash");

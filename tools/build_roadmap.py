@@ -23,14 +23,26 @@ def checklist(text):
 def build():
     text = (ROOT / "rodmap.md").read_text(encoding="utf-8-sig")
     now = dict(table(section(text, "Agora")))
+    focus_heading = re.search(r"^### (Entrega em foco: .+)$", text, re.M)
+    focus = focus_heading.group(1) if focus_heading else "Entrega em foco: exportação"
+
+    def document_link(value, fallback):
+        match = re.fullmatch(r"\[([^\]]+)\]\((docs/[A-Za-z0-9_./-]+\.md)\)", value)
+        if match and ".." not in match.group(2):
+            return {"label": match.group(1), "href": match.group(2)}
+        return {"label": "Central de estudos", "href": fallback}
+
     data = {
         "date": re.search(r"Atualizado em \*\*(.+?)\*\*", text).group(1),
         "now": now,
-        "stages": table(section(text, "Caminho para fechar os cadernos")),
+        "module": now.get("Foco", "Projeto Trama"),
+        "reference": document_link(now.get("Referência principal", ""), "docs/estudos/README.md"),
+        "review": document_link(now.get("Relatório atual", ""), "docs/reviews/055-markdown-export-green.md"),
+        "stages": table(section(text, "Etapas do módulo atual") or section(text, "Caminho para fechar os cadernos")),
         "available": table(section(text, "O que já está disponível")),
         "future": table(section(text, "Evolução futura")),
         "technical": table(section(text, "Pendências técnicas")),
-        "tasks": checklist(section(text, "Entrega em foco: exportação")),
+        "tasks": checklist(section(text, focus)),
         "acceptance": checklist(section(text, "Critério de conclusão desta versão")),
     }
     template = (ROOT / "tools" / "roadmap.template.html").read_text(encoding="utf-8")

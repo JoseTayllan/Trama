@@ -7,7 +7,7 @@
   <Grid RowDefinitions="Auto,*,Auto" Margin="24">
     <TextBlock Text="Salvar antes de continuar?" FontSize="22" FontWeight="SemiBold"
                Foreground="{DynamicResource TramaTextBrush}" />
-    <TextBlock Grid.Row="1" Text="Esta página tem alterações não salvas. Você pode salvá-las, descartá-las ou continuar aqui."
+    <TextBlock x:Name="ChangesMessage" Grid.Row="1" Text="Esta página tem alterações não salvas. Você pode salvá-las, descartá-las ou continuar aqui."
                TextWrapping="Wrap" FontSize="14" Margin="0,16" Foreground="{DynamicResource TramaMutedBrush}" />
     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
       <Button x:Name="CancelButton" Content="Cancelar" Classes="notebook-add" Click="CancelClicked" IsCancel="True" IsDefault="True" />
