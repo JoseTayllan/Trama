@@ -15,6 +15,7 @@ Atualizado em **05/11/2026**. Acompanhe o módulo atual, as entregas disponívei
 | Resultado novo | 21 casos aprovados intactos; suíte completa de 865 passou |
 | Última suíte completa | 865 aprovados: 131 unitários e 734 integrações |
 | Última suíte estável | 865 aprovados no fluxo da lixeira |
+| CI | NU1004 corrigido localmente; nova execução GitHub pendente |
 | Próxima etapa | Especificar confirmação e tela da lixeira; depois visão semanal |
 | Referência principal | [Agenda: fluxo da lixeira implementado](docs/estudos/81-lixeira-agenda-fluxo-implementado.md) |
 | Relatório atual | [Fluxo da lixeira implementado](docs/reviews/088-agenda-trash-workflow-green.md) |
@@ -184,3 +185,5 @@ Aceite posterior, 05/11: o responsável confirmou “validado” para os campos 
 Fluxo da lixeira em RED (05/11): 21 novos casos, 20 falhas esperadas e uma guarda; 844 anteriores passaram. Nenhuma implementação nova. Checkpoint de commit orientado ao responsável na branch feat/agenda-semanal; Git não executado pelo agente.
 
 Fluxo da lixeira integrado após aprovação dos 21 casos, preservados; suíte completa com 865 aprovados. IAgendaTrashActions ligado à composição real. Controles/diálogos ainda pendentes; estado atual no GREEN para revisão e commit pelo responsável. Nenhum Git executado pelo agente.
+
+Correção CI/NU1004 (05/11): locks genéricos preservados e locks de runtime isolados em obj. Restore bloqueado/ciclo runtime passaram no Windows, com build/formatação; suíte local Windows afetada pela política 0x800711C7. WSL validou restore/build/format e 865 testes. Workflow mantém --locked-mode; confirmação remota depende de novo commit/push. Ver [relatório 089](docs/reviews/089-ci-locks-runtime-fix.md).

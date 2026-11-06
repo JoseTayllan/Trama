@@ -91,6 +91,7 @@ Os procedimentos de ambiente e distribuição ficam separados na [central de ope
 | 79 | [Agenda: campos de datas e horários implementados](79-campos-de-datas-e-horarios-implementados.md) | Horários HH:mm, fim planejado e conclusão informada; 844 testes e QA SQLite/Skia |
 | 80 | [Agenda: fluxo da lixeira em revisão](80-lixeira-agenda-fluxo-especificacao.md) | Confirmação, rascunhos e restauração; 21 casos, 20 RED e uma guarda |
 | 81 | [Agenda: fluxo da lixeira implementado](81-lixeira-agenda-fluxo-implementado.md) | Confirmação, rascunhos e restauração conectados ao ViewModel; 865 testes; tela pendente |
+| 82 | [CI: locks por runtime](82-ci-locks-por-runtime.md) | NU1004 reproduzido/corrigido, hashes preservados e 865 testes no WSL; CI remoto pendente |
 
 Leia os capítulos na ordem na primeira passagem. Depois, use os links para revisar um assunto enquanto examina o código correspondente. Aprovar testes de uma funcionalidade não significa que persistência, editor e todos os módulos previstos já estejam entregues.
 

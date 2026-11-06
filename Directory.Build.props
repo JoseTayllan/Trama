@@ -6,5 +6,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AnalysisLevel>latest</AnalysisLevel>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- Keep runtime-specific restores from rewriting the generic locks used by CI. -->
+    <_TramaLockRuntime>$(RuntimeIdentifier)</_TramaLockRuntime>
+    <_TramaLockRuntime Condition="'$(_TramaLockRuntime)' == ''">$(RuntimeIdentifiers)</_TramaLockRuntime>
+    <NuGetLockFilePath Condition="'$(_TramaLockRuntime)' != ''">$(MSBuildProjectDirectory)/obj/nuget-locks/$(_TramaLockRuntime)/packages.lock.json</NuGetLockFilePath>
   </PropertyGroup>
 </Project>
