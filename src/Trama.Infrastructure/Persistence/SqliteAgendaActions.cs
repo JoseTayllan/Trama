@@ -4,7 +4,7 @@ using Trama.Application.Agenda;
 
 namespace Trama.Infrastructure.Persistence;
 
-public sealed class SqliteAgendaActions : IAgendaActions
+public sealed class SqliteAgendaActions : IAgendaActions, IAgendaPeriodReader
 {
     private readonly DbContextOptions<TramaDbContext> _options;
 
@@ -42,5 +42,12 @@ public sealed class SqliteAgendaActions : IAgendaActions
         cancellationToken.ThrowIfCancellationRequested();
         await using var context = new TramaDbContext(_options);
         return await new SqliteAgendaTaskRepository(context).ListAsync(from, through, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<AgendaTaskSnapshot>> ListOverlappingAsync(DateOnly from, DateOnly through, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        await using var context = new TramaDbContext(_options);
+        return await new SqliteAgendaTaskRepository(context).ListOverlappingAsync(from, through, cancellationToken);
     }
 }

@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Trama.Desktop.ViewModels" xmlns:agenda="using:Trama.Application.Agenda" xmlns:views="using:Trama.Desktop.Views"
+        x:Class="Trama.Desktop.Views.AgendaTrashDialog" x:DataType="vm:AgendaTrashViewModel"
+        Title="Lixeira da Agenda" Width="720" Height="560" MinWidth="420" MinHeight="330"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Background="{DynamicResource TramaWindowBrush}">
+  <Window.Resources><views:AgendaPresentationConverter x:Key="AgendaPresentation" /></Window.Resources>
+  <Window.Styles>
+    <Style Selector="ListBox.agenda-trash-list"><Setter Property="Background" Value="{DynamicResource TramaInputBrush}" /><Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" /><Setter Property="BorderThickness" Value="1" /><Setter Property="CornerRadius" Value="8" /></Style>
+    <Style Selector="ListBox.agenda-trash-list ListBoxItem"><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Padding" Value="12" /></Style>
+    <Style Selector="ListBox.agenda-trash-list ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TramaAccentSoftBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaAccentBrush}" /><Setter Property="BorderThickness" Value="2,0,0,0" />
+    </Style>
+  </Window.Styles>
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Margin="24">
+    <StackPanel Spacing="8" Margin="0,0,0,14">
+      <TextBlock Text="AGENDA / RECUPERAR TAREFAS" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TramaAccentBrush}" />
+      <TextBlock Text="Lixeira da Agenda" FontSize="24" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" />
+      <TextBlock Text="Escolha uma tarefa para restaurar. Datas e estado serão preservados." FontSize="12" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+    </StackPanel>
+    <TextBlock Grid.Row="1" x:Name="AgendaTrashLoadingMessage" Text="Atualizando a lixeira…" IsVisible="{Binding IsBusy}" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,0,8" />
+    <Grid Grid.Row="2">
+      <ListBox x:Name="AgendaTrashEntriesList" Classes="agenda-trash-list" ItemsSource="{Binding Entries}" SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
+               IsEnabled="{Binding !IsBusy}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="agenda:AgendaTaskTrashEntry">
+            <StackPanel Spacing="6">
+              <TextBlock Text="{Binding Task.Title}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Task.Title}" />
+              <WrapPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=category}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,12,0" />
+                <TextBlock Text="{Binding Task.Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status}" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" />
+              </WrapPanel>
+              <TextBlock Text="{Binding Task, Converter={StaticResource AgendaPresentation}, ConverterParameter=planning}" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding DeletedAt, StringFormat='Excluída: {0:dd/MM/yyyy HH:mm}'}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding LastCompletedAt, StringFormat='Último encerramento: {0:dd/MM/yyyy HH:mm}'}" IsVisible="{Binding LastCompletedAt, Converter={StaticResource AgendaPresentation}, ConverterParameter=has-value}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" />
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+      <TextBlock x:Name="AgendaTrashEmptyMessage" Text="A lixeira está vazia." IsVisible="{Binding IsEmpty}" IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TramaMutedBrush}" />
+    </Grid>
+    <TextBlock Grid.Row="3" x:Name="AgendaTrashFeedback" Text="{Binding Feedback}" FontSize="12" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" Margin="0,12" />
+    <Border Grid.Row="4" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
+      <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button x:Name="CloseAgendaTrashButton" Content="Fechar" Classes="notebook-add" IsCancel="True" Click="CloseClicked" IsEnabled="{Binding !IsBusy}" Padding="12,9" Margin="0,0,8,0" />
+        <Button x:Name="RefreshAgendaTrashButton" Content="Atualizar" Classes="notebook-add" Command="{Binding RefreshCommand}" Padding="12,9" Margin="0,0,8,0" />
+        <Button x:Name="RestoreAgendaTrashButton" Content="Restaurar tarefa" Classes="trama-primary" Command="{Binding RestoreCommand}" IsEnabled="{Binding CanRestore}" Padding="16,9" />
+      </WrapPanel>
+    </Border>
+  </Grid>
+</Window>

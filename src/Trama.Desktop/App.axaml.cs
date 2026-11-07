@@ -43,7 +43,9 @@ public sealed partial class App : Avalonia.Application
                     viewModel.Library = library;
                     var agenda = new AgendaViewModel(services.GetRequiredService<Trama.Application.Agenda.IAgendaActions>(),
                         new WindowUnsavedChangesPrompt(window, "Esta tarefa da Agenda tem alterações não salvas. Deseja salvá-las antes de continuar?"),
-                        services.GetRequiredService<Trama.Application.Agenda.IAgendaTrashActions>(), TimeProvider.System);
+                        services.GetRequiredService<Trama.Application.Agenda.IAgendaTrashActions>(), TimeProvider.System,
+                        services.GetRequiredService<Trama.Application.Agenda.IAgendaPeriodReader>(),
+                        services.GetRequiredService<Trama.Application.Agenda.IAgendaWeekProjector>());
                     await agenda.InitializeAsync(DateOnly.FromDateTime(DateTime.Today));
                     if (_shutdown.IsCancellationRequested) return;
                     viewModel.Agenda = agenda;

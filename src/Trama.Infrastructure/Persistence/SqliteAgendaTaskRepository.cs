@@ -4,7 +4,7 @@ using Trama.Application.Agenda;
 
 namespace Trama.Infrastructure.Persistence;
 
-public sealed class SqliteAgendaTaskRepository : IAgendaTaskRepository, IAgendaTaskReader
+public sealed class SqliteAgendaTaskRepository : IAgendaTaskRepository, IAgendaTaskReader, IAgendaPeriodReader
 {
     private readonly TramaDbContext _context;
 
@@ -80,6 +80,24 @@ public sealed class SqliteAgendaTaskRepository : IAgendaTaskRepository, IAgendaT
         catch (Exception exception) when (exception is DbException or FormatException or InvalidCastException)
         {
             throw new AgendaPersistenceException("The agenda period could not be read.");
+        }
+    }
+
+    public async Task<IReadOnlyList<AgendaTaskSnapshot>> ListOverlappingAsync(DateOnly from, DateOnly through, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (from > through) throw new ArgumentException("The period must start before it ends.", nameof(through));
+        try
+        {
+            var records = await _context.Set<AgendaTaskRecord>().AsNoTracking()
+                .Where(item => item.DeletedAt == null && item.PlannedDate <= through && (item.PlannedEndDate ?? item.PlannedDate) >= from)
+                .OrderBy(item => item.PlannedDate).ThenBy(item => item.StartTime == null).ThenBy(item => item.StartTime)
+                .ThenBy(item => item.Title).ThenBy(item => item.Id).ToArrayAsync(cancellationToken);
+            return records.Select(Read).ToArray();
+        }
+        catch (Exception exception) when (exception is DbException or FormatException or InvalidCastException)
+        {
+            throw new AgendaPersistenceException("The overlapping agenda tasks could not be read.");
         }
     }
 

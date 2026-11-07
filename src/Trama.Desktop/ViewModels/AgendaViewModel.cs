@@ -82,6 +82,7 @@ public sealed partial class AgendaViewModel : ObservableObject
     protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
+        if (e.PropertyName is nameof(CanEdit) or nameof(EditingTaskId)) OnPropertyChanged(nameof(CanDeleteTask));
         if (e.PropertyName == nameof(Category)) OnPropertyChanged(nameof(CategoryIndex));
         if (e.PropertyName == nameof(Status)) OnPropertyChanged(nameof(StatusIndex));
         if (!_loadingDraft && e.PropertyName is nameof(Title) or nameof(Description) or nameof(PlannedDate) or nameof(PlannedEndDate) or nameof(StartTime) or nameof(EndTime) or nameof(StartTimeText) or nameof(EndTimeText) or nameof(Category) or nameof(Status))
@@ -223,6 +224,7 @@ public sealed partial class AgendaViewModel : ObservableObject
         Feedback = HasUnsavedChanges ? "Versão salva; há alterações mais recentes." : "Tarefa salva.";
         try { Tasks = await _actions.ListAsync(SelectedDay, SelectedDay, cancellationToken); HasListError = false; }
         catch (Exception) { HasListError = true; Feedback = "Tarefa salva; não foi possível atualizar a lista. Use Atualizar para consultar."; }
+        await RefreshActiveWeekAsync(cancellationToken);
         return true;
     }
 
@@ -230,8 +232,12 @@ public sealed partial class AgendaViewModel : ObservableObject
     {
         if (IsBusy) return;
         IsBusy = true;
-        try { Tasks = await _actions.ListAsync(SelectedDay, SelectedDay); HasListError = false; Feedback = string.Empty; }
-        catch (Exception) { HasListError = true; Feedback = "Não foi possível consultar as tarefas. Use Atualizar para tentar novamente."; }
+        try
+        {
+            try { Tasks = await _actions.ListAsync(SelectedDay, SelectedDay); HasListError = false; Feedback = string.Empty; }
+            catch (Exception) { HasListError = true; Feedback = "Não foi possível consultar as tarefas. Use Atualizar para tentar novamente."; }
+            await RefreshActiveWeekAsync();
+        }
         finally { IsBusy = false; }
     }
 

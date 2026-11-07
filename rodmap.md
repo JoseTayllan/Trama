@@ -1,6 +1,6 @@
 # Trama · Roadmap
 
-Atualizado em **05/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
+Atualizado em **07/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
 
 [Abrir painel HTML](roadmap.html) · gerado deste arquivo por `python tools/build_roadmap.py`.
 
@@ -9,18 +9,18 @@ Atualizado em **05/11/2026**. Acompanhe o módulo atual, as entregas disponívei
 | Item | Estado |
 | --- | --- |
 | Foco | Agenda e rotina semanal |
-| Última entrega validada no uso | Campos de datas e horários da Agenda (05/11); ambiente não informado |
-| Entrega em revisão | Fluxo da lixeira integrado; controles nativos a iniciar |
-| Etapa atual | Fluxo no GREEN; revisão do diff e commit pelo responsável |
-| Resultado novo | 21 casos aprovados intactos; suíte completa de 865 passou |
-| Última suíte completa | 865 aprovados: 131 unitários e 734 integrações |
-| Última suíte estável | 865 aprovados no fluxo da lixeira |
-| CI | NU1004 corrigido localmente; nova execução GitHub pendente |
-| Próxima etapa | Especificar confirmação e tela da lixeira; depois visão semanal |
-| Referência principal | [Agenda: fluxo da lixeira implementado](docs/estudos/81-lixeira-agenda-fluxo-implementado.md) |
-| Relatório atual | [Fluxo da lixeira implementado](docs/reviews/088-agenda-trash-workflow-green.md) |
+| Última entrega validada no uso | Lixeira da Agenda e acesso à exclusão (06/11); ambiente não informado |
+| Entrega em revisão | Inicialização semanal corrigida |
+| Etapa atual | Correção no GREEN; reabertura no WSL e revisão do diff pendentes |
+| Resultado novo | Dois casos aprovados intactos; 1.016 testes passaram; inicialização real conferida |
+| Última suíte completa | 1.016 aprovados: 167 unitários e 849 integrações |
+| Última suíte estável | 1.016 aprovados na correção de inicialização |
+| CI | Correção confirmada pelo responsável em 06/11; execução remota não consultada pelo agente |
+| Próxima etapa | Reabrir no WSL com o mesmo perfil, validar Semana no uso e revisar o diff |
+| Referência principal | [Inicialização semanal corrigida](docs/estudos/94-inicializacao-semanal-corrigida.md) |
+| Relatório atual | [Inicialização semanal corrigida](docs/reviews/101-agenda-startup-week-green.md) |
 
-A imagem conceitual, a direção da tela Início e os 17 testes foram aprovados antes de implementar. Início e Cadernos estão integrados para revisão, preservando o editor ao alternar. A Agenda diária está habilitada, com tarefas e horários opcionais; indicadores e semana visual permanecem pendentes.
+A imagem conceitual, a direção da tela Início e os 17 testes foram aprovados antes de implementar. Início e Cadernos estão integrados para revisão, preservando o editor ao alternar. A Agenda diária está habilitada, com tarefas e horários opcionais; a semana visual está implementada para revisão e os indicadores permanecem pendentes.
 
 Em 02/11, o responsável validou previamente a ideia, mas pediu maior fidelidade ao protótipo nos ícones, informações dos cadernos e backup. A correção de rolagem e seleção foi priorizada; aceite estético final permanece pendente.
 
@@ -32,12 +32,35 @@ A correção de rolagem foi aprovada em seguida. O refino visual está implement
 | --- | --- | --- | --- |
 | 1 | Início e navegação | Implementado · revisão pendente | Validar Início, retomada, autosave e fechamento no uso; revisar o diff |
 | 2 | Tarefas com persistência | Implementado · revisão pendente | Criar, editar, reagendar e mudar estado; reabrir sem perder os dados |
-| 3 | Agenda semanal | A iniciar | Semana/dia, horários opcionais, categorias, cores e filtros em janela ampla/compacta |
+| 3 | Agenda semanal | Implementado · validação de uso e revisão pendentes | Semana/dia, horários opcionais, categorias, cores e filtros em janela ampla/compacta |
 | 4 | Planejado e realizado | A iniciar | Registros reais separados do planejamento e indicadores consistentes |
 | 5 | Integração dos módulos | A iniciar | Vínculo com páginas, resumos reais do Início e backup/restauração da agenda |
 | 6 | Validação e aceite | A iniciar | Suíte completa, uso Windows/Linux e revisão do diff antes da mesclagem pelo responsável |
 
-### Entrega em foco: datas de término e lixeira da Agenda
+### Entrega em foco: visão semanal
+
+- [x] Validar no uso a lixeira e a localização da exclusão.
+- [x] Especificar consulta por sobreposição com 25 casos RED.
+- [x] Aprovar os 25 casos e implementar a consulta adicional.
+- [x] Gerar e salvar protótipo conceitual da visão semanal.
+- [ ] Revisar o diff da consulta e a proposta visual.
+- [x] Especificar semana de sete dias, distribuição de intervalos e filtros com 36 casos RED.
+- [x] Aprovar os casos e implementar a projeção semanal; 948 testes passaram.
+- [ ] Revisar o diff da projeção semanal.
+- [x] Especificar integração com leitor por período, navegação/filtros e editor: 34 casos RED.
+- [x] Aprovar os 34 casos e implementar a integração semanal; 982 testes passaram.
+- [ ] Revisar o diff da integração semanal.
+- [x] Especificar controles e cartões semanais com sinais de estado e responsividade: 32 casos RED.
+- [x] Aprovar os 32 casos e implementar os controles semanais.
+- [x] Diferenciar estados com ícone e texto, mantendo a cor da categoria na interface.
+- [x] Disponibilizar na tela a navegação semanal, filtros, seleção/criação por dia e editor integrado.
+- [x] Conferir cores e janela ampla/compacta com SQLite/Skia; 1.014 testes passaram.
+- [x] Reproduzir Semana ausente na inicialização real com dois casos RED.
+- [x] Aprovar os dois casos e conectar as dependências semanais na Agenda criada por App.
+- [x] Conferir App/Opened/MainWindow e executar 1.016 testes.
+- [ ] Validar novamente no uso, conferir aparência nos ambientes do responsável e revisar o diff.
+
+### Histórico: datas de término e lixeira da Agenda
 
 - [x] Implementar e verificar regras, SQLite e serviço nas fatias anteriores.
 - [x] Especificar e executar os 34 casos de formulário/navegação.
@@ -85,7 +108,11 @@ A correção de rolagem foi aprovada em seguida. O refino visual está implement
 - [x] Especificar fluxo de exclusão/restauração e proteção do editor com 21 casos.
 - [x] Aprovar os 21 casos e implementar o fluxo.
 - [ ] Revisar o diff do fluxo da lixeira e fazer checkpoint pelo responsável.
-- [ ] Especificar e implementar confirmação/tela da lixeira.
+- [x] Especificar confirmação/tela da lixeira com 22 casos RED.
+- [x] Aprovar os 22 casos e implementar controles/diálogos.
+- [x] Conferir capturas da lixeira ampla/compacta e integração SQLite/Skia.
+- [x] Validar a lixeira e o acesso à exclusão no uso (06/11).
+- [ ] Revisar formalmente o diff da lixeira.
 - [ ] Iniciar a semana visual após os ajustes de tarefas.
 
 Formulário compacto e fechamento coordenado conferidos em perfis fictícios. Regras, SQLite, serviço e diálogo estão integrados; saída normal resolve rascunhos antes de concluir a seleção, preserva o planejamento e impede autosave de descarte. Suíte completa com 738 aprovados, build/formatação e QA SQLite/Skia. Após o ajuste apenas textual do contador, os 35 casos e a formatação passaram novamente. O responsável validou o fluxo em 05/11, sem especificar o ambiente. Aceite visual e revisão formal do diff continuam separados. Pacote Windows isolado disponível; esta atualização não executou novos testes. O armazenamento da lixeira passou após aprovação dos 31 casos e dos dois ajustes antigos, com suíte completa de 769 aprovados. O responsável pediu término planejado em outro dia e data/hora real informada; essa ampliação terá especificação própria. A confirmação/tela de exclusão e a semana visual ainda não estão implementadas.
@@ -187,3 +214,13 @@ Fluxo da lixeira em RED (05/11): 21 novos casos, 20 falhas esperadas e uma guard
 Fluxo da lixeira integrado após aprovação dos 21 casos, preservados; suíte completa com 865 aprovados. IAgendaTrashActions ligado à composição real. Controles/diálogos ainda pendentes; estado atual no GREEN para revisão e commit pelo responsável. Nenhum Git executado pelo agente.
 
 Correção CI/NU1004 (05/11): locks genéricos preservados e locks de runtime isolados em obj. Restore bloqueado/ciclo runtime passaram no Windows, com build/formatação; suíte local Windows afetada pela política 0x800711C7. WSL validou restore/build/format e 865 testes. Workflow mantém --locked-mode; confirmação remota depende de novo commit/push. Ver [relatório 089](docs/reviews/089-ci-locks-runtime-fix.md).
+
+06/11: responsável confirmou sucesso da correção do CI. Interface da lixeira especificada com 22 casos, 21 RED e uma guarda; 865 anteriores passaram separadamente. Sem implementação nova ou Git executado; aprovação conforme CODEX §9 pendente.
+
+06/11: interface da lixeira implementada após aprovação dos 22 casos, intactos; 887 testes e QA SQLite/Skia passaram. Capturas ampla/compacta conferidas, com seleção na paleta dinâmica. Aceite no uso, revisão do diff e nova execução remota desta entrega pendentes. Sem novo exe/publicação.
+
+06/11: após dificuldade em localizar a exclusão, o botão foi destacado em Tarefas do dia com instrução de uso. Mesma ação e confirmação, sem mudança de regras/testes. Build/formatação, 887 testes e QA SQLite/Skia ampla/compacta aprovados novamente; aceite no uso pendente.
+
+06/11: responsável validou a lixeira e acesso à exclusão. Visão semanal iniciada pela consulta de sobreposição: 25 casos, 24 RED e uma guarda, com base de 887 aprovada. Contrato adicional sem implementação; modelo/filtros/tela pendentes. Histórico anterior preservado abaixo do foco atual.
+
+06/11: consulta por sobreposição implementada após aprovação, com 25 casos intactos e suíte completa de 912 aprovados. Protótipo salvo em [agenda-semanal-v1.png](docs/prototipos/agenda-semanal-v1.png). Imagem conceitual; modelo/filtros e tela ainda não implementados. Revisão técnica/visual pendente.

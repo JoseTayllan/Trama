@@ -92,6 +92,18 @@ Os procedimentos de ambiente e distribuição ficam separados na [central de ope
 | 80 | [Agenda: fluxo da lixeira em revisão](80-lixeira-agenda-fluxo-especificacao.md) | Confirmação, rascunhos e restauração; 21 casos, 20 RED e uma guarda |
 | 81 | [Agenda: fluxo da lixeira implementado](81-lixeira-agenda-fluxo-implementado.md) | Confirmação, rascunhos e restauração conectados ao ViewModel; 865 testes; tela pendente |
 | 82 | [CI: locks por runtime](82-ci-locks-por-runtime.md) | NU1004 reproduzido/corrigido, hashes preservados e 865 testes no WSL; CI remoto pendente |
+| 83 | [Agenda: interface da lixeira em revisão](83-lixeira-agenda-interface-especificacao.md) | Botões, confirmação, seleção/restauração e erros; 22 casos, 21 RED e uma guarda |
+| 84 | [Agenda: interface da lixeira implementada](84-lixeira-agenda-interface-implementada.md) | Confirmação, seleção, restauração, erros e janela compacta; 887 testes e QA SQLite/Skia |
+| 85 | [Semana: consulta por sobreposição em revisão](85-semana-consulta-por-sobreposicao.md) | Contrato adicional, compatibilidade diária e interseção de datas; 25 casos, 24 RED e uma guarda |
+| 94 | [Inicialização semanal corrigida](94-inicializacao-semanal-corrigida.md) | App recebe leitor/projetor; 1.016 testes e captura do ponto de entrada real |
+| 93 | [Semana ausente na inicialização](93-semana-ausente-na-inicializacao.md) | Dois casos RED de App/Opened/MainWindow; dependências semanais ausentes no ponto de entrada |
+| 92 | [Tela semanal implementada](92-tela-semanal-implementada.md) | Cartões, estados, filtros, continuidade e formulário preservado; 1.014 testes e QA visual |
+| 91 | [Tela semanal: especificação](91-tela-semanal-especificacao.md) | 32 casos RED; controles, cartões, estados, paleta dinâmica e janela compacta |
+| 90 | [Integração semanal implementada](90-integracao-semanal-implementada.md) | Leitor/projetor no formulário existente, rascunhos e atualização após mutações; 982 testes |
+| 89 | [Integração semanal: especificação](89-integracao-semanal-especificacao.md) | 34 casos RED; navegação, rascunhos, mutações, filtros e símbolos de estado |
+| 88 | [Projeção semanal implementada](88-projecao-semanal-implementada.md) | Projeção pura, validação compartilhada, continuidade e filtros; 948 testes; tela pendente |
+| 87 | [Semana, filtros e estados: especificação](87-semana-projecao-e-estados-especificacao.md) | 36 casos RED; sete dias, continuidade, filtros e sinais de estado separados da categoria |
+| 86 | [Semana: consulta implementada e protótipo](86-semana-consulta-implementada-e-prototipo.md) | Sobreposição com contrato diário preservado; 912 testes e imagem conceitual; tela pendente |
 
 Leia os capítulos na ordem na primeira passagem. Depois, use os links para revisar um assunto enquanto examina o código correspondente. Aprovar testes de uma funcionalidade não significa que persistência, editor e todos os módulos previstos já estejam entregues.
 

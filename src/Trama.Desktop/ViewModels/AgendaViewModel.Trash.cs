@@ -8,6 +8,7 @@ public sealed partial class AgendaViewModel
     private readonly TimeProvider _trashClock;
 
     public bool HasTrash => _trash is not null;
+    public bool CanDeleteTask => HasTrash && CanEdit && EditingTaskId is not null;
 
     public async Task<bool> MoveToTrashAsync(Guid taskId, Func<AgendaTaskSnapshot, Task<bool>> confirm)
     {
@@ -77,5 +78,6 @@ public sealed partial class AgendaViewModel
             HasListError = true;
             Feedback = success + " Não foi possível atualizar a lista; use Atualizar para consultar.";
         }
+        await RefreshActiveWeekAsync();
     }
 }

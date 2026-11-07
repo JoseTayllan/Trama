@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:agenda="using:Trama.Application.Agenda" x:Class="Trama.Desktop.Views.AgendaTrashConfirmationDialog" x:DataType="agenda:AgendaTaskSnapshot"
+        Title="Enviar tarefa para a lixeira" Width="540" Height="340" MinWidth="420" MinHeight="260"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Background="{DynamicResource TramaWindowBrush}">
+  <Grid RowDefinitions="*,Auto" Margin="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <StackPanel Spacing="12" Margin="0,0,6,12">
+        <TextBlock Text="AGENDA / EXCLUIR TAREFA" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TramaAccentBrush}" />
+        <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{DynamicResource TramaTextBrush}" />
+        <TextBlock Text="Enviar esta tarefa para a lixeira?" FontSize="15" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+        <TextBlock Text="Você poderá restaurar o conteúdo, as datas e o estado original. Nenhuma tarefa será apagada definitivamente."
+                   FontSize="13" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" />
+      </StackPanel>
+    </ScrollViewer>
+    <Border Grid.Row="1" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
+      <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button x:Name="CancelAgendaTrashButton" Content="Cancelar" Classes="notebook-add" IsCancel="True" IsDefault="True" Click="CancelClicked" Padding="12,9" Margin="0,0,8,0" />
+        <Button x:Name="ConfirmAgendaTrashButton" Content="Enviar para a lixeira" Classes="trama-primary" Click="ConfirmClicked" Padding="16,9" />
+      </WrapPanel>
+    </Border>
+  </Grid>
+</Window>

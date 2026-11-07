@@ -20,6 +20,8 @@ public static class DesktopComposition
         var images = new LocalImageAttachmentStore(dataDirectory);
         return new ServiceCollection()
             .AddSingleton<IAgendaActions>(new SqliteAgendaActions(databasePath))
+            .AddSingleton<IAgendaPeriodReader>(services => (IAgendaPeriodReader)services.GetRequiredService<IAgendaActions>())
+            .AddSingleton<IAgendaWeekProjector, AgendaWeekProjector>()
             .AddSingleton<IAgendaCompletionActions>(new SqliteAgendaCompletionActions(databasePath))
             .AddSingleton<IAgendaTrashActions>(new SqliteAgendaTrashActions(databasePath))
             .AddSingleton<ICreateNote>(new SqliteNoteService(databasePath))
@@ -36,7 +38,8 @@ public static class DesktopComposition
             .AddSingleton<ILibraryManagementActions>(new SqliteLibraryManagement(databasePath))
             .AddSingleton<IUnsavedChangesPrompt>(unsavedChangesPrompt ?? new CancelUnsavedChangesPrompt())
             .AddTransient(services => new AgendaViewModel(services.GetRequiredService<IAgendaActions>(),
-                services.GetRequiredService<IUnsavedChangesPrompt>(), services.GetRequiredService<IAgendaTrashActions>(), TimeProvider.System))
+                services.GetRequiredService<IUnsavedChangesPrompt>(), services.GetRequiredService<IAgendaTrashActions>(), TimeProvider.System,
+                services.GetRequiredService<IAgendaPeriodReader>(), services.GetRequiredService<IAgendaWeekProjector>()))
             .AddTransient(services => new LibraryViewModel(services.GetRequiredService<ILibraryActions>(),
                 services.GetRequiredService<IUnsavedChangesPrompt>(), services.GetRequiredService<ILibraryManagementActions>(),
                 services.GetRequiredService<IKnowledgeDiscovery>(), enableAutoSave ? TimeProvider.System : null,

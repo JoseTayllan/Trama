@@ -9,6 +9,11 @@
     <Style Selector="Border.category-spine"><Setter Property="Background" Value="{DynamicResource TramaAgendaPersonalBrush}" /></Style>
     <Style Selector="Border.category-spine.work"><Setter Property="Background" Value="{DynamicResource TramaAgendaWorkBrush}" /></Style>
     <Style Selector="Border.category-spine.study"><Setter Property="Background" Value="{DynamicResource TramaAgendaStudyBrush}" /></Style>
+    <Style Selector="Button.agenda-week-card"><Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Padding" Value="0" /><Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="HorizontalContentAlignment" Value="Stretch" /></Style>
+    <Style Selector="Border.agenda-week-day"><Setter Property="Background" Value="{DynamicResource TramaInputBrush}" /><Setter Property="CornerRadius" Value="10" /><Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" /><Setter Property="BorderThickness" Value="1" /><Setter Property="Padding" Value="10" /><Setter Property="MinHeight" Value="180" /></Style>
+    <Style Selector="Border.agenda-week-day.today"><Setter Property="BorderBrush" Value="{DynamicResource TramaAccentBrush}" /></Style>
+    <Style Selector="Button.agenda-mode.active"><Setter Property="Background" Value="{DynamicResource TramaAccentSoftBrush}" /><Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" /></Style>
+    <Style Selector="Button.agenda-week-create"><Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="HorizontalContentAlignment" Value="Left" /><Setter Property="Padding" Value="4,8" /><Setter Property="FontSize" Value="11" /></Style>
     <Style Selector="TextBlock.agenda-section"><Setter Property="FontSize" Value="10" /><Setter Property="FontWeight" Value="SemiBold" /><Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" /><Setter Property="LetterSpacing" Value="1" /></Style>
     <Style Selector="Border.agenda-field-group"><Setter Property="Background" Value="Transparent" /><Setter Property="Padding" Value="0" /></Style>
     <Style Selector="DatePicker.agenda-picker, TimePicker.agenda-picker">
@@ -47,20 +52,91 @@
   <Grid RowDefinitions="Auto,*,Auto" Margin="24,20,24,12">
     <StackPanel Spacing="12" Margin="0,0,0,16">
       <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-        <StackPanel Spacing="5"><TextBlock Text="AGENDA / SEU DIA" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource TramaAccentBrush}" /><TextBlock Text="{Binding DayLabel}" FontSize="25" FontWeight="SemiBold" TextWrapping="Wrap" /></StackPanel>
-        <Button Grid.Column="1" x:Name="AgendaNewTaskButton" Content="+ Nova tarefa" Classes="trama-primary" Command="{Binding NewTaskCommand}" VerticalAlignment="Center" Padding="16,10" />
+        <StackPanel Spacing="5">
+          <TextBlock Text="AGENDA / SEU TEMPO" Classes="agenda-section" />
+          <TextBlock Text="{Binding DayLabel}" IsVisible="{Binding !IsWeekView}" FontSize="25" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <TextBlock x:Name="AgendaWeekHeading" Text="{Binding WeekHeading}" IsVisible="{Binding IsWeekView}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Button x:Name="AgendaTrashButton" Content="Lixeira da Agenda" Classes="notebook-add" Click="OpenTrashClicked" IsVisible="{Binding HasTrash}" IsEnabled="{Binding CanEdit}" Padding="12,10" />
+          <Button x:Name="AgendaNewTaskButton" Content="+ Nova tarefa" Classes="trama-primary" Command="{Binding NewTaskCommand}" Padding="16,10" />
+        </StackPanel>
       </Grid>
-      <WrapPanel Orientation="Horizontal" IsEnabled="{Binding CanEdit}">
+      <WrapPanel Orientation="Horizontal">
+        <Button x:Name="AgendaDayModeButton" Content="Dia" Classes="notebook-tool agenda-mode" Classes.active="{Binding !IsWeekView}" Click="DayModeClicked" IsEnabled="{Binding CanEdit}" Margin="0,0,4,4" />
+        <Button x:Name="AgendaWeekModeButton" Content="Semana" Classes="notebook-tool agenda-mode" Classes.active="{Binding IsWeekView}" Click="WeekModeClicked" IsEnabled="{Binding CanEdit}" IsVisible="{Binding HasWeekView}" Margin="0,0,16,4" />
+        <Button x:Name="AgendaDeleteTaskButton" Content="Excluir tarefa" Classes="notebook-add" Click="DeleteTaskClicked" IsVisible="{Binding HasTrash}" IsEnabled="{Binding CanDeleteTask}" Padding="10,7" FontSize="12" Background="{DynamicResource TramaRaisedBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" ToolTip.Tip="Abra uma tarefa para ativar a exclusão. Você poderá restaurá-la pela lixeira." />
+      </WrapPanel>
+      <WrapPanel Orientation="Horizontal" IsVisible="{Binding !IsWeekView}" IsEnabled="{Binding CanEdit}">
         <Button Content="Dia anterior" Classes="notebook-tool" Click="PreviousDayClicked" Margin="0,0,8,0" />
         <DatePicker x:Name="AgendaDayPicker" Classes="agenda-picker" SelectedDate="{Binding SelectedDayDate, Mode=OneWay}" SelectedDateChanged="DayChanged" DayFormat="dd" MonthFormat="MMM" YearFormat="yyyy" />
         <Button Content="Próximo dia" Classes="notebook-tool" Click="NextDayClicked" Margin="8,0" />
         <Button Content="Atualizar" Classes="notebook-tool" Command="{Binding ReloadCommand}" />
       </WrapPanel>
+      <WrapPanel Orientation="Horizontal" IsVisible="{Binding IsWeekView}">
+        <Button x:Name="AgendaPreviousWeekButton" Content="Semana anterior" Classes="notebook-tool" Click="PreviousWeekClicked" IsEnabled="{Binding CanPreviousWeek}" Margin="0,0,6,4" />
+        <Button x:Name="AgendaTodayButton" Content="Hoje" Classes="notebook-add" Click="TodayClicked" IsEnabled="{Binding CanEdit}" Margin="0,0,6,4" />
+        <Button x:Name="AgendaNextWeekButton" Content="Próxima semana" Classes="notebook-tool" Click="NextWeekClicked" IsEnabled="{Binding CanNextWeek}" Margin="0,0,12,4" />
+        <Button x:Name="AgendaWeekRefreshButton" Content="Atualizar" Classes="notebook-tool" Command="{Binding ReloadCommand}" Margin="0,0,12,4" />
+        <TextBlock x:Name="AgendaWeekCount" Text="{Binding WeekCountLabel}" VerticalAlignment="Center" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" Margin="0,0,0,4" />
+      </WrapPanel>
+      <WrapPanel Orientation="Horizontal" IsVisible="{Binding IsWeekView}" IsEnabled="{Binding CanEdit}">
+        <ComboBox x:Name="AgendaWeekCategoryFilter" ItemsSource="{Binding WeekCategoryChoices}" SelectedIndex="{Binding WeekCategoryIndex, Mode=OneWay}" SelectionChanged="WeekFiltersChanged" AutomationProperties.Name="Filtrar semana por categoria" MinWidth="174" Margin="0,0,10,4" />
+        <ComboBox x:Name="AgendaWeekStatusFilter" ItemsSource="{Binding WeekStatusChoices}" SelectedIndex="{Binding WeekStatusIndex, Mode=OneWay}" SelectionChanged="WeekFiltersChanged" AutomationProperties.Name="Filtrar semana por estado" MinWidth="164" Margin="0,0,0,4" />
+      </WrapPanel>
+      <TextBlock x:Name="AgendaWeekLoadingMessage" Text="Consultando sua agenda…" IsVisible="{Binding IsBusy}" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" />
     </StackPanel>
-    <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="18">
-      <Border Classes="agenda-card" Padding="18">
+    <ScrollViewer Grid.Row="1" x:Name="AgendaBodyScroll" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
+    <Grid x:Name="AgendaBody" ColumnDefinitions="*,*" ColumnSpacing="18" RowSpacing="18">
+      <Border Classes="agenda-card" Padding="14" IsVisible="{Binding IsWeekView}">
+        <StackPanel Spacing="14">
+          <TextBlock Text="SUA SEMANA" Classes="agenda-section" />
+          <TextBlock Text="Abra um cartão para editar. Use + Tarefa no dia desejado para criar." FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+          <TextBlock x:Name="AgendaWeekErrorMessage" Text="A semana pode estar desatualizada. Use Atualizar para tentar novamente." IsVisible="{Binding HasWeekError}" Foreground="{DynamicResource TramaErrorBrush}" TextWrapping="Wrap" />
+          <TextBlock x:Name="AgendaWeekEmptyMessage" Text="Nenhuma tarefa nesta seleção. Você pode criar uma em qualquer dia abaixo." IsVisible="{Binding IsWeekEmpty}" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+          <ItemsControl x:Name="AgendaWeekDays" ItemsSource="{Binding Week.Days}" IsEnabled="{Binding CanEdit}">
+            <ItemsControl.ItemsPanel><ItemsPanelTemplate><views:AgendaWeekPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="agenda:AgendaWeekDay">
+                <Border Classes="agenda-week-day" Loaded="WeekDayLoaded" DataContextChanged="WeekDayReady">
+                  <StackPanel Spacing="12">
+                    <StackPanel Spacing="3"><TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-day-name}" FontSize="10" Foreground="{DynamicResource TramaMutedBrush}" /><TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-day-number}" FontSize="23" FontWeight="SemiBold" /></StackPanel>
+                    <ItemsControl ItemsSource="{Binding Entries}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="agenda:AgendaWeekEntry">
+                          <Button Classes="agenda-week-card" Click="WeekTaskClicked" Margin="0,0,0,8" AutomationProperties.Name="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-card-name}">
+                            <Border Background="{DynamicResource TramaRaisedBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,10">
+                              <Grid ColumnDefinitions="3,*" ColumnSpacing="8">
+                                <Border Classes="category-spine" Classes.work="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=work}" Classes.study="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=study}" CornerRadius="2" />
+                                <StackPanel Grid.Column="1" Spacing="7">
+                                  <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-time}" FontSize="10" TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+                                  <TextBlock Text="{Binding Task.Title}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                  <TextBlock Text="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=category}" FontSize="10" Foreground="{DynamicResource TramaSubtleBrush}" />
+                                  <WrapPanel Orientation="Horizontal"><TextBlock Classes="agenda-week-status-icon" Text="{Binding Task.Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status-icon}" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,4,0" FontSize="12" /><TextBlock Classes="agenda-week-status" Text="{Binding Task.Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status}" TextWrapping="Wrap" FontSize="10" Foreground="{DynamicResource TramaTextBrush}" /></WrapPanel>
+                                  <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-continuation}" FontSize="10" TextWrapping="Wrap" Foreground="{DynamicResource TramaAccentBrush}" />
+                                </StackPanel>
+                              </Grid>
+                            </Border>
+                          </Button>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Classes="notebook-tool agenda-week-create" Content="+ Tarefa" Click="WeekCreateClicked" AutomationProperties.Name="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-create-name}" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+      <Border Classes="agenda-card" Padding="18" IsVisible="{Binding !IsWeekView}">
         <Grid RowDefinitions="Auto,*">
-          <StackPanel Spacing="6" Margin="0,0,0,16"><TextBlock Text="Tarefas do dia" FontSize="18" FontWeight="SemiBold" /><TextBlock Text="Abra uma tarefa para editar ou reagendar." FontSize="12" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" /></StackPanel>
+          <StackPanel Spacing="8" Margin="0,0,0,16">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+              <TextBlock Text="Tarefas do dia" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
+            </Grid>
+            <TextBlock Text="Clique em uma tarefa para abri-la. Depois, use Excluir tarefa para enviá-la à lixeira." FontSize="12" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+          </StackPanel>
           <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <StackPanel Spacing="12">
               <TextBlock Text="A lista pode estar desatualizada. Use Atualizar para consultar novamente." IsVisible="{Binding HasListError}" Foreground="{DynamicResource TramaErrorBrush}" TextWrapping="Wrap" />
@@ -87,7 +163,7 @@
           </ScrollViewer>
         </Grid>
       </Border>
-      <Border Grid.Column="1" Classes="agenda-card" Padding="18">
+      <Border x:Name="AgendaFormPanel" Grid.Column="1" Classes="agenda-card" Padding="18">
         <Grid RowDefinitions="Auto,*,Auto">
           <Grid ColumnDefinitions="3,*" ColumnSpacing="10" Margin="0,0,0,12">
             <Border Background="{DynamicResource TramaAccentBrush}" CornerRadius="2" />
@@ -132,6 +208,7 @@
         </Grid>
       </Border>
     </Grid>
+    </ScrollViewer>
     <TextBlock Grid.Row="2" Text="{Binding Feedback}" TextWrapping="Wrap" Foreground="{DynamicResource TramaAccentBrush}" FontSize="12" MinHeight="18" Margin="0,12,0,0" />
   </Grid>
 </UserControl>

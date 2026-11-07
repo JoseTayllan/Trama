@@ -1,6 +1,8 @@
 # CI — correção de NU1004 por runtime
 
-Data: 05/11/2026. Validado localmente; nova execução GitHub pendente.
+Data: 05/11/2026. Verificações locais abaixo.
+
+Aceite posterior, 06/11/2026: o responsável confirmou “deu certo” para a correção do CI. Execução remota não consultada pelo agente; o restante do relatório registra as evidências e limites da entrega anterior. Nenhum novo teste foi executado apenas para registrar esse aceite.
 
 Reproduzido NU1004 com o mesmo restore bloqueado do workflow. Quatro locks de src continham win-x64 enquanto a solução não declara runtime na execução do CI. Removidos somente os grafos específicos; comparação semântica mantém versões, dependências e hashes genéricos. Directory.Build.props isola locks quando RuntimeIdentifier ou RuntimeIdentifiers estão presentes, em obj por projeto/runtime. Workflow e --locked-mode intactos.
 
