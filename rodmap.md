@@ -1,6 +1,6 @@
 # Trama · Roadmap
 
-Atualizado em **07/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
+Atualizado em **12/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
 
 [Abrir painel HTML](roadmap.html) · gerado deste arquivo por `python tools/build_roadmap.py`.
 
@@ -8,17 +8,18 @@ Atualizado em **07/11/2026**. Acompanhe o módulo atual, as entregas disponívei
 
 | Item | Estado |
 | --- | --- |
-| Foco | Agenda e rotina semanal |
-| Última entrega validada no uso | Lixeira da Agenda e acesso à exclusão (06/11); ambiente não informado |
-| Entrega em revisão | Inicialização semanal corrigida |
-| Etapa atual | Correção no GREEN; reabertura no WSL e revisão do diff pendentes |
-| Resultado novo | Dois casos aprovados intactos; 1.016 testes passaram; inicialização real conferida |
-| Última suíte completa | 1.016 aprovados: 167 unitários e 849 integrações |
-| Última suíte estável | 1.016 aprovados na correção de inicialização |
+| Foco | Reflexão semanal e fechamento da primeira versão da Agenda |
+| Última entrega validada no uso | Atalho de páginas nos cartões da Agenda, confirmado pelo responsável |
+| Aviso | Em Pendências para revisar, Atual acompanha a tarefa. No fechamento e os totais guardam o registro da semana. |
+| Entrega em revisão | Atalho para páginas nos cartões da Agenda |
+| Etapa atual | Abertura direta ou menu de páginas nas visões Dia e Semana |
+| Resultado novo | Quatro casos do atalho passaram com os testes intactos |
+| Última suíte completa | 1.337 aprovados, com 224 unitários e 1.113 de integração |
+| Última suíte estável | 1.337 aprovados com o atalho para páginas |
 | CI | Correção confirmada pelo responsável em 06/11; execução remota não consultada pelo agente |
-| Próxima etapa | Reabrir no WSL com o mesmo perfil, validar Semana no uso e revisar o diff |
-| Referência principal | [Inicialização semanal corrigida](docs/estudos/94-inicializacao-semanal-corrigida.md) |
-| Relatório atual | [Inicialização semanal corrigida](docs/reviews/101-agenda-startup-week-green.md) |
+| Próxima etapa | Mostrar dados reais da Agenda no Início |
+| Referência principal | [Reflexão: SQLite implementado](docs/estudos/117-reflexao-sqlite-implementada.md) |
+| Relatório atual | [Atalho para páginas nos cartões](docs/reviews/133-agenda-page-shortcut-green.md) |
 
 A imagem conceitual, a direção da tela Início e os 17 testes foram aprovados antes de implementar. Início e Cadernos estão integrados para revisão, preservando o editor ao alternar. A Agenda diária está habilitada, com tarefas e horários opcionais; a semana visual está implementada para revisão e os indicadores permanecem pendentes.
 
@@ -32,12 +33,88 @@ A correção de rolagem foi aprovada em seguida. O refino visual está implement
 | --- | --- | --- | --- |
 | 1 | Início e navegação | Implementado · revisão pendente | Validar Início, retomada, autosave e fechamento no uso; revisar o diff |
 | 2 | Tarefas com persistência | Implementado · revisão pendente | Criar, editar, reagendar e mudar estado; reabrir sem perder os dados |
-| 3 | Agenda semanal | Implementado · validação de uso e revisão pendentes | Semana/dia, horários opcionais, categorias, cores e filtros em janela ampla/compacta |
-| 4 | Planejado e realizado | A iniciar | Registros reais separados do planejamento e indicadores consistentes |
+| 3 | Agenda semanal | Validado no uso · revisão formal do diff não registrada | Semana/dia, horários opcionais, categorias, cores e filtros em janela ampla/compacta |
+| 4 | Retrospectiva semanal | Painel implementado · aceite pendente | Fechamentos preservados, indicadores consistentes, comparação e painel validado |
 | 5 | Integração dos módulos | A iniciar | Vínculo com páginas, resumos reais do Início e backup/restauração da agenda |
 | 6 | Validação e aceite | A iniciar | Suíte completa, uso Windows/Linux e revisão do diff antes da mesclagem pelo responsável |
 
-### Entrega em foco: visão semanal
+### Entrega em foco: retrospectiva semanal
+
+- [x] Gerar protótipo visual do painel de fechamento semanal.
+- [x] Confirmar fechamento preservado, contagem única e uso da conclusão real.
+- [x] Preparar 32 casos RED das regras e conferir a base de 1.016.
+- [x] Aprovar os casos e implementar os cálculos sem alterar os testes; 1.048 passaram.
+- [ ] Revisar o diff dos cálculos da retrospectiva.
+- [x] Especificar fonte conjunta, armazenamento e backup com 33 casos RED.
+- [x] Aprovar os 33 casos, contratos e proposta de migração 11.
+- [x] Implementar persistência e validação/restauração de backup; um escape no helper aprovado, asserções intactas.
+- [x] Conferir modelo/SQL da migração e executar 1.081 testes.
+- [ ] Revisar o diff da persistência dos fechamentos.
+- [x] Especificar serviço transacional e composição com 34 casos RED.
+- [x] Aprovar os 34 casos/contrato e implementar o serviço; 1.115 testes passaram.
+- [ ] Revisar o diff do serviço de fechamento.
+- [x] Especificar comparação com semana anterior e apresentação dos dados ausentes; 33 casos RED.
+- [x] Aprovar os 33 casos/contrato e implementar comparador e resumo; 1.148 testes passaram.
+- [ ] Revisar o diff da comparação e resumo.
+- [x] Especificar carregamento, navegação e erros do painel; 29 casos RED.
+- [x] Aprovar os 29 casos e implementar o modelo de carregamento; 1.177 testes passaram.
+- [ ] Revisar o diff do carregamento da retrospectiva.
+- [x] Especificar integração com Agenda/App e proteção dos rascunhos; 22 casos RED.
+- [x] Aprovar os 22 casos e implementar a integração com Agenda/App; 1.199 testes passaram.
+- [ ] Revisar o diff da integração com Agenda/App.
+- [x] Especificar controles, indicadores e estados visuais do painel; 28 casos RED.
+- [x] Aprovar os 28 casos e implementar a tela da retrospectiva; 1.227 testes passaram.
+- [x] Conferir capturas SQLite/Skia ampla/compacta, pendências por rolagem e retorno diário.
+- [x] Refinar visualmente o painel em direção ao protótipo; ícones, cartões, gráfico e linhas compactas.
+- [x] Comparar com a referência enviada e alinhar modos, cartões, navegação, ícones e rótulos.
+- [ ] Revisar o diff do painel/refinos e validar no uso Windows/Linux.
+- [x] Integrar painel de dados e lista de pendências capturadas; conferir amplo/compacto.
+- [x] Especificar a composição visual de pendências e prévia da reflexão; nove casos RED.
+- [x] Aprovar os nove casos e implementar os dois cartões lado a lado/empilhados; 1.236 testes passaram.
+- [x] Refinar ícones de categoria/estado nas pendências e conferir alinhamento amplo/compacto.
+- [ ] Revisar os diffs da composição inferior/ícones e validar a prévia no uso.
+- [x] Especificar regras da reflexão gravável; 25 casos RED e contratos mínimos.
+- [x] Aprovar os 25 casos/contratos e implementar as regras de gravação; 1.261 testes passaram.
+- [ ] Revisar o diff das regras de gravação da reflexão.
+- [x] Especificar SQLite, leitor, perfis e backup da reflexão; 33 casos RED.
+- [x] Aprovar os 33 casos/leitor e a migração 12.
+- [x] Implementar SQLite, leitura e backup; 1.294 testes e modelo EF aprovados, onze migrações preservadas.
+- [ ] Revisar o diff da persistência e o SQL da migração 12.
+- [x] Especificar o serviço de reflexão por perfil e sua composição com sete casos RED.
+- [x] Aprovar os sete testes e implementar o serviço por perfil.
+- [x] Integrar interface, gravação manual e proteção do rascunho da reflexão.
+- [x] Validar o editor da reflexão no uso.
+- [ ] Revisar o diff do editor da reflexão.
+- [x] Integrar a ação Abrir tarefa nas pendências com dez casos aprovados.
+- [ ] Validar a abertura de tarefas no uso e revisar o diff.
+- [x] Exibir e atualizar o status atual nas pendências, preservando o fechamento.
+- [x] Validar a atualização do status no uso.
+- [ ] Revisar o diff da atualização do status.
+- [x] Especificar o aviso da última semana encerrada e a abertura sob ação do usuário.
+- [x] Aprovar os quatro casos e implementar o aviso de semana encerrada.
+- [x] Validar o aviso no uso.
+- [ ] Revisar o diff do aviso.
+- [ ] Validar no uso, executar suíte e revisar o diff antes da integração pelo responsável.
+
+### Fechamento da primeira versão da Agenda
+
+- [x] Habilitar reflexão com gravação/edição por semana, rascunhos protegidos e backup.
+- [x] Integrar revisão das pendências às tarefas atuais, preservando o fechamento histórico.
+- [x] Implementar o aviso de semana encerrada com abertura sob ação do usuário.
+- [x] Especificar o vínculo de uma tarefa salva com uma página existente.
+- [x] Implementar o vínculo, a navegação e a leitura após reabrir o perfil.
+- [x] Permitir várias tarefas por página no mesmo dia ou em dias diferentes e preparar o banco para várias páginas por tarefa.
+- [ ] Validar o vínculo no uso e revisar o diff da migração.
+- [x] Evoluir a interface para gerenciar várias páginas por tarefa.
+- [ ] Validar o seletor de páginas no uso e revisar o diff.
+- [x] Adicionar o atalho de páginas vinculadas aos cartões de Dia e Semana.
+- [x] Validar no uso o ícone e o menu de páginas.
+- [ ] Revisar o diff do atalho de páginas.
+- [ ] Mostrar dados reais da Agenda no Início.
+- [ ] Validar recuperação completa e atualização de bancos anteriores.
+- [ ] Conferir Windows/WSL, executável, suíte/build/formatação e diff; Git/mesclagem pelo responsável.
+
+### Histórico: visão semanal
 
 - [x] Validar no uso a lixeira e a localização da exclusão.
 - [x] Especificar consulta por sobreposição com 25 casos RED.

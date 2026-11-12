@@ -4,7 +4,7 @@ using Trama.Application.Agenda;
 
 namespace Trama.Infrastructure.Persistence;
 
-public sealed class SqliteAgendaActions : IAgendaActions, IAgendaPeriodReader
+public sealed partial class SqliteAgendaActions : IAgendaActions, IAgendaPeriodReader, IAgendaPageLinks
 {
     private readonly DbContextOptions<TramaDbContext> _options;
 

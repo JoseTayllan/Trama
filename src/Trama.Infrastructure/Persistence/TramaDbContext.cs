@@ -8,6 +8,40 @@ public sealed class TramaDbContext(DbContextOptions<TramaDbContext> options) : D
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<AgendaWeekReflectionRecord>(reflection =>
+        {
+            reflection.ToTable("AgendaWeekReflections");
+            reflection.HasKey(record => record.WeekStart);
+            reflection.Property(record => record.WeekStart).HasColumnType("TEXT").ValueGeneratedNever();
+            reflection.Property(record => record.WorkedWell).HasColumnType("TEXT").IsRequired();
+            reflection.Property(record => record.Adjustments).HasColumnType("TEXT").IsRequired();
+            reflection.Property(record => record.UpdatedAt).HasColumnType("TEXT").IsRequired();
+            reflection.HasOne<AgendaWeekRetrospectiveRecord>().WithMany().HasForeignKey(record => record.WeekStart).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<AgendaWeekRetrospectiveRecord>(report =>
+        {
+            report.ToTable("AgendaWeekRetrospectives");
+            report.HasKey(record => record.StartDate);
+            report.Property(record => record.StartDate).HasColumnType("TEXT").ValueGeneratedNever();
+            report.Property(record => record.EndDate).HasColumnType("TEXT").IsRequired();
+            report.Property(record => record.ClosedAt).HasColumnType("TEXT").IsRequired();
+            report.Property(record => record.TimeZoneId).HasColumnType("TEXT").IsRequired();
+            report.Property(record => record.TimeZoneData).HasColumnType("TEXT").IsRequired();
+            report.Property(record => record.FormatVersion).IsRequired();
+            report.Property(record => record.Content).HasColumnType("TEXT").IsRequired();
+        });
+
+        modelBuilder.Entity<AgendaPageLinkRecord>(link =>
+        {
+            link.ToTable("AgendaPageLinks");
+            link.HasKey(record => new { record.TaskId, record.PageId });
+            link.Property(record => record.TaskId).HasColumnType("TEXT").ValueGeneratedNever();
+            link.Property(record => record.PageId).HasColumnType("TEXT").ValueGeneratedNever();
+            link.HasIndex(record => record.PageId);
+            link.HasOne<AgendaTaskRecord>().WithMany().HasForeignKey(record => record.TaskId).OnDelete(DeleteBehavior.Restrict);
+        });
+
         modelBuilder.Entity<AgendaTaskRecord>(task =>
         {
             task.ToTable("AgendaTasks");

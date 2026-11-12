@@ -45,7 +45,9 @@ public sealed partial class App : Avalonia.Application
                         new WindowUnsavedChangesPrompt(window, "Esta tarefa da Agenda tem alterações não salvas. Deseja salvá-las antes de continuar?"),
                         services.GetRequiredService<Trama.Application.Agenda.IAgendaTrashActions>(), TimeProvider.System,
                         services.GetRequiredService<Trama.Application.Agenda.IAgendaPeriodReader>(),
-                        services.GetRequiredService<Trama.Application.Agenda.IAgendaWeekProjector>());
+                        services.GetRequiredService<Trama.Application.Agenda.IAgendaWeekProjector>(),
+                        services.GetRequiredService<AgendaRetrospectiveViewModel>(),
+                        new WindowUnsavedChangesPrompt(window, "A reflexão da semana tem alterações não salvas. Deseja salvá-las antes de continuar?"));
                     await agenda.InitializeAsync(DateOnly.FromDateTime(DateTime.Today));
                     if (_shutdown.IsCancellationRequested) return;
                     viewModel.Agenda = agenda;

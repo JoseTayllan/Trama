@@ -24,6 +24,12 @@ public static class DesktopComposition
             .AddSingleton<IAgendaWeekProjector, AgendaWeekProjector>()
             .AddSingleton<IAgendaCompletionActions>(new SqliteAgendaCompletionActions(databasePath))
             .AddSingleton<IAgendaTrashActions>(new SqliteAgendaTrashActions(databasePath))
+            .AddSingleton<IAgendaRetrospectiveActions>(new SqliteAgendaRetrospectiveActions(databasePath, TimeProvider.System))
+            .AddSingleton<IAgendaReflectionActions>(new SqliteAgendaReflectionActions(databasePath, TimeProvider.System))
+            .AddSingleton<IAgendaRetrospectiveComparer, AgendaRetrospectiveComparer>()
+            .AddTransient(services => new AgendaRetrospectiveViewModel(services.GetRequiredService<IAgendaRetrospectiveActions>(),
+                services.GetRequiredService<IAgendaRetrospectiveComparer>(), TimeProvider.System,
+                services.GetRequiredService<IAgendaReflectionActions>(), services.GetRequiredService<IAgendaActions>()))
             .AddSingleton<ICreateNote>(new SqliteNoteService(databasePath))
             .AddTransient<NoteEditorViewModel>()
             .AddSingleton<INotebookActions>(new SqliteNotebookActions(databasePath, images))
@@ -39,7 +45,8 @@ public static class DesktopComposition
             .AddSingleton<IUnsavedChangesPrompt>(unsavedChangesPrompt ?? new CancelUnsavedChangesPrompt())
             .AddTransient(services => new AgendaViewModel(services.GetRequiredService<IAgendaActions>(),
                 services.GetRequiredService<IUnsavedChangesPrompt>(), services.GetRequiredService<IAgendaTrashActions>(), TimeProvider.System,
-                services.GetRequiredService<IAgendaPeriodReader>(), services.GetRequiredService<IAgendaWeekProjector>()))
+                services.GetRequiredService<IAgendaPeriodReader>(), services.GetRequiredService<IAgendaWeekProjector>(),
+                services.GetRequiredService<AgendaRetrospectiveViewModel>()))
             .AddTransient(services => new LibraryViewModel(services.GetRequiredService<ILibraryActions>(),
                 services.GetRequiredService<IUnsavedChangesPrompt>(), services.GetRequiredService<ILibraryManagementActions>(),
                 services.GetRequiredService<IKnowledgeDiscovery>(), enableAutoSave ? TimeProvider.System : null,

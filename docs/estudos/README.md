@@ -95,6 +95,29 @@ Os procedimentos de ambiente e distribuição ficam separados na [central de ope
 | 83 | [Agenda: interface da lixeira em revisão](83-lixeira-agenda-interface-especificacao.md) | Botões, confirmação, seleção/restauração e erros; 22 casos, 21 RED e uma guarda |
 | 84 | [Agenda: interface da lixeira implementada](84-lixeira-agenda-interface-implementada.md) | Confirmação, seleção, restauração, erros e janela compacta; 887 testes e QA SQLite/Skia |
 | 85 | [Semana: consulta por sobreposição em revisão](85-semana-consulta-por-sobreposicao.md) | Contrato adicional, compatibilidade diária e interseção de datas; 25 casos, 24 RED e uma guarda |
+| 117 | [Reflexão: SQLite implementado](117-reflexao-sqlite-implementada.md) | UPSERT, FK restritiva, migração 12 e backup; 1.294 testes |
+| 116 | [Reflexão: persistência proposta](116-reflexao-sqlite-especificacao.md) | SQLite, migração 12, vínculo e backup formato 1; 33 casos RED |
+| 115 | [Reflexão: regras implementadas](115-reflexao-semanal-regras-implementadas.md) | Caso de uso com texto preservado, UTC e cancelamento; 1.261 testes |
+| 114 | [Reflexão: regras propostas](114-reflexao-semanal-regras-especificacao.md) | Registro independente por semana, texto preservado e falhas; 25 casos RED |
+| 113 | [Ícones das pendências](113-icones-das-pendencias.md) | Ícones por categoria, estados legíveis e alinhamento; 1.236 testes intactos |
+| 112 | [Composição inferior implementada](112-pendencias-e-reflexao-visual-implementadas.md) | Cartões lado a lado/empilhados e reflexão em prévia; 1.236 testes |
+| 111 | [Composição inferior: especificação](111-composicao-visual-pendencias-e-reflexao.md) | Pendências e reflexão lado a lado; prévia visual transparente; nove casos RED |
+| 110 | [Alinhamento ao protótipo](110-alinhamento-com-prototipo-da-retrospectiva.md) | Modos, cartões, navegação, ícones e rótulos das barras; 1.227 testes intactos |
+| 109 | [Refino visual do painel](109-refino-visual-da-retrospectiva.md) | Aproximação ao protótipo, ícones, cartões e gráfico; 1.227 testes intactos |
+| 108 | [Painel implementado](108-retrospectiva-painel-implementado.md) | Indicadores, gráfico, categorias e pendências; QA amplo/compacto; 1.227 testes |
+| 107 | [Tela: especificação](107-retrospectiva-tela-especificacao.md) | Indicadores, séries, categorias, pendências e responsividade; 28 casos RED |
+| 106 | [Retrospectiva integrada](106-retrospectiva-integrada-a-agenda.md) | Agenda/App, modos e proteção de rascunhos/saída; 1.199 testes; tela futura |
+| 105 | [Integração: especificação](105-retrospectiva-integracao-especificacao.md) | Agenda, rascunhos, saída e inicialização real do App; 22 casos RED |
+| 104 | [Carregamento implementado](104-retrospectiva-carregamento-implementado.md) | Coordenação das capturas, publicação conjunta e recuperação; 1.177 testes; integração futura |
+| 103 | [Carregamento: especificação](103-retrospectiva-navegacao-especificacao.md) | Capturas atual/anterior, navegação, falhas e cancelamento; 29 casos RED |
+| 102 | [Comparação implementada](102-retrospectiva-comparacao-implementada.md) | Comparação pura e resumo em português; 1.148 testes; integração do painel futura |
+| 101 | [Comparação: especificação](101-retrospectiva-comparacao-especificacao.md) | Semana anterior, pontos percentuais, dados ausentes e resumo; 33 casos RED |
+| 100 | [Serviço de fechamento implementado](100-retrospectiva-servico-implementado.md) | Captura transacional, relógio local, recuperação e composição; 1.115 testes; painel futuro |
+| 99 | [Serviço de fechamento: especificação](99-retrospectiva-servico-especificacao.md) | 34 casos RED; captura transacional, relógio local, concorrência, recuperação e composição |
+| 98 | [Fechamentos persistidos](98-retrospectiva-persistida.md) | Primeiro fechamento preservado, fuso portátil, migração 11 e backup; 1.081 testes |
+| 97 | [Persistência da retrospectiva: especificação](97-retrospectiva-persistencia-especificacao.md) | 33 casos RED; primeiro fechamento preservado, fuso portátil, migração 11 e backup compatível |
+| 96 | [Cálculos da retrospectiva implementados](96-retrospectiva-regras-implementadas.md) | Agregação pura, fuso, contagem única e dados sem data/fora; 1.048 testes; persistência futura |
+| 95 | [Retrospectiva: regras do fechamento](95-retrospectiva-semanal-regras.md) | 32 casos RED; contagem única, conclusão real, continuidades, fuso e limites históricos |
 | 94 | [Inicialização semanal corrigida](94-inicializacao-semanal-corrigida.md) | App recebe leitor/projetor; 1.016 testes e captura do ponto de entrada real |
 | 93 | [Semana ausente na inicialização](93-semana-ausente-na-inicializacao.md) | Dois casos RED de App/Opened/MainWindow; dependências semanais ausentes no ponto de entrada |
 | 92 | [Tela semanal implementada](92-tela-semanal-implementada.md) | Cartões, estados, filtros, continuidade e formulário preservado; 1.014 testes e QA visual |

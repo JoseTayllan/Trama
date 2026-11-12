@@ -63,6 +63,85 @@ public sealed partial class AgendaWorkspaceView : UserControl
     {
         if (DataContext is AgendaViewModel vm) await vm.ShowDayAsync();
     }
+    private async void LinkPageClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not AgendaViewModel agenda ||
+            TopLevel.GetTopLevel(this) is not MainWindow { DataContext: MainWindowViewModel { Library: { } library } } owner) return;
+        await agenda.LinkPageAsync(async () =>
+        {
+            var linkedIds = agenda.LinkedPages.Select(link => link.PageId).ToHashSet();
+            var pages = await library.ListLinkablePagesAsync();
+            var availablePages = pages.Where(page => !linkedIds.Contains(page.PageId)).ToArray();
+            return await new AgendaPageLinkDialog(availablePages).ShowDialog<Guid?>(owner);
+        });
+    }
+
+    private async void OpenLinkedPageClicked(object? sender, RoutedEventArgs e)
+    {
+        if (TopLevel.GetTopLevel(this) is MainWindow { DataContext: MainWindowViewModel main })
+            await main.OpenAgendaLinkedPageAsync();
+    }
+
+    private async void TaskPageShortcutClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || DataContext is not AgendaViewModel agenda ||
+            TopLevel.GetTopLevel(this) is not MainWindow { DataContext: MainWindowViewModel main } ||
+            !main.IsAgendaActive || !main.CanNavigateModules) return;
+
+        var task = button.DataContext switch
+        {
+            AgendaWeekEntry entry => entry.Task,
+            AgendaTaskSnapshot snapshot => snapshot,
+            _ => null
+        };
+        if (task is null) return;
+        e.Handled = true;
+        var links = await agenda.ReadCardPageLinksAsync(task.Id);
+        if (!ReferenceEquals(main.Agenda, agenda) || !main.IsAgendaActive) return;
+        if (links.Count == 1)
+        {
+            await main.OpenAgendaLinkedPageAsync(links[0].PageId);
+            return;
+        }
+        if (links.Count == 0 || !button.IsEffectivelyVisible) return;
+
+        var menu = new MenuFlyout();
+        foreach (var link in links)
+        {
+            var item = new MenuItem { Header = link.Title ?? "Página vinculada" };
+            item.Click += async (_, _) =>
+            {
+                menu.Hide();
+                if (ReferenceEquals(main.Agenda, agenda))
+                    await main.OpenAgendaLinkedPageAsync(link.PageId);
+            };
+            menu.Items.Add(item);
+        }
+        button.Flyout = menu;
+        menu.Closed += (_, _) => { if (ReferenceEquals(button.Flyout, menu)) button.Flyout = null; };
+        menu.ShowAt(button);
+    }
+
+    private async void UnlinkPageClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is AgendaViewModel agenda) await agenda.UnlinkPageAsync();
+    }
+
+    private async void OpenClosedWeekNoticeClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is AgendaViewModel vm) await vm.OpenClosedWeekNoticeAsync();
+    }
+
+    private async void RetrospectiveModeClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not AgendaViewModel { CanEdit: true, HasRetrospectiveView: true } vm) return;
+        var today = vm.Today;
+        var thisMonday = today.AddDays(-(((int)today.DayOfWeek + 6) % 7));
+        var reference = vm.IsWeekView && vm.Week is { } week && week.EndDate < today ? week.StartDate
+            : vm.Retrospective?.Report is { } report ? report.StartDate
+            : thisMonday.DayNumber >= 7 ? thisMonday.AddDays(-7) : (DateOnly?)null;
+        if (reference is { } date) await vm.ShowRetrospectiveAsync(date);
+    }
     private async void PreviousWeekClicked(object? sender, RoutedEventArgs e)
     {
         if (DataContext is AgendaViewModel { CanPreviousWeek: true, Week: { } week } vm) await vm.ShowWeekAsync(week.StartDate.AddDays(-7));

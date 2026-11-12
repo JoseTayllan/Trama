@@ -56,7 +56,22 @@ public sealed partial class LibraryViewModel
     public Task<bool> OpenSearchResultAsync(Guid pageId)
     {
         if (_discovery is null || !SearchResults.Any(result => result.PageId == pageId)) return Task.FromResult(false);
-        return NavigateAsync(async () =>
+        return OpenPageAtCurrentLocationAsync(pageId);
+    }
+
+    internal Task<IReadOnlyList<PageSearchResult>> ListLinkablePagesAsync() => _discovery is { } discovery
+        ? discovery.SearchAsync(string.Empty)
+        : Task.FromResult<IReadOnlyList<PageSearchResult>>([]);
+
+    internal Task<bool> OpenAgendaLinkedPageAsync(Guid pageId)
+    {
+        if (!CanNavigate) return Task.FromResult(false);
+        Feedback = "A abertura da página foi cancelada.";
+        return OpenPageAtCurrentLocationAsync(pageId, fromAgenda: true);
+    }
+
+    private Task<bool> OpenPageAtCurrentLocationAsync(Guid pageId, bool fromAgenda = false) =>
+        NavigateAsync(async () =>
         {
             var spaces = await _actions.ListSpacesAsync();
             Guid? spaceId = null;
@@ -82,12 +97,14 @@ public sealed partial class LibraryViewModel
             }
             if (!found)
             {
-                Feedback = "Este resultado não está mais disponível. Atualize a busca; seu conteúdo foi mantido.";
+                Feedback = fromAgenda
+                    ? "Página vinculada indisponível."
+                    : "Este resultado não está mais disponível. Atualize a busca; seu conteúdo foi mantido.";
                 return false;
             }
             var candidate = CreateEditor(notebookId);
             if (!await candidate.TryLoadAsync(pageId)) return false;
-            var tags = await _discovery.GetPageTagsAsync(pageId);
+            var tags = _discovery is null ? Array.Empty<string>() : await _discovery.GetPageTagsAsync(pageId);
             Replace(_spaces, spaces);
             Replace(_notebooks, notebooks);
             Replace(_pages, pages);
@@ -95,10 +112,9 @@ public sealed partial class LibraryViewModel
             SelectedNotebookId = notebookId;
             Editor = candidate;
             CurrentPageTags = tags;
-            Feedback = "Resultado aberto na localização atual da página.";
+            Feedback = fromAgenda ? "Página aberta na localização atual." : "Resultado aberto na localização atual da página.";
             return true;
         });
-    }
 
     public Task<bool> LoadCurrentPageTagsAsync()
     {

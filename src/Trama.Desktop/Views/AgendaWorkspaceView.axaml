@@ -13,6 +13,7 @@
     <Style Selector="Border.agenda-week-day"><Setter Property="Background" Value="{DynamicResource TramaInputBrush}" /><Setter Property="CornerRadius" Value="10" /><Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" /><Setter Property="BorderThickness" Value="1" /><Setter Property="Padding" Value="10" /><Setter Property="MinHeight" Value="180" /></Style>
     <Style Selector="Border.agenda-week-day.today"><Setter Property="BorderBrush" Value="{DynamicResource TramaAccentBrush}" /></Style>
     <Style Selector="Button.agenda-mode.active"><Setter Property="Background" Value="{DynamicResource TramaAccentSoftBrush}" /><Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" /></Style>
+    <Style Selector="Button#AgendaRetrospectiveModeButton.active"><Setter Property="Background" Value="{DynamicResource TramaAccentBrush}" /><Setter Property="Foreground" Value="{DynamicResource TramaOnAccentBrush}" /><Setter Property="FontWeight" Value="SemiBold" /></Style>
     <Style Selector="Button.agenda-week-create"><Setter Property="HorizontalAlignment" Value="Stretch" /><Setter Property="HorizontalContentAlignment" Value="Left" /><Setter Property="Padding" Value="4,8" /><Setter Property="FontSize" Value="11" /></Style>
     <Style Selector="TextBlock.agenda-section"><Setter Property="FontSize" Value="10" /><Setter Property="FontWeight" Value="SemiBold" /><Setter Property="Foreground" Value="{DynamicResource TramaAccentBrush}" /><Setter Property="LetterSpacing" Value="1" /></Style>
     <Style Selector="Border.agenda-field-group"><Setter Property="Background" Value="Transparent" /><Setter Property="Padding" Value="0" /></Style>
@@ -51,23 +52,36 @@
   </UserControl.Styles>
   <Grid RowDefinitions="Auto,*,Auto" Margin="24,20,24,12">
     <StackPanel Spacing="12" Margin="0,0,0,16">
+      <WrapPanel Orientation="Horizontal">
+        <Button x:Name="AgendaDayModeButton" Content="Dia" Classes="notebook-tool agenda-mode" Classes.active="{Binding IsDayView}" Click="DayModeClicked" IsEnabled="{Binding CanEdit}" Margin="0,0,4,4" />
+        <Button x:Name="AgendaWeekModeButton" Content="Semana" Classes="notebook-tool agenda-mode" Classes.active="{Binding IsWeekView}" Click="WeekModeClicked" IsEnabled="{Binding CanEdit}" IsVisible="{Binding HasWeekView}" Margin="0,0,16,4" />
+        <Button x:Name="AgendaRetrospectiveModeButton" Content="Retrospectiva" AutomationProperties.Name="Abrir retrospectiva semanal" Classes="notebook-tool agenda-mode" Classes.active="{Binding IsRetrospectiveView}" Click="RetrospectiveModeClicked" IsEnabled="{Binding CanEdit}" IsVisible="{Binding HasRetrospectiveView}" Margin="0,0,16,4" />
+        <Button x:Name="AgendaDeleteTaskButton" Content="Excluir tarefa" Classes="notebook-add" Click="DeleteTaskClicked" IsVisible="{Binding ShowTaskDelete}" IsEnabled="{Binding CanDeleteTask}" Padding="10,7" FontSize="12" Background="{DynamicResource TramaRaisedBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" ToolTip.Tip="Abra uma tarefa para ativar a exclusão. Você poderá restaurá-la pela lixeira." />
+      </WrapPanel>
       <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
         <StackPanel Spacing="5">
-          <TextBlock Text="AGENDA / SEU TEMPO" Classes="agenda-section" />
-          <TextBlock Text="{Binding DayLabel}" IsVisible="{Binding !IsWeekView}" FontSize="25" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <TextBlock Text="AGENDA / SEU TEMPO" Classes="agenda-section" IsVisible="{Binding !IsRetrospectiveView}" />
+          <TextBlock Text="AGENDA / FECHAMENTO SEMANAL" Classes="agenda-section" IsVisible="{Binding IsRetrospectiveView}" />
+          <TextBlock Text="{Binding DayLabel}" IsVisible="{Binding IsDayView}" FontSize="25" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <TextBlock Text="Sua semana em perspectiva" IsVisible="{Binding IsRetrospectiveView}" FontSize="30" FontWeight="SemiBold" TextWrapping="Wrap" />
           <TextBlock x:Name="AgendaWeekHeading" Text="{Binding WeekHeading}" IsVisible="{Binding IsWeekView}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" />
         </StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
           <Button x:Name="AgendaTrashButton" Content="Lixeira da Agenda" Classes="notebook-add" Click="OpenTrashClicked" IsVisible="{Binding HasTrash}" IsEnabled="{Binding CanEdit}" Padding="12,10" />
-          <Button x:Name="AgendaNewTaskButton" Content="+ Nova tarefa" Classes="trama-primary" Command="{Binding NewTaskCommand}" Padding="16,10" />
+          <Button x:Name="AgendaNewTaskButton" Content="+ Nova tarefa" IsVisible="{Binding !IsRetrospectiveView}" Classes="trama-primary" Command="{Binding NewTaskCommand}" Padding="16,10" />
         </StackPanel>
       </Grid>
-      <WrapPanel Orientation="Horizontal">
-        <Button x:Name="AgendaDayModeButton" Content="Dia" Classes="notebook-tool agenda-mode" Classes.active="{Binding !IsWeekView}" Click="DayModeClicked" IsEnabled="{Binding CanEdit}" Margin="0,0,4,4" />
-        <Button x:Name="AgendaWeekModeButton" Content="Semana" Classes="notebook-tool agenda-mode" Classes.active="{Binding IsWeekView}" Click="WeekModeClicked" IsEnabled="{Binding CanEdit}" IsVisible="{Binding HasWeekView}" Margin="0,0,16,4" />
-        <Button x:Name="AgendaDeleteTaskButton" Content="Excluir tarefa" Classes="notebook-add" Click="DeleteTaskClicked" IsVisible="{Binding HasTrash}" IsEnabled="{Binding CanDeleteTask}" Padding="10,7" FontSize="12" Background="{DynamicResource TramaRaisedBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" ToolTip.Tip="Abra uma tarefa para ativar a exclusão. Você poderá restaurá-la pela lixeira." />
-      </WrapPanel>
-      <WrapPanel Orientation="Horizontal" IsVisible="{Binding !IsWeekView}" IsEnabled="{Binding CanEdit}">
+      <Border x:Name="AgendaWeekClosedNotice" IsVisible="{Binding ShowClosedWeekNotice}"
+              Background="{DynamicResource TramaAccentSoftBrush}" CornerRadius="8" Padding="12,7">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <TextBlock Text="{Binding ClosedWeekNotice}" FontWeight="SemiBold" VerticalAlignment="Center"
+                     TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+          <Button x:Name="AgendaOpenWeekNoticeButton" Grid.Column="1" Classes="notebook-add"
+                  Content="Abrir retrospectiva" Click="OpenClosedWeekNoticeClicked"
+                  IsEnabled="{Binding CanEdit}" VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+      <WrapPanel Orientation="Horizontal" IsVisible="{Binding IsDayView}" IsEnabled="{Binding CanEdit}">
         <Button Content="Dia anterior" Classes="notebook-tool" Click="PreviousDayClicked" Margin="0,0,8,0" />
         <DatePicker x:Name="AgendaDayPicker" Classes="agenda-picker" SelectedDate="{Binding SelectedDayDate, Mode=OneWay}" SelectedDateChanged="DayChanged" DayFormat="dd" MonthFormat="MMM" YearFormat="yyyy" />
         <Button Content="Próximo dia" Classes="notebook-tool" Click="NextDayClicked" Margin="8,0" />
@@ -85,8 +99,11 @@
         <ComboBox x:Name="AgendaWeekStatusFilter" ItemsSource="{Binding WeekStatusChoices}" SelectedIndex="{Binding WeekStatusIndex, Mode=OneWay}" SelectionChanged="WeekFiltersChanged" AutomationProperties.Name="Filtrar semana por estado" MinWidth="164" Margin="0,0,0,4" />
       </WrapPanel>
       <TextBlock x:Name="AgendaWeekLoadingMessage" Text="Consultando sua agenda…" IsVisible="{Binding IsBusy}" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" />
+      <TextBlock x:Name="AgendaRetrospectiveLoading" Text="Preparando o fechamento preservado…" IsVisible="{Binding Retrospective.IsBusy}" Foreground="{DynamicResource TramaAccentBrush}" FontSize="12" />
+      <Border x:Name="AgendaRetrospectiveError" IsVisible="{Binding Retrospective.HasError}" BorderBrush="{DynamicResource TramaErrorBrush}" BorderThickness="1" CornerRadius="8" Padding="12"><TextBlock Text="{Binding Retrospective.Feedback}" TextWrapping="Wrap" Foreground="{DynamicResource TramaErrorBrush}" /></Border>
     </StackPanel>
-    <ScrollViewer Grid.Row="1" x:Name="AgendaBodyScroll" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
+    <views:AgendaRetrospectivePanelView Grid.Row="1" x:Name="AgendaRetrospectivePanel" IsVisible="{Binding IsRetrospectiveView}" />
+    <ScrollViewer Grid.Row="1" x:Name="AgendaBodyScroll" IsVisible="{Binding !IsRetrospectiveView}" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
     <Grid x:Name="AgendaBody" ColumnDefinitions="*,*" ColumnSpacing="18" RowSpacing="18">
       <Border Classes="agenda-card" Padding="14" IsVisible="{Binding IsWeekView}">
         <StackPanel Spacing="14">
@@ -104,20 +121,34 @@
                     <ItemsControl ItemsSource="{Binding Entries}">
                       <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="agenda:AgendaWeekEntry">
-                          <Button Classes="agenda-week-card" Click="WeekTaskClicked" Margin="0,0,0,8" AutomationProperties.Name="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-card-name}">
-                            <Border Background="{DynamicResource TramaRaisedBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,10">
-                              <Grid ColumnDefinitions="3,*" ColumnSpacing="8">
-                                <Border Classes="category-spine" Classes.work="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=work}" Classes.study="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=study}" CornerRadius="2" />
-                                <StackPanel Grid.Column="1" Spacing="7">
-                                  <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-time}" FontSize="10" TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
-                                  <TextBlock Text="{Binding Task.Title}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                  <TextBlock Text="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=category}" FontSize="10" Foreground="{DynamicResource TramaSubtleBrush}" />
-                                  <WrapPanel Orientation="Horizontal"><TextBlock Classes="agenda-week-status-icon" Text="{Binding Task.Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status-icon}" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,4,0" FontSize="12" /><TextBlock Classes="agenda-week-status" Text="{Binding Task.Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status}" TextWrapping="Wrap" FontSize="10" Foreground="{DynamicResource TramaTextBrush}" /></WrapPanel>
-                                  <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-continuation}" FontSize="10" TextWrapping="Wrap" Foreground="{DynamicResource TramaAccentBrush}" />
-                                </StackPanel>
-                              </Grid>
-                            </Border>
-                          </Button>
+                          <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                            <Button Classes="agenda-week-card" Click="WeekTaskClicked" AutomationProperties.Name="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-card-name}">
+                              <Border Background="{DynamicResource TramaRaisedBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8,10">
+                                <Grid ColumnDefinitions="3,*" ColumnSpacing="8">
+                                  <Border Classes="category-spine" Classes.work="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=work}" Classes.study="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=study}" CornerRadius="2" />
+                                  <StackPanel Grid.Column="1" Spacing="7">
+                                    <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-time}" FontSize="10" TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+                                    <TextBlock Text="{Binding Task.Title}" FontSize="13" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding Task.Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=category}" FontSize="10" Foreground="{DynamicResource TramaSubtleBrush}" />
+                                    <WrapPanel Orientation="Horizontal"><TextBlock Classes="agenda-week-status-icon" Text="{Binding Task.Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status-icon}" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,4,0" FontSize="12" /><TextBlock Classes="agenda-week-status" Text="{Binding Task.Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status}" TextWrapping="Wrap" FontSize="10" Foreground="{DynamicResource TramaTextBrush}" /></WrapPanel>
+                                    <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=week-continuation}" FontSize="10" TextWrapping="Wrap" Foreground="{DynamicResource TramaAccentBrush}" />
+                                  </StackPanel>
+                                </Grid>
+                              </Border>
+                            </Button>
+                            <Button Grid.Column="1" x:Name="AgendaTaskPageShortcut" Classes="notebook-add"
+                                    AutomationProperties.Name="Abrir páginas vinculadas" ToolTip.Tip="Abrir páginas vinculadas"
+                                    Click="TaskPageShortcutClicked" VerticalAlignment="Top" Padding="5" Margin="4,0,0,0">
+                              <Button.IsVisible>
+                                <MultiBinding Converter="{StaticResource AgendaPresentation}">
+                                  <Binding Path="Task.Id" />
+                                  <ReflectionBinding Path="$parent[UserControl].DataContext.WeekTasksWithPageLinks" />
+                                </MultiBinding>
+                              </Button.IsVisible>
+                              <Path Width="13" Height="15" Stretch="Uniform" Stroke="{DynamicResource TramaAccentBrush}" StrokeThickness="1.5"
+                                    Data="M2,1 L9,1 13,5 13,15 2,15 Z M9,1 L9,5 13,5 M5,8 L10,8 M5,11 L10,11" />
+                            </Button>
+                          </Grid>
                         </DataTemplate>
                       </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -144,18 +175,32 @@
               <ItemsControl x:Name="AgendaTaskList" ItemsSource="{Binding Tasks}" IsEnabled="{Binding CanEdit}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate x:DataType="agenda:AgendaTaskSnapshot">
-                    <Button Classes="task-row" Margin="0,0,0,10" Click="TaskClicked" ToolTip.Tip="Abrir tarefa para edição">
-                      <Border Background="{DynamicResource TramaInputBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" CornerRadius="9" Padding="12">
-                        <Grid ColumnDefinitions="3,*" ColumnSpacing="12">
-                          <Border Classes="category-spine" CornerRadius="2" Classes.work="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=work}" Classes.study="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=study}" />
-                          <StackPanel Grid.Column="1" Spacing="7">
-                            <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=time}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" />
-                            <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
-                            <WrapPanel Orientation="Horizontal"><TextBlock Text="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=category}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,12,0" /><TextBlock Text="{Binding Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status}" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" /></WrapPanel>
-                          </StackPanel>
-                        </Grid>
-                      </Border>
-                    </Button>
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                      <Button Classes="task-row" Click="TaskClicked" ToolTip.Tip="Abrir tarefa para edição">
+                        <Border Background="{DynamicResource TramaInputBrush}" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" CornerRadius="9" Padding="12">
+                          <Grid ColumnDefinitions="3,*" ColumnSpacing="12">
+                            <Border Classes="category-spine" CornerRadius="2" Classes.work="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=work}" Classes.study="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=study}" />
+                            <StackPanel Grid.Column="1" Spacing="7">
+                              <TextBlock Text="{Binding Converter={StaticResource AgendaPresentation}, ConverterParameter=time}" FontSize="11" Foreground="{DynamicResource TramaSubtleBrush}" />
+                              <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
+                              <WrapPanel Orientation="Horizontal"><TextBlock Text="{Binding Category, Converter={StaticResource AgendaPresentation}, ConverterParameter=category}" FontSize="11" Foreground="{DynamicResource TramaAccentBrush}" Margin="0,0,12,0" /><TextBlock Text="{Binding Status, Converter={StaticResource AgendaPresentation}, ConverterParameter=status}" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" /></WrapPanel>
+                            </StackPanel>
+                          </Grid>
+                        </Border>
+                      </Button>
+                      <Button Grid.Column="1" x:Name="AgendaTaskPageShortcut" Classes="notebook-add"
+                              AutomationProperties.Name="Abrir páginas vinculadas" ToolTip.Tip="Abrir páginas vinculadas"
+                              Click="TaskPageShortcutClicked" VerticalAlignment="Top" Padding="5" Margin="4,0,0,0">
+                        <Button.IsVisible>
+                          <MultiBinding Converter="{StaticResource AgendaPresentation}">
+                            <Binding Path="Id" />
+                            <ReflectionBinding Path="$parent[UserControl].DataContext.DayTasksWithPageLinks" />
+                          </MultiBinding>
+                        </Button.IsVisible>
+                        <Path Width="13" Height="15" Stretch="Uniform" Stroke="{DynamicResource TramaAccentBrush}" StrokeThickness="1.5"
+                              Data="M2,1 L9,1 13,5 13,15 2,15 Z M9,1 L9,5 13,5 M5,8 L10,8 M5,11 L10,11" />
+                      </Button>
+                    </Grid>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
@@ -203,7 +248,31 @@
             </StackPanel>
           </ScrollViewer>
           <Border Grid.Row="2" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,1,0,0" Padding="0,12,0,0">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12"><StackPanel VerticalAlignment="Center" Spacing="3"><TextBlock Text="Salva neste computador" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" /><TextBlock Text="Salvar não conclui a tarefa." FontSize="10" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" /></StackPanel><Button Grid.Column="1" x:Name="AgendaSaveButton" Content="Salvar tarefa" Classes="trama-primary" Command="{Binding SaveCommand}" Padding="18,10" /></Grid>
+            <StackPanel Spacing="10">
+              <StackPanel Spacing="6" IsVisible="{Binding HasPageLinkSupport}">
+                <TextBlock x:Name="AgendaLinkedPageLabel" Text="{Binding LinkedPageLabel}" IsVisible="{Binding HasSingleLinkedPage}"
+                           FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <ComboBox x:Name="AgendaLinkedPagePicker" AutomationProperties.Name="Página vinculada"
+                          ItemsSource="{Binding LinkedPages}" SelectedItem="{Binding SelectedPageLink, Mode=TwoWay}"
+                          IsVisible="{Binding HasMultipleLinkedPages}" IsEnabled="{Binding CanManagePageLink}"
+                          HorizontalAlignment="Stretch">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="agenda:AgendaPageLink">
+                      <TextBlock Text="{Binding Title, TargetNullValue='Página vinculada'}" TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <WrapPanel Orientation="Horizontal">
+                  <Button x:Name="AgendaLinkPageButton" Content="Vincular página" Classes="notebook-add"
+                          IsEnabled="{Binding CanManagePageLink}" Click="LinkPageClicked" Margin="0,0,8,0" />
+                  <Button x:Name="AgendaOpenLinkedPageButton" Content="Abrir página" Classes="notebook-add"
+                          IsVisible="{Binding HasLinkedPage}" IsEnabled="{Binding CanManagePageLink}" Click="OpenLinkedPageClicked" Margin="0,0,8,0" />
+                  <Button x:Name="AgendaUnlinkPageButton" Content="Desvincular" Classes="notebook-tool"
+                          IsVisible="{Binding HasLinkedPage}" IsEnabled="{Binding CanManagePageLink}" Click="UnlinkPageClicked" />
+                </WrapPanel>
+              </StackPanel>
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12"><StackPanel VerticalAlignment="Center" Spacing="3"><TextBlock Text="Salva neste computador" FontSize="11" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" /><TextBlock Text="Salvar não conclui a tarefa." FontSize="10" Foreground="{DynamicResource TramaSubtleBrush}" TextWrapping="Wrap" /></StackPanel><Button Grid.Column="1" x:Name="AgendaSaveButton" Content="Salvar tarefa" Classes="trama-primary" Command="{Binding SaveCommand}" Padding="18,10" /></Grid>
+            </StackPanel>
           </Border>
         </Grid>
       </Border>

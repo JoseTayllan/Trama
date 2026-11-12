@@ -95,10 +95,17 @@ public sealed partial class LocalBackupService
                     throw new InvalidDataException("Missing stored page.");
             await ValidateTrashAsync(context, cancellationToken);
             await new SqliteAgendaTaskRepository(context).ValidateForBackupAsync(cancellationToken);
+            await new SqliteAgendaRetrospectiveRepository(context).ValidateForBackupAsync(cancellationToken);
+            await new SqliteAgendaReflectionRepository(context).ValidateForBackupAsync(cancellationToken);
             if (await context.Set<PageTagRecord>().AnyAsync(tag =>
                 !context.Set<NotebookPageRecord>().Any(page => page.Id == tag.PageId) &&
                 !context.Set<NoteRecord>().Any(note => note.Id == tag.PageId), cancellationToken))
                 throw new InvalidDataException("Tags refer to a missing page.");
+            if (await context.Set<AgendaPageLinkRecord>().AnyAsync(link =>
+                link.TaskId == Guid.Empty || link.PageId == Guid.Empty ||
+                (!context.Set<NotebookPageRecord>().Any(page => page.Id == link.PageId) &&
+                 !context.Set<NoteRecord>().Any(page => page.Id == link.PageId)), cancellationToken))
+                throw new InvalidDataException("An agenda link refers to an invalid page.");
             if (await context.Set<PageLocationRecord>().AnyAsync(location =>
                 !context.Set<NotebookPageRecord>().Any(page => page.Id == location.PageId) &&
                 !context.Set<NoteRecord>().Any(note => note.Id == location.PageId), cancellationToken))

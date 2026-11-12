@@ -16,6 +16,19 @@ public sealed partial class MainWindowViewModel
             NotifyModuleNavigation();
         }
     }
+    internal async Task OpenAgendaLinkedPageAsync(Guid? pageId = null)
+    {
+        if (Agenda is not { } agenda || Library is not { } library || !IsAgendaActive || !CanNavigateModules) return;
+        var opened = pageId is { } id
+            ? await agenda.OpenLinkedPageAsync(id, OpenPageAsync)
+            : await agenda.OpenLinkedPageAsync(OpenPageAsync);
+
+        async Task<string?> OpenPageAsync(Guid target) =>
+            await library.OpenAgendaLinkedPageAsync(target) ? null : library.Feedback;
+
+        if (opened && ReferenceEquals(Agenda, agenda) && ReferenceEquals(Library, library)) SelectModule(Module.Notebooks);
+    }
+
     public bool HasAgenda => Agenda is not null;
     private void AgendaChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {

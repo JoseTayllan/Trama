@@ -24,6 +24,7 @@
   <h1 id="module-title">Acompanhar o projeto</h1>
   <p class="intro">O que já funciona, o que estamos construindo e o que falta para fechar esta versão. Implementação, validação de uso e revisão são acompanhadas separadamente.</p>
   <div class="focus"><div><span class="eyebrow">Entrega em foco</span><h2 id="focus-title"></h2><p id="focus-state"></p><p><a id="focus-link" href="docs/estudos/README.md">Ver especificação e critérios ↗</a></p></div><div class="focus-aside"><small>Critérios de fechamento</small><strong id="acceptance-count"></strong><div class="bar" role="progressbar" aria-label="Critérios de fechamento concluídos" id="progress"><div class="fill" id="progress-fill"></div></div><small>Contagem dos critérios desta versão.<br>Não representa todo o projeto Trama.</small></div></div>
+  <div class="panel" id="roadmap-notice" hidden><h2>Aviso</h2><p id="roadmap-notice-text"></p></div>
   <div class="stats"><div class="stat"><strong id="test-count">—</strong><span>testes da última suíte completa</span></div><div class="stat"><strong id="area-count">—</strong><span>áreas disponíveis no aplicativo</span></div><div class="stat"><strong id="updated">—</strong><span>última atualização da fonte</span></div></div>
 </section>
 <section id="entregas"><div class="section-head"><div><h2>Rota de entrega</h2><p><span id="stage-description">Etapas do módulo atual.</span></p></div><span class="pill" id="result-count" aria-live="polite"></span></div>
@@ -49,6 +50,10 @@ const status=value=>{const s=normalize(value);return /uso validado/.test(s)?'val
 const labels={validated:'Uso validado',review:'Em revisão',active:'Em andamento',planned:'A iniciar'};
 $('focus-title').textContent=data.now['Entrega em revisão']||data.now['Próxima funcionalidade'];
 $('focus-state').textContent=data.now['Etapa atual'];
+if(data.now.Aviso){
+  $('roadmap-notice-text').textContent=data.now.Aviso;
+  $('roadmap-notice').hidden=false;
+}
 $('test-count').textContent=(data.now['Última suíte completa']||'').match(/\d+/)?.[0]||'—';
 $('area-count').textContent=data.available.length;$('updated').textContent=data.date.slice(0,5);$('footer-date').textContent=data.date;
 const done=data.acceptance.filter(item=>item.done).length,total=data.acceptance.length;

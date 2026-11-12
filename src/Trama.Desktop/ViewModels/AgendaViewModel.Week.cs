@@ -23,6 +23,11 @@ public sealed partial class AgendaViewModel
         _weekProjector = weekProjector;
         PropertyChanged += (_, e) =>
         {
+            if (e.PropertyName is nameof(IsWeekView) or nameof(IsRetrospectiveView))
+            {
+                OnPropertyChanged(nameof(IsDayView)); OnPropertyChanged(nameof(ShowTaskDelete));
+            }
+            if (e.PropertyName == nameof(CanEdit)) NotifyRetrospectivePresentation();
             if (e.PropertyName is nameof(Week) or nameof(IsWeekView) or nameof(HasWeekError) or nameof(CanEdit))
             {
                 OnPropertyChanged(nameof(WeekHeading)); OnPropertyChanged(nameof(WeekCountLabel));
@@ -57,6 +62,7 @@ public sealed partial class AgendaViewModel
         try
         {
             await LoadWeekCoreAsync(referenceDate, CancellationToken.None);
+            IsRetrospectiveView = false;
             IsWeekView = true; Feedback = string.Empty; return true;
         }
         catch (Exception)
@@ -71,6 +77,7 @@ public sealed partial class AgendaViewModel
     public Task<bool> ShowDayAsync()
     {
         if (IsBusy) return Task.FromResult(false);
+        IsRetrospectiveView = false;
         IsWeekView = false;
         return Task.FromResult(true);
     }
@@ -108,6 +115,7 @@ public sealed partial class AgendaViewModel
         var range = projector.Build(referenceDate, Array.Empty<AgendaTaskSnapshot>());
         var tasks = (await reader.ListOverlappingAsync(range.StartDate, range.EndDate, cancellationToken)).ToArray();
         var projected = projector.Build(referenceDate, tasks, WeekCategoryFilter, WeekStatusFilter);
+        WeekTasksWithPageLinks = await ReadTasksWithLinksAsync(tasks, cancellationToken);
         _weekTasks = tasks; Week = projected; HasWeekError = false;
     }
 

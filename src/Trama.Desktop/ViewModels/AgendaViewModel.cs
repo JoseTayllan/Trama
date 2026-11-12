@@ -82,7 +82,11 @@ public sealed partial class AgendaViewModel : ObservableObject
     protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
-        if (e.PropertyName is nameof(CanEdit) or nameof(EditingTaskId)) OnPropertyChanged(nameof(CanDeleteTask));
+        if (e.PropertyName is nameof(CanEdit) or nameof(EditingTaskId))
+        {
+            OnPropertyChanged(nameof(CanDeleteTask));
+            OnPropertyChanged(nameof(CanManagePageLink));
+        }
         if (e.PropertyName == nameof(Category)) OnPropertyChanged(nameof(CategoryIndex));
         if (e.PropertyName == nameof(Status)) OnPropertyChanged(nameof(StatusIndex));
         if (!_loadingDraft && e.PropertyName is nameof(Title) or nameof(Description) or nameof(PlannedDate) or nameof(PlannedEndDate) or nameof(StartTime) or nameof(EndTime) or nameof(StartTimeText) or nameof(EndTimeText) or nameof(Category) or nameof(Status))
@@ -142,7 +146,8 @@ public sealed partial class AgendaViewModel : ObservableObject
             if (!await ResolveChangesAsync()) return false;
             task = await _actions.GetByIdAsync(id);
             if (task is null) { Feedback = "A tarefa não está mais disponível. Seu rascunho foi mantido."; return false; }
-            LoadDraft(task); Feedback = "Tarefa aberta para edição."; return true;
+            var links = await ReadPageLinksAsync(task.Id);
+            LoadDraft(task, links); Feedback = "Tarefa aberta para edição."; return true;
         }
         catch (Exception) { Feedback = "Não foi possível abrir a tarefa. Seu rascunho foi mantido."; return false; }
         finally { IsBusy = false; }
@@ -155,7 +160,7 @@ public sealed partial class AgendaViewModel : ObservableObject
         try
         {
             if (!await ResolveChangesAsync()) return false;
-            var tasks = await _actions.ListAsync(day, day);
+            var tasks = await ReadDayTasksAsync(day);
             SelectDay(day); Tasks = tasks; HasListError = false; LoadDraft(null); Feedback = string.Empty; return true;
         }
         catch (Exception) { HasListError = true; Feedback = "Não foi possível consultar o dia. Sua seleção e seu rascunho foram mantidos."; return false; }
@@ -182,7 +187,7 @@ public sealed partial class AgendaViewModel : ObservableObject
     {
         if (IsBusy) return false;
         IsBusy = true;
-        try { return await ResolveChangesAsync(); }
+        try { return await ResolveChangesAsync() && await ResolveReflectionDraftAsync(CancellationToken.None); }
         catch (Exception) { Feedback = "Não foi possível concluir o fechamento. Seu rascunho foi mantido."; return false; }
         finally { IsBusy = false; }
     }
@@ -222,7 +227,7 @@ public sealed partial class AgendaViewModel : ObservableObject
         _editingTaskId = snapshot.Id; _baseline = draft;
         OnPropertyChanged(nameof(EditingTaskId)); OnPropertyChanged(nameof(FormHeading)); OnPropertyChanged(nameof(HasUnsavedChanges));
         Feedback = HasUnsavedChanges ? "Versão salva; há alterações mais recentes." : "Tarefa salva.";
-        try { Tasks = await _actions.ListAsync(SelectedDay, SelectedDay, cancellationToken); HasListError = false; }
+        try { Tasks = await ReadDayTasksAsync(SelectedDay, cancellationToken); HasListError = false; }
         catch (Exception) { HasListError = true; Feedback = "Tarefa salva; não foi possível atualizar a lista. Use Atualizar para consultar."; }
         await RefreshActiveWeekAsync(cancellationToken);
         return true;
@@ -234,9 +239,10 @@ public sealed partial class AgendaViewModel : ObservableObject
         IsBusy = true;
         try
         {
-            try { Tasks = await _actions.ListAsync(SelectedDay, SelectedDay); HasListError = false; Feedback = string.Empty; }
+            try { Tasks = await ReadDayTasksAsync(SelectedDay); HasListError = false; Feedback = string.Empty; }
             catch (Exception) { HasListError = true; Feedback = "Não foi possível consultar as tarefas. Use Atualizar para tentar novamente."; }
             await RefreshActiveWeekAsync();
+            await RefreshClosedWeekNoticeAsync();
         }
         finally { IsBusy = false; }
     }
@@ -247,8 +253,9 @@ public sealed partial class AgendaViewModel : ObservableObject
         OnPropertyChanged(nameof(SelectedDay)); OnPropertyChanged(nameof(SelectedDayDate)); OnPropertyChanged(nameof(DayLabel));
     }
 
-    private void LoadDraft(AgendaTaskSnapshot? task)
+    private void LoadDraft(AgendaTaskSnapshot? task, IReadOnlyList<AgendaPageLink>? links = null)
     {
+        SetPageLinks(links ?? []);
         _loadingDraft = true;
         try
         {

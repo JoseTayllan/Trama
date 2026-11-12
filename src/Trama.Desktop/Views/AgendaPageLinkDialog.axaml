@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:knowledge="using:Trama.Application.Knowledge"
+        x:Class="Trama.Desktop.Views.AgendaPageLinkDialog"
+        Title="Vincular página" Width="580" Height="510" MinWidth="360" MinHeight="340"
+        ShowInTaskbar="False" WindowStartupLocation="CenterOwner" Background="{DynamicResource TramaWindowBrush}">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" Margin="24">
+    <TextBlock Text="Vincular página" FontSize="24" FontWeight="SemiBold" />
+    <TextBox Grid.Row="1" x:Name="PageFilter" AutomationProperties.Name="Filtrar páginas" Watermark="Filtrar por título ou caderno"
+             Classes="trama-input" TextChanged="FilterChanged" />
+    <ListBox Grid.Row="2" x:Name="AgendaPageLinkList" AutomationProperties.Name="Páginas disponíveis" SelectionChanged="PageSelected"
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="knowledge:PageSearchResult">
+          <StackPanel Spacing="4" Margin="4">
+            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding LocationLabel}" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" FontSize="12" />
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <TextBlock Grid.Row="2" Text="Nenhuma página disponível para vincular." IsVisible="{Binding !ItemCount, ElementName=AgendaPageLinkList}"
+               IsHitTestVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center"
+               Foreground="{DynamicResource TramaMutedBrush}" />
+    <WrapPanel Grid.Row="3" HorizontalAlignment="Right">
+      <Button Content="Cancelar" Classes="notebook-add" Click="CancelClicked" IsCancel="True" Margin="0,0,8,0" />
+      <Button x:Name="ConfirmAgendaPageLinkButton" Content="Vincular página" Classes="trama-primary"
+              IsEnabled="False" IsDefault="True" Click="ConfirmClicked" />
+    </WrapPanel>
+  </Grid>
+</Window>

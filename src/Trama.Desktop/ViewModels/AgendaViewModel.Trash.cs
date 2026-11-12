@@ -71,7 +71,7 @@ public sealed partial class AgendaViewModel
     {
         try
         {
-            Tasks = await _actions.ListAsync(SelectedDay, SelectedDay); HasListError = false; Feedback = success;
+            Tasks = await ReadDayTasksAsync(SelectedDay); HasListError = false; Feedback = success;
         }
         catch (Exception)
         {
