@@ -18,7 +18,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task CancelDialog_PreservesTheDraftHistoryAndCreatesNoOutput()
     {
-        using var f = await Fixture.CreateAsync();
+        await using var f = await Fixture.CreateAsync();
         f.Prose.Document.Insert(0, "Rascunho "); f.Pump();
         var before = f.Draft();
         Assert.True(f.Prose.CanUndo);
@@ -34,7 +34,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_UsesTheOpenDraftWithoutSavingOrChangingTheStoredPage()
     {
-        using var f = await Fixture.CreateAsync();
+        await using var f = await Fixture.CreateAsync();
         var stored = JsonSerializer.Serialize(await f.Actions.LoadAsync(f.Page.Id));
         f.Editor.Title = "Título em edição";
         f.Prose.Document.Insert(0, "Ainda não salvo: "); f.Pump();
@@ -51,7 +51,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_NewUnsavedPageDoesNotRequireAStoredIdentity()
     {
-        using var f = await Fixture.CreateAsync(newPage: true);
+        await using var f = await Fixture.CreateAsync(newPage: true);
         f.Prose.Document.Insert(0, "Primeira ideia"); f.Pump();
         var markdown = await f.ExportAsync();
         Assert.Contains("# Sem título", markdown);
@@ -63,7 +63,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_PreservesTextCodeImageAndBlockOrder()
     {
-        using var f = await Fixture.CreateAsync(body: "Primeiro texto", code: "Console.WriteLine(42);", images: true, trailingText: true);
+        await using var f = await Fixture.CreateAsync(body: "Primeiro texto", code: "Console.WriteLine(42);", images: true, trailingText: true);
         var markdown = await f.ExportAsync();
         var first = markdown.IndexOf("Primeiro texto", StringComparison.Ordinal);
         var code = markdown.IndexOf("Console.WriteLine(42);", StringComparison.Ordinal);
@@ -77,7 +77,7 @@ public sealed class MarkdownExportWorkflowTests
     public async Task Export_MapsParagraphListsAndRestartsNumberingAfterPlainParagraphs()
     {
         const string text = "Um\nDois\nIntervalo\nTrês\nQuatro";
-        using var f = await Fixture.CreateAsync(body: text, lists:
+        await using var f = await Fixture.CreateAsync(body: text, lists:
             [new(0, "numbered"), new(3, "numbered"), new(18, "numbered"), new(23, "bullet")]);
         var markdown = await f.ExportAsync();
         Assert.Contains("1. Um\n2. Dois", markdown);
@@ -90,7 +90,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_PreservesBoldItalicAndTheirCombination()
     {
-        using var f = await Fixture.CreateAsync(body: "Negrito Itálico Ambos", styles:
+        await using var f = await Fixture.CreateAsync(body: "Negrito Itálico Ambos", styles:
             [new(0, 7, InlineTextStyle.Bold), new(8, 7, InlineTextStyle.Italic), new(16, 5, InlineTextStyle.Bold | InlineTextStyle.Italic)]);
         var markdown = await f.ExportAsync();
         Assert.Contains("**Negrito** *Itálico* ***Ambos***", markdown);
@@ -99,7 +99,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_DocumentsPortableTextWithoutInjectingTramaColorOrSizeMarkup()
     {
-        using var f = await Fixture.CreateAsync(body: "Conteúdo colorido", styles:
+        await using var f = await Fixture.CreateAsync(body: "Conteúdo colorido", styles:
             [new(0, 8, InlineTextStyle.None) { FontSize = 24, Foreground = "teal", Highlight = "amber" }]);
         var markdown = await f.ExportAsync();
         Assert.Contains("Conteúdo colorido", markdown);
@@ -115,7 +115,7 @@ public sealed class MarkdownExportWorkflowTests
     [InlineData("**literal** e _literal_", @"\*\*literal\*\* e \_literal\_")]
     public async Task Export_EscapesLiteralMarkdownAndHtml(string body, string escaped)
     {
-        using var f = await Fixture.CreateAsync(body: body);
+        await using var f = await Fixture.CreateAsync(body: body);
         Assert.Contains(escaped, await f.ExportAsync());
         Assert.Equal(body, f.Editor.Blocks[0].Text);
     }
@@ -124,14 +124,14 @@ public sealed class MarkdownExportWorkflowTests
     public async Task Export_UsesALongerFenceWhenCodeContainsBackticks()
     {
         const string code = "var texto = \"```\";\nConsole.WriteLine(texto);";
-        using var f = await Fixture.CreateAsync(code: code);
+        await using var f = await Fixture.CreateAsync(code: code);
         Assert.Contains("````csharp\n" + code + "\n````", await f.ExportAsync());
     }
 
     [AvaloniaFact]
     public async Task Export_DoesNotTreatAnUnsafeLanguageLabelAsMarkdown()
     {
-        using var f = await Fixture.CreateAsync(code: "exemplo", language: "csharp\n<script>");
+        await using var f = await Fixture.CreateAsync(code: "exemplo", language: "csharp\n<script>");
         var markdown = await f.ExportAsync();
         Assert.Contains("```text\nexemplo\n```", markdown);
         Assert.DoesNotContain("<script>", markdown);
@@ -142,7 +142,7 @@ public sealed class MarkdownExportWorkflowTests
     [InlineData(true, ".jpg")]
     public async Task Export_CopiesImagesWithRelativeLinksAndCorrectBytes(bool jpeg, string extension)
     {
-        using var f = await Fixture.CreateAsync(images: true, jpeg: jpeg);
+        await using var f = await Fixture.CreateAsync(images: true, jpeg: jpeg);
         var markdown = await f.ExportAsync();
         var relative = Assert.Single(ImagePaths(markdown));
         Assert.StartsWith("imagens/", relative);
@@ -157,7 +157,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_ReusesOneFileWhenTwoBlocksReferenceTheSameImage()
     {
-        using var f = await Fixture.CreateAsync(images: true, repeatImage: true);
+        await using var f = await Fixture.CreateAsync(images: true, repeatImage: true);
         var markdown = await f.ExportAsync();
         var references = ImagePaths(markdown);
         Assert.Equal(2, references.Length);
@@ -168,7 +168,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_WithoutImagesCreatesOnlyTheMarkdownFileAndNoLocalPathLeaks()
     {
-        using var f = await Fixture.CreateAsync();
+        await using var f = await Fixture.CreateAsync();
         var markdown = await f.ExportAsync();
         Assert.Equal("pagina.md", Path.GetFileName(Assert.Single(Directory.GetFiles(f.Destination, "*", SearchOption.AllDirectories))));
         Assert.False(Directory.Exists(Path.Combine(f.Destination, "imagens")));
@@ -179,7 +179,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_MissingImageReportsFailureWithoutPublishingAPartialFolder()
     {
-        using var f = await Fixture.CreateAsync(images: true);
+        await using var f = await Fixture.CreateAsync(images: true);
         await f.OpenAsync(); f.Gate.Mode = ImageMode.Missing;
         await f.ExportFailureAsync();
         Assert.False(Directory.Exists(f.Destination));
@@ -190,7 +190,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_ImageReadFailureCleansTemporaryFilesAndDisposesTheStream()
     {
-        using var f = await Fixture.CreateAsync(images: true);
+        await using var f = await Fixture.CreateAsync(images: true);
         await f.OpenAsync(); f.Gate.Mode = ImageMode.Failure;
         await f.ExportFailureAsync();
         Assert.NotEmpty(f.Gate.ExportStreams);
@@ -201,7 +201,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_CancellationDuringImageCopyRemovesPartialOutputAndKeepsTheDraft()
     {
-        using var f = await Fixture.CreateAsync(images: true);
+        await using var f = await Fixture.CreateAsync(images: true);
         await f.OpenAsync(); f.Gate.Mode = ImageMode.Blocked;
         var before = f.Draft();
         f.SetDestination(); f.Click(f.Control<Button>("ConfirmExportButton"));
@@ -216,7 +216,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_RefusesAnExistingDestinationAndPreservesAllExistingFiles()
     {
-        using var f = await Fixture.CreateAsync();
+        await using var f = await Fixture.CreateAsync();
         Directory.CreateDirectory(f.Destination);
         var sentinel = Path.Combine(f.Destination, "pagina.md");
         await File.WriteAllTextAsync(sentinel, "Arquivo do usuário");
@@ -229,7 +229,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_RejectsARelativeDestinationWithoutWritingToTheWorkingDirectory()
     {
-        using var f = await Fixture.CreateAsync();
+        await using var f = await Fixture.CreateAsync();
         await f.OpenAsync();
         var relative = "trama-relative-export-" + Guid.NewGuid().ToString("N");
         await f.ExportFailureAsync(relative);
@@ -240,7 +240,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_AHostileTitleCannotBecomeAnOutputPathOrAnExtraHeading()
     {
-        using var f = await Fixture.CreateAsync();
+        await using var f = await Fixture.CreateAsync();
         f.Editor.Title = "../../fora\n# Outro título";
         var markdown = await f.ExportAsync();
         Assert.Equal("pagina.md", Path.GetFileName(Assert.Single(Directory.GetFiles(f.Destination))));
@@ -251,7 +251,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_IsAvailableInACompactEditorAndItsDialogFitsTheWindow()
     {
-        using var f = await Fixture.CreateAsync();
+        await using var f = await Fixture.CreateAsync();
         f.Window.Width = 860; f.Pump();
         await f.OpenAsync();
         Assert.True(f.ExportButton().IsEffectivelyVisible);
@@ -264,7 +264,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task Export_DisposesImageStreamsAfterSuccessfulPublication()
     {
-        using var f = await Fixture.CreateAsync(images: true);
+        await using var f = await Fixture.CreateAsync(images: true);
         await f.OpenAsync(); f.Gate.Mode = ImageMode.Track;
         await f.CompleteExportAsync();
         Assert.NotEmpty(f.Gate.ExportStreams);
@@ -287,7 +287,7 @@ public sealed class MarkdownExportWorkflowTests
     [AvaloniaFact]
     public async Task ExistingStorage_AlreadyPreservesThePageAndItsImageBytes()
     {
-        using var f = await Fixture.CreateAsync(images: true);
+        await using var f = await Fixture.CreateAsync(images: true);
         var page = await f.Actions.LoadAsync(f.Page.Id);
         Assert.NotNull(page);
         Assert.Equal("Texto salvo", Assert.IsType<NotebookTextBlock>(page.Blocks[0]).Text);
@@ -297,10 +297,32 @@ public sealed class MarkdownExportWorkflowTests
         Assert.Equal(NotebookTestWorkspace.Png, bytes.ToArray());
     }
 
+    [AvaloniaFact]
+    public async Task Preview_ReleasesTheAttachmentBeforePublishingTheImage()
+    {
+        var stream = new PreviewStream();
+        await using var f = await Fixture.CreateAsync(images: true, previewStream: stream);
+        try
+        {
+            await f.UntilAsync(() => stream.DisposeStarted.Task.IsCompleted);
+            var preview = Assert.Single(f.View.GetVisualDescendants().OfType<NotebookImagePreview>());
+            var image = Assert.IsType<Image>(preview.FindControl<Image>("PreviewImage"));
+
+            Assert.Null(image.Source);
+
+            stream.AllowDispose.TrySetResult();
+            await f.UntilAsync(() => image.Source is not null);
+        }
+        finally
+        {
+            stream.AllowDispose.TrySetResult();
+        }
+    }
+
     private static string[] ImagePaths(string markdown) => Regex.Matches(markdown, @"!\[.*?\]\(([^)]+)\)")
         .Select(match => match.Groups[1].Value).ToArray();
 
-    private sealed class Fixture : IDisposable
+    private sealed class Fixture : IAsyncDisposable
     {
         public NotebookTestWorkspace Root { get; } = new();
         public string Source => Path.Combine(Root.DirectoryPath, "source");
@@ -319,7 +341,8 @@ public sealed class MarkdownExportWorkflowTests
 
         public static async Task<Fixture> CreateAsync(string body = "Texto salvo", IReadOnlyList<TextStyleSpan>? styles = null,
             IReadOnlyList<ParagraphListItem>? lists = null, string? code = null, string language = "csharp",
-            bool images = false, bool jpeg = false, bool repeatImage = false, bool trailingText = false, bool newPage = false)
+            bool images = false, bool jpeg = false, bool repeatImage = false, bool trailingText = false, bool newPage = false,
+            Stream? previewStream = null)
         {
             var f = new Fixture(); Directory.CreateDirectory(f.OutputParent);
             f.Services = await DesktopComposition.CreateAsync(f.Source);
@@ -337,7 +360,7 @@ public sealed class MarkdownExportWorkflowTests
             if (trailingText) blocks.Add(new NotebookTextBlock(Guid.NewGuid(), "Último texto"));
             f.Page = new(Guid.NewGuid(), "Página de estudo", blocks);
             Assert.Equal(NotebookSaveStatus.Saved, (await f.Actions.SaveAsync(f.Page)).Status);
-            f.Gate = new ExportImageActions(f.Services.GetRequiredService<INotebookActions>());
+            f.Gate = new ExportImageActions(f.Services.GetRequiredService<INotebookActions>(), previewStream);
             f.Editor = ActivatorUtilities.CreateInstance<NotebookEditorViewModel>(f.Services, f.Gate);
             if (!newPage) Assert.True(await f.Editor.TryLoadAsync(f.Page.Id));
             f.View = new NotebookEditorView(f.Editor);
@@ -384,16 +407,30 @@ public sealed class MarkdownExportWorkflowTests
             while (!ready()) { Assert.True(DateTime.UtcNow < end, "A operação de exportação não concluiu no prazo do teste."); Pump(); await Task.Delay(10); }
             Pump();
         }
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
+            var pendingPreviews = View.GetVisualDescendants().OfType<NotebookImagePreview>()
+                .Select(preview => preview.PendingLoads).ToArray();
             foreach (var dialog in Window.OwnedWindows.ToArray()) dialog.Close();
-            View.DataContext = null; Window.Close(); Editor.Dispose(); Services.Dispose(); Root.Dispose();
+            View.DataContext = null;
+            Window.Close();
+            Editor.Dispose();
+            try
+            {
+                await Task.WhenAll(pendingPreviews).WaitAsync(TimeSpan.FromSeconds(10));
+            }
+            finally
+            {
+                Services.Dispose();
+            }
+
+            Root.Dispose();
         }
     }
 
     private enum ImageMode { Normal, Missing, Failure, Blocked, Track }
 
-    private sealed class ExportImageActions(INotebookActions inner) : INotebookActions
+    private sealed class ExportImageActions(INotebookActions inner, Stream? previewStream) : INotebookActions
     {
         public ImageMode Mode { get; set; }
         public List<ExportImageStream> ExportStreams { get; } = [];
@@ -402,10 +439,29 @@ public sealed class MarkdownExportWorkflowTests
         public Task<ImageAttachment> ImportImageAsync(Stream source, CancellationToken cancellationToken = default) => inner.ImportImageAsync(source, cancellationToken);
         public Task<Stream?> OpenImageAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            if (Mode == ImageMode.Normal) return inner.OpenImageAsync(id, cancellationToken);
+            if (Mode == ImageMode.Normal) return previewStream is null
+                ? inner.OpenImageAsync(id, cancellationToken)
+                : Task.FromResult<Stream?>(previewStream);
             if (Mode == ImageMode.Missing) return Task.FromResult<Stream?>(null);
             var stream = new ExportImageStream(Mode); ExportStreams.Add(stream);
             return Task.FromResult<Stream?>(stream);
+        }
+    }
+
+    private sealed class PreviewStream : MemoryStream
+    {
+        public PreviewStream() : base(NotebookTestWorkspace.Png)
+        {
+        }
+
+        public TaskCompletionSource DisposeStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource AllowDispose { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public override async ValueTask DisposeAsync()
+        {
+            DisposeStarted.TrySetResult();
+            await AllowDispose.Task;
+            await base.DisposeAsync();
         }
     }
 

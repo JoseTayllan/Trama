@@ -13,6 +13,8 @@ public sealed partial class NotebookImagePreview : UserControl
     private CancellationTokenSource? _loading;
     private Bitmap? _bitmap;
 
+    public Task PendingLoads { get; private set; } = Task.CompletedTask;
+
     public NotebookImagePreview() => InitializeComponent();
 
     public Guid? AttachmentId { get => GetValue(AttachmentIdProperty); set => SetValue(AttachmentIdProperty, value); }
@@ -20,7 +22,7 @@ public sealed partial class NotebookImagePreview : UserControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        _ = LoadPreviewAsync();
+        QueuePreviewLoad();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -35,8 +37,14 @@ public sealed partial class NotebookImagePreview : UserControl
         base.OnPropertyChanged(change);
         if (change.Property == AttachmentIdProperty && this.IsAttachedToVisualTree())
         {
-            _ = LoadPreviewAsync();
+            QueuePreviewLoad();
         }
+    }
+
+    private void QueuePreviewLoad()
+    {
+        var current = LoadPreviewAsync();
+        PendingLoads = PendingLoads.IsCompleted ? current : Task.WhenAll(PendingLoads, current);
     }
 
     private async Task LoadPreviewAsync()
@@ -52,45 +60,52 @@ public sealed partial class NotebookImagePreview : UserControl
         _loading = loading;
         ImageMessage.Text = "Abrindo imagem…";
         ImageMessage.IsVisible = true;
+        var token = loading.Token;
+        Bitmap? decoded = null;
         try
         {
-            await using var stream = await editor.OpenImageAsync(id, loading.Token);
-            loading.Token.ThrowIfCancellationRequested();
-            if (stream is null)
+            await using (var stream = await editor.OpenImageAsync(id, token))
             {
-                ImageMessage.Text = "Imagem indisponível. A referência foi mantida na página.";
-                return;
+                token.ThrowIfCancellationRequested();
+                if (stream is null)
+                {
+                    ImageMessage.Text = "Imagem indisponível. A referência foi mantida na página.";
+                    return;
+                }
+
+                decoded = await Task.Run(() => Bitmap.DecodeToWidth(stream, 1200), token);
             }
 
-            var bitmap = await Task.Run(() => Bitmap.DecodeToWidth(stream, 1200), loading.Token);
-            if (loading.IsCancellationRequested)
-            {
-                bitmap.Dispose();
-                return;
-            }
-
-            _bitmap = bitmap;
-            PreviewImage.Source = bitmap;
+            token.ThrowIfCancellationRequested();
+            _bitmap = decoded;
+            decoded = null;
+            PreviewImage.Source = _bitmap;
             ImageMessage.IsVisible = false;
         }
-        catch (OperationCanceledException) when (loading.IsCancellationRequested)
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             // A newer load or detachment owns the visual state now.
         }
         catch (Exception)
         {
-            if (!loading.IsCancellationRequested)
+            if (!token.IsCancellationRequested)
             {
                 ImageMessage.Text = "Não foi possível exibir esta imagem. A referência foi mantida.";
             }
+        }
+        finally
+        {
+            decoded?.Dispose();
+            if (ReferenceEquals(_loading, loading)) _loading = null;
+            loading.Dispose();
         }
     }
 
     private void CancelLoading()
     {
-        _loading?.Cancel();
-        _loading?.Dispose();
+        var loading = _loading;
         _loading = null;
+        loading?.Cancel();
     }
 
     private void ClearBitmap()
