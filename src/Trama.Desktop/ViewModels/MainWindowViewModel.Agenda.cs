@@ -14,11 +14,13 @@ public sealed partial class MainWindowViewModel
             if (value is not null) value.PropertyChanged += AgendaChanged;
             if (value is null && _module == Module.Agenda) _module = Module.Home;
             NotifyModuleNavigation();
+            _ = RefreshHomeAgendaAsync();
         }
     }
     internal async Task OpenAgendaLinkedPageAsync(Guid? pageId = null)
     {
-        if (Agenda is not { } agenda || Library is not { } library || !IsAgendaActive || !CanNavigateModules) return;
+        if (Agenda is not { } agenda || Library is not { } library || !CanNavigateModules ||
+            (!IsAgendaActive && !(IsHomeActive && pageId.HasValue))) return;
         var opened = pageId is { } id
             ? await agenda.OpenLinkedPageAsync(id, OpenPageAsync)
             : await agenda.OpenLinkedPageAsync(OpenPageAsync);
@@ -26,7 +28,9 @@ public sealed partial class MainWindowViewModel
         async Task<string?> OpenPageAsync(Guid target) =>
             await library.OpenAgendaLinkedPageAsync(target) ? null : library.Feedback;
 
-        if (opened && ReferenceEquals(Agenda, agenda) && ReferenceEquals(Library, library)) SelectModule(Module.Notebooks);
+        if (!ReferenceEquals(Agenda, agenda) || !ReferenceEquals(Library, library)) return;
+        if (opened) SelectModule(Module.Notebooks);
+        else if (IsHomeActive) Status = agenda.Feedback;
     }
 
     public bool HasAgenda => Agenda is not null;

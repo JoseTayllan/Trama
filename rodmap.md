@@ -1,6 +1,6 @@
 # Trama · Roadmap
 
-Atualizado em **12/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
+Atualizado em **13/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
 
 [Abrir painel HTML](roadmap.html) · gerado deste arquivo por `python tools/build_roadmap.py`.
 
@@ -9,17 +9,17 @@ Atualizado em **12/11/2026**. Acompanhe o módulo atual, as entregas disponívei
 | Item | Estado |
 | --- | --- |
 | Foco | Reflexão semanal e fechamento da primeira versão da Agenda |
-| Última entrega validada no uso | Atalho de páginas nos cartões da Agenda, confirmado pelo responsável |
+| Última entrega validada no uso | Horas realizadas no Início, com executável Win64 atualizado pelo responsável |
 | Aviso | Em Pendências para revisar, Atual acompanha a tarefa. No fechamento e os totais guardam o registro da semana. |
-| Entrega em revisão | Atalho para páginas nos cartões da Agenda |
-| Etapa atual | Abertura direta ou menu de páginas nas visões Dia e Semana |
-| Resultado novo | Quatro casos do atalho passaram com os testes intactos |
-| Última suíte completa | 1.337 aprovados, com 224 unitários e 1.113 de integração |
-| Última suíte estável | 1.337 aprovados com o atalho para páginas |
-| CI | Correção confirmada pelo responsável em 06/11; execução remota não consultada pelo agente |
-| Próxima etapa | Mostrar dados reais da Agenda no Início |
+| Entrega em revisão | Resumo da Agenda e páginas recentes no Início |
+| Etapa atual | Commit 1 · horas realizadas na semana e revisão do Início |
+| Resultado novo | Dois casos de horas realizadas passaram com os testes intactos |
+| Última suíte completa | 1.355 aprovados, com 224 unitários e 1.131 de integração |
+| Última suíte estável | 1.355 aprovados com horas realizadas |
+| CI | Verificação do GitHub confirmada pelo responsável em 12/11/2026 |
+| Próxima etapa | Revisar e fazer o commit 1. Depois, validar backup e atualização de bancos anteriores. |
 | Referência principal | [Reflexão: SQLite implementado](docs/estudos/117-reflexao-sqlite-implementada.md) |
-| Relatório atual | [Atalho para páginas nos cartões](docs/reviews/133-agenda-page-shortcut-green.md) |
+| Relatório atual | [Horas realizadas](docs/reviews/139-home-actual-hours-green.md) |
 
 A imagem conceitual, a direção da tela Início e os 17 testes foram aprovados antes de implementar. Início e Cadernos estão integrados para revisão, preservando o editor ao alternar. A Agenda diária está habilitada, com tarefas e horários opcionais; a semana visual está implementada para revisão e os indicadores permanecem pendentes.
 
@@ -98,6 +98,8 @@ A correção de rolagem foi aprovada em seguida. O refino visual está implement
 
 ### Fechamento da primeira versão da Agenda
 
+Entregar uma implementação por commit, na ordem do checklist. O responsável revisa e executa os comandos do Git.
+
 - [x] Habilitar reflexão com gravação/edição por semana, rascunhos protegidos e backup.
 - [x] Integrar revisão das pendências às tarefas atuais, preservando o fechamento histórico.
 - [x] Implementar o aviso de semana encerrada com abertura sob ação do usuário.
@@ -110,7 +112,17 @@ A correção de rolagem foi aprovada em seguida. O refino visual está implement
 - [x] Adicionar o atalho de páginas vinculadas aos cartões de Dia e Semana.
 - [x] Validar no uso o ícone e o menu de páginas.
 - [ ] Revisar o diff do atalho de páginas.
-- [ ] Mostrar dados reais da Agenda no Início.
+- [x] Especificar o resumo da Agenda no Início com dados do perfil local.
+- [x] Implementar o resumo da Agenda no Início.
+- [x] Refinar a data, as linhas de tarefas e a contagem semanal no Início.
+- [x] Colocar o atalho dentro da borda dos cartões nas visões Dia e Semana.
+- [x] Exibir horas planejadas e abrir anotações em Hoje na agenda.
+- [x] Registrar a data de edição e refinar Páginas recentes no Início.
+- [x] Unificar a página aberta com a linha em Páginas recentes e preservar o rascunho.
+- [x] Registrar a conclusão real ao salvar como Concluída, preservando o término planejado.
+- [x] Registrar o início real e somar as horas realizadas na semana.
+- [x] Validar horas realizadas no uso e gerar o executável Win64 atualizado.
+- [ ] Revisar o diff e fazer o commit 1.
 - [ ] Validar recuperação completa e atualização de bancos anteriores.
 - [ ] Conferir Windows/WSL, executável, suíte/build/formatação e diff; Git/mesclagem pelo responsável.
 

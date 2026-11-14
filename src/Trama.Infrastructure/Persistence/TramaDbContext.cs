@@ -42,6 +42,14 @@ public sealed class TramaDbContext(DbContextOptions<TramaDbContext> options) : D
             link.HasOne<AgendaTaskRecord>().WithMany().HasForeignKey(record => record.TaskId).OnDelete(DeleteBehavior.Restrict);
         });
 
+        modelBuilder.Entity<AgendaTaskStartRecord>(start =>
+        {
+            start.ToTable("AgendaTaskStarts");
+            start.HasKey(record => record.TaskId);
+            start.Property(record => record.TaskId).HasColumnType("TEXT").ValueGeneratedNever();
+            start.HasOne<AgendaTaskRecord>().WithMany().HasForeignKey(record => record.TaskId).OnDelete(DeleteBehavior.Cascade);
+        });
+
         modelBuilder.Entity<AgendaTaskRecord>(task =>
         {
             task.ToTable("AgendaTasks");
@@ -96,6 +104,15 @@ public sealed class TramaDbContext(DbContextOptions<TramaDbContext> options) : D
             note.Property(record => record.Id).HasColumnType("TEXT").ValueGeneratedNever().IsRequired();
             note.Property(record => record.Title).HasColumnType("TEXT").IsRequired();
             note.Property(record => record.Body).HasColumnType("TEXT").IsRequired();
+        });
+
+        modelBuilder.Entity<NotebookPageEditRecord>(edit =>
+        {
+            edit.ToTable("NotebookPageEdits");
+            edit.HasKey(record => record.PageId);
+            edit.Property(record => record.PageId).HasColumnType("TEXT").ValueGeneratedNever();
+            edit.HasIndex(record => record.EditedAtUtcTicks);
+            edit.HasOne<NotebookPageRecord>().WithMany().HasForeignKey(record => record.PageId).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<NotebookPageRecord>(page =>

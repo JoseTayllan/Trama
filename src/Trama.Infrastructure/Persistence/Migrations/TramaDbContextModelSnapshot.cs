@@ -76,6 +76,19 @@ namespace Trama.Infrastructure.Persistence.Migrations
                     b.ToTable("AgendaTasks", (string)null);
                 });
 
+            modelBuilder.Entity("Trama.Infrastructure.Persistence.AgendaTaskStartRecord", b =>
+                {
+                    b.Property<Guid>("TaskId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("StartedAtUtcTicks")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TaskId");
+
+                    b.ToTable("AgendaTaskStarts", (string)null);
+                });
+
             modelBuilder.Entity("Trama.Infrastructure.Persistence.AgendaWeekReflectionRecord", b =>
                 {
                     b.Property<DateOnly>("WeekStart")
@@ -222,6 +235,21 @@ namespace Trama.Infrastructure.Persistence.Migrations
                     b.ToTable("NotebookBlocks", (string)null);
                 });
 
+            modelBuilder.Entity("Trama.Infrastructure.Persistence.NotebookPageEditRecord", b =>
+                {
+                    b.Property<Guid>("PageId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("EditedAtUtcTicks")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PageId");
+
+                    b.HasIndex("EditedAtUtcTicks");
+
+                    b.ToTable("NotebookPageEdits", (string)null);
+                });
+
             modelBuilder.Entity("Trama.Infrastructure.Persistence.NotebookPageRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -314,6 +342,15 @@ namespace Trama.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Trama.Infrastructure.Persistence.AgendaTaskStartRecord", b =>
+                {
+                    b.HasOne("Trama.Infrastructure.Persistence.AgendaTaskRecord", null)
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Trama.Infrastructure.Persistence.AgendaWeekReflectionRecord", b =>
                 {
                     b.HasOne("Trama.Infrastructure.Persistence.AgendaWeekRetrospectiveRecord", null)
@@ -327,6 +364,15 @@ namespace Trama.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("Trama.Infrastructure.Persistence.NotebookPageRecord", null)
                         .WithMany("Blocks")
+                        .HasForeignKey("PageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Trama.Infrastructure.Persistence.NotebookPageEditRecord", b =>
+                {
+                    b.HasOne("Trama.Infrastructure.Persistence.NotebookPageRecord", null)
+                        .WithMany()
                         .HasForeignKey("PageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

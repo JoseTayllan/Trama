@@ -68,6 +68,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository
                 _context.Set<NotebookTextStyleRecord>().AddRange(styles);
                 await _context.SaveChangesAsync(cancellationToken);
             }
+            await NotebookPageEditRecord.RecordAsync(_context, notebook.Id, cancellationToken);
             if (transaction is not null)
             {
                 await transaction.CommitAsync(cancellationToken);

@@ -46,7 +46,7 @@ public sealed partial class AgendaViewModel
         return tasks;
     }
 
-    private async Task<IReadOnlySet<Guid>> ReadTasksWithLinksAsync(IEnumerable<AgendaTaskSnapshot> tasks,
+    internal async Task<IReadOnlySet<Guid>> ReadTasksWithLinksAsync(IEnumerable<AgendaTaskSnapshot> tasks,
         CancellationToken cancellationToken) =>
         PageLinks is { } links
             ? await links.ListTasksWithPageLinksAsync(tasks.Select(task => task.Id).ToArray(), cancellationToken)

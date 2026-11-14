@@ -7,11 +7,17 @@ namespace Trama.Infrastructure.Persistence;
 public sealed class SqliteAgendaTaskRepository : IAgendaTaskRepository, IAgendaTaskReader, IAgendaPeriodReader
 {
     private readonly TramaDbContext _context;
+    private readonly TimeProvider? _completionClock;
 
-    public SqliteAgendaTaskRepository(TramaDbContext context)
+    public SqliteAgendaTaskRepository(TramaDbContext context) : this(context, null)
+    {
+    }
+
+    internal SqliteAgendaTaskRepository(TramaDbContext context, TimeProvider? completionClock)
     {
         ArgumentNullException.ThrowIfNull(context);
         _context = context;
+        _completionClock = completionClock;
     }
 
     public async Task SaveAsync(AgendaTaskSnapshot task, CancellationToken cancellationToken = default)
@@ -42,12 +48,34 @@ public sealed class SqliteAgendaTaskRepository : IAgendaTaskRepository, IAgendaT
             record.EndTime = task.EndTime;
             record.Category = task.Category;
             record.Status = task.Status;
+            if (_completionClock is not null && current?.Status != task.Status &&
+                task.Status == AgendaTaskStatus.Completed)
+                record.LastCompletedAt = _completionClock.GetLocalNow();
+
             await _context.SaveChangesAsync(cancellationToken);
+            if (_completionClock is not null && current?.Status != task.Status)
+                await SaveExecutionStartAsync(task, _completionClock, cancellationToken);
             if (transaction is not null) await transaction.CommitAsync(cancellationToken);
         }
         catch (Exception exception) when (exception is DbUpdateException or DbException)
         {
             throw new AgendaPersistenceException("The agenda task could not be saved.");
+        }
+    }
+
+    private async Task SaveExecutionStartAsync(AgendaTaskSnapshot task, TimeProvider clock, CancellationToken cancellationToken)
+    {
+        if (task.Status == AgendaTaskStatus.InProgress)
+        {
+            var startedAt = clock.GetUtcNow().UtcTicks;
+            await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"INSERT INTO AgendaTaskStarts (TaskId, StartedAtUtcTicks) VALUES ({task.Id}, {startedAt}) ON CONFLICT (TaskId) DO UPDATE SET StartedAtUtcTicks = excluded.StartedAtUtcTicks",
+                cancellationToken);
+        }
+        else if (task.Status == AgendaTaskStatus.Pending)
+        {
+            await _context.Set<AgendaTaskStartRecord>().Where(start => start.TaskId == task.Id)
+                .ExecuteDeleteAsync(cancellationToken);
         }
     }
 

@@ -37,6 +37,11 @@ public sealed partial class MainWindowViewModel
         if (!CanNavigateModules || _module == module || (module == Module.Agenda && !HasAgenda)) return;
         _module = module;
         NotifyModuleNavigation();
+        if (module == Module.Home)
+        {
+            _ = RefreshHomeAgendaAsync();
+            _ = RefreshHomeRecentPagesAsync();
+        }
     }
 
     private void ObserveLibraryNavigation(LibraryViewModel? previous, LibraryViewModel? current)
@@ -45,6 +50,8 @@ public sealed partial class MainWindowViewModel
         if (current is not null) current.PropertyChanged += LibraryNavigationChanged;
         _module = Module.Home;
         NotifyModuleNavigation();
+        _ = RefreshHomeAgendaAsync();
+        _ = RefreshHomeRecentPagesAsync();
     }
 
     private void LibraryNavigationChanged(object? sender, PropertyChangedEventArgs e)
@@ -63,6 +70,8 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(HasAgenda));
         OnPropertyChanged(nameof(IsWorkspaceVisible));
         OnPropertyChanged(nameof(HasNotebookToContinue));
+        OnPropertyChanged(nameof(HomeCurrentPageId));
+        OnPropertyChanged(nameof(ShowContinueNotebook));
         OnPropertyChanged(nameof(ContinueNotebookTitle));
         OnPropertyChanged(nameof(ContinueNotebookLocation));
         OnPropertyChanged(nameof(ContinueNotebookStatus));

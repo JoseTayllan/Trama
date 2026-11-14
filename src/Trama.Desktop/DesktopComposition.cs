@@ -19,7 +19,7 @@ public static class DesktopComposition
         var databasePath = await LocalDatabase.InitializeAsync(dataDirectory, cancellationToken);
         var images = new LocalImageAttachmentStore(dataDirectory);
         return new ServiceCollection()
-            .AddSingleton<IAgendaActions>(new SqliteAgendaActions(databasePath))
+            .AddSingleton<IAgendaActions>(new SqliteAgendaActions(databasePath, TimeProvider.System))
             .AddSingleton<IAgendaPeriodReader>(services => (IAgendaPeriodReader)services.GetRequiredService<IAgendaActions>())
             .AddSingleton<IAgendaWeekProjector, AgendaWeekProjector>()
             .AddSingleton<IAgendaCompletionActions>(new SqliteAgendaCompletionActions(databasePath))

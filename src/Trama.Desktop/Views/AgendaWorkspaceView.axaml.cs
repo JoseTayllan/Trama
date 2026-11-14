@@ -96,30 +96,7 @@ public sealed partial class AgendaWorkspaceView : UserControl
         };
         if (task is null) return;
         e.Handled = true;
-        var links = await agenda.ReadCardPageLinksAsync(task.Id);
-        if (!ReferenceEquals(main.Agenda, agenda) || !main.IsAgendaActive) return;
-        if (links.Count == 1)
-        {
-            await main.OpenAgendaLinkedPageAsync(links[0].PageId);
-            return;
-        }
-        if (links.Count == 0 || !button.IsEffectivelyVisible) return;
-
-        var menu = new MenuFlyout();
-        foreach (var link in links)
-        {
-            var item = new MenuItem { Header = link.Title ?? "Página vinculada" };
-            item.Click += async (_, _) =>
-            {
-                menu.Hide();
-                if (ReferenceEquals(main.Agenda, agenda))
-                    await main.OpenAgendaLinkedPageAsync(link.PageId);
-            };
-            menu.Items.Add(item);
-        }
-        button.Flyout = menu;
-        menu.Closed += (_, _) => { if (ReferenceEquals(button.Flyout, menu)) button.Flyout = null; };
-        menu.ShowAt(button);
+        await MainWindow.ShowTaskNotesAsync(button, main, agenda, task.Id, fromHome: false);
     }
 
     private async void UnlinkPageClicked(object? sender, RoutedEventArgs e)

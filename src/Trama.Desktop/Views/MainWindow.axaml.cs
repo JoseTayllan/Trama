@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Trama.Application.Agenda;
 using Trama.Desktop.ViewModels;
 
 namespace Trama.Desktop.Views;
@@ -22,6 +23,56 @@ public sealed partial class MainWindow : Window
     public MainWindow(MainWindowViewModel viewModel) : this()
     {
         DataContext = viewModel;
+    }
+
+    private async void OpenHomeRecentPageClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: HomeRecentPage recent } && DataContext is MainWindowViewModel main)
+            await main.OpenHomeRecentPageAsync(recent.Page.PageId);
+    }
+
+    private async void OpenHomeNotesClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: AgendaTaskSnapshot task } button &&
+            DataContext is MainWindowViewModel { Agenda: { } agenda } main)
+            await ShowTaskNotesAsync(button, main, agenda, task.Id, fromHome: true);
+    }
+
+    internal static async Task ShowTaskNotesAsync(Button button, MainWindowViewModel main, AgendaViewModel agenda,
+        Guid taskId, bool fromHome)
+    {
+        bool IsCurrent() => ReferenceEquals(main.Agenda, agenda) &&
+            (fromHome ? main.IsHomeActive : main.IsAgendaActive);
+        if (!IsCurrent() || !main.CanNavigateModules) return;
+
+        var links = await agenda.ReadCardPageLinksAsync(taskId);
+        if (!IsCurrent()) return;
+        if (links.Count == 1)
+        {
+            await main.OpenAgendaLinkedPageAsync(links[0].PageId);
+            return;
+        }
+        if (links.Count == 0)
+        {
+            if (fromHome) main.Status = "Nenhuma página vinculada disponível.";
+            return;
+        }
+        if (!button.IsEffectivelyVisible) return;
+
+        var menu = new MenuFlyout();
+        foreach (var link in links)
+        {
+            var item = new MenuItem { Header = link.Title ?? "Página vinculada" };
+            item.Click += async (_, _) =>
+            {
+                menu.Hide();
+                if (IsCurrent()) await main.OpenAgendaLinkedPageAsync(link.PageId);
+            };
+            menu.Items.Add(item);
+        }
+        button.Flyout = menu;
+        menu.Closed += (_, _) => { if (ReferenceEquals(button.Flyout, menu)) button.Flyout = null; };
+        menu.ShowAt(button);
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)

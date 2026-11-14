@@ -63,6 +63,17 @@ public sealed partial class LibraryViewModel
         ? discovery.SearchAsync(string.Empty)
         : Task.FromResult<IReadOnlyList<PageSearchResult>>([]);
 
+    internal Task<IReadOnlyList<RecentPage>> ReadRecentPagesAsync() => _discovery is IRecentPagesReader recent
+        ? recent.ListRecentPagesAsync(3)
+        : Task.FromResult<IReadOnlyList<RecentPage>>([]);
+
+    internal Task<bool> OpenRecentPageAsync(Guid pageId)
+    {
+        if (!CanNavigate) return Task.FromResult(false);
+        Feedback = "A abertura da página foi cancelada.";
+        return OpenPageAtCurrentLocationAsync(pageId, fromRecentPages: true);
+    }
+
     internal Task<bool> OpenAgendaLinkedPageAsync(Guid pageId)
     {
         if (!CanNavigate) return Task.FromResult(false);
@@ -70,7 +81,7 @@ public sealed partial class LibraryViewModel
         return OpenPageAtCurrentLocationAsync(pageId, fromAgenda: true);
     }
 
-    private Task<bool> OpenPageAtCurrentLocationAsync(Guid pageId, bool fromAgenda = false) =>
+    private Task<bool> OpenPageAtCurrentLocationAsync(Guid pageId, bool fromAgenda = false, bool fromRecentPages = false) =>
         NavigateAsync(async () =>
         {
             var spaces = await _actions.ListSpacesAsync();
@@ -99,6 +110,7 @@ public sealed partial class LibraryViewModel
             {
                 Feedback = fromAgenda
                     ? "Página vinculada indisponível."
+                    : fromRecentPages ? "Página recente indisponível."
                     : "Este resultado não está mais disponível. Atualize a busca; seu conteúdo foi mantido.";
                 return false;
             }
@@ -112,7 +124,7 @@ public sealed partial class LibraryViewModel
             SelectedNotebookId = notebookId;
             Editor = candidate;
             CurrentPageTags = tags;
-            Feedback = fromAgenda ? "Página aberta na localização atual." : "Resultado aberto na localização atual da página.";
+            Feedback = fromAgenda || fromRecentPages ? "Página aberta na localização atual." : "Resultado aberto na localização atual da página.";
             return true;
         });
 

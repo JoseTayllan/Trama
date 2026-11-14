@@ -27,6 +27,7 @@ public sealed class AgendaPresentationConverter : IValueConverter, IMultiValueCo
             (null, { } end) => $"{end:HH:mm} · fim",
             _ => timed.ContinuesFromPreviousDay || timed.ContinuesToNextDay ? string.Empty : "Sem horário"
         } : string.Empty,
+        "home-start" => value is AgendaTaskSnapshot { StartTime: { } start } ? start.ToString("HH:mm", CultureInfo.InvariantCulture) : "Sem horário",
         "time" => TimeLabel(value),
         "planning" => value is AgendaTaskSnapshot task ? task.PlannedEndDate is { } endDate && endDate != task.PlannedDate
             ? $"Planejada: {TimeLabel(task)}" : $"Planejada: {task.PlannedDate:dd/MM/yyyy} · {TimeLabel(task)}" : string.Empty,
@@ -51,7 +52,11 @@ public sealed class AgendaPresentationConverter : IValueConverter, IMultiValueCo
     };
 
     public object Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture) =>
-        values.Count == 2 && values[0] is Guid id && values[1] is IReadOnlySet<Guid> ids && ids.Contains(id);
+        values.Count == 2 && values[0] is Guid id && (parameter switch
+        {
+            "same-page" => values[1] is Guid currentPage && currentPage == id,
+            _ => values[1] is IReadOnlySet<Guid> ids && ids.Contains(id)
+        });
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotSupportedException();
 }

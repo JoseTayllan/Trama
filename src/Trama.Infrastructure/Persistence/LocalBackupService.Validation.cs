@@ -95,6 +95,9 @@ public sealed partial class LocalBackupService
                     throw new InvalidDataException("Missing stored page.");
             await ValidateTrashAsync(context, cancellationToken);
             await new SqliteAgendaTaskRepository(context).ValidateForBackupAsync(cancellationToken);
+            if (await context.Set<AgendaTaskStartRecord>().AnyAsync(start =>
+                start.StartedAtUtcTicks <= 0 || start.StartedAtUtcTicks > DateTimeOffset.MaxValue.UtcTicks, cancellationToken))
+                throw new InvalidDataException("Invalid agenda task start time.");
             await new SqliteAgendaRetrospectiveRepository(context).ValidateForBackupAsync(cancellationToken);
             await new SqliteAgendaReflectionRepository(context).ValidateForBackupAsync(cancellationToken);
             if (await context.Set<PageTagRecord>().AnyAsync(tag =>

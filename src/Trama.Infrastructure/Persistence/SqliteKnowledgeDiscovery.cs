@@ -7,7 +7,7 @@ using Trama.Application.Knowledge;
 
 namespace Trama.Infrastructure.Persistence;
 
-public sealed class SqliteKnowledgeDiscovery : IKnowledgeDiscovery
+public sealed class SqliteKnowledgeDiscovery : IKnowledgeDiscovery, IRecentPagesReader
 {
     private readonly DbContextOptions<TramaDbContext> _options;
 
@@ -18,6 +18,39 @@ public sealed class SqliteKnowledgeDiscovery : IKnowledgeDiscovery
             throw new ArgumentException("An absolute database path is required.", nameof(databasePath));
         var connection = new SqliteConnectionStringBuilder { DataSource = databasePath, Pooling = false };
         _options = new DbContextOptionsBuilder<TramaDbContext>().UseSqlite(connection.ToString()).Options;
+    }
+
+    public async Task<IReadOnlyList<RecentPage>> ListRecentPagesAsync(int limit, CancellationToken cancellationToken = default)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(limit);
+        await using var context = new TramaDbContext(_options);
+        var rows = await (from edit in context.Set<NotebookPageEditRecord>().AsNoTracking()
+                          join page in context.Set<NotebookPageRecord>() on edit.PageId equals page.Id
+                          join location in context.Set<PageLocationRecord>() on page.Id equals location.PageId into locations
+                          from location in locations.DefaultIfEmpty()
+                          join notebook in context.Set<NotebookRecord>() on location.NotebookId equals notebook.Id into notebooks
+                          from notebook in notebooks.DefaultIfEmpty()
+                          join space in context.Set<KnowledgeSpaceRecord>() on notebook.SpaceId equals space.Id into spaces
+                          from space in spaces.DefaultIfEmpty()
+                          where !context.Set<LibraryTrashRecord>().Any(item =>
+                              (item.Kind == LibraryEntryKind.Page && item.EntryId == page.Id) ||
+                              (item.Kind == LibraryEntryKind.Notebook && item.EntryId == location.NotebookId) ||
+                              (item.Kind == LibraryEntryKind.Space && item.EntryId == notebook.SpaceId))
+                          orderby edit.EditedAtUtcTicks descending, page.Id
+                          select new
+                          {
+                              page.Id,
+                              page.Title,
+                              edit.EditedAtUtcTicks,
+                              NotebookId = (Guid?)notebook.Id,
+                              NotebookTitle = (string?)notebook.Title,
+                              SpaceId = (Guid?)space.Id,
+                              SpaceTitle = (string?)space.Title
+                          }).Take(limit).ToArrayAsync(cancellationToken);
+
+        return rows.Select(row => new RecentPage(
+            new PageSearchResult(row.Id, row.Title, row.SpaceId, row.SpaceTitle, row.NotebookId, row.NotebookTitle),
+            new DateTimeOffset(row.EditedAtUtcTicks, TimeSpan.Zero))).ToArray();
     }
 
     public async Task<IReadOnlyList<PageSearchResult>> SearchAsync(string query, string? tag = null, CancellationToken cancellationToken = default)

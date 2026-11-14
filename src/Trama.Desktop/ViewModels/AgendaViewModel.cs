@@ -114,6 +114,26 @@ public sealed partial class AgendaViewModel : ObservableObject
         finally { _syncingTimeText = false; }
     }
 
+    internal Task<IReadOnlyList<AgendaTaskSnapshot>> ReadHomeTasksAsync(DateOnly today)
+    {
+        var start = AgendaRetrospectiveViewModel.WeekStart(today);
+        var end = today.AddDays(Math.Min(7, DateOnly.MaxValue.DayNumber - today.DayNumber));
+        return _periodReader is { } periodReader ? periodReader.ListOverlappingAsync(start, end) : _actions.ListAsync(start, end);
+    }
+
+    internal Task<TimeSpan?> ReadHomeActualHoursAsync(DateOnly weekStart)
+    {
+        if (_actions is not IAgendaActualHoursReader reader) return Task.FromResult<TimeSpan?>(null);
+
+        var zone = _trashClock.LocalTimeZone;
+        var start = weekStart.ToDateTime(TimeOnly.MinValue);
+        var end = weekStart.DayNumber <= DateOnly.MaxValue.DayNumber - 7
+            ? weekStart.AddDays(7).ToDateTime(TimeOnly.MinValue)
+            : DateTime.MaxValue;
+        return reader.ReadActualHoursAsync(new DateTimeOffset(start, zone.GetUtcOffset(start)),
+            new DateTimeOffset(end, zone.GetUtcOffset(end)));
+    }
+
     public async Task InitializeAsync(DateOnly day)
     {
         if (IsBusy) return;

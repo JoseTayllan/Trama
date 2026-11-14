@@ -1,12 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:Trama.Desktop.ViewModels"
+        xmlns:vm="using:Trama.Desktop.ViewModels" xmlns:agenda="using:Trama.Application.Agenda"
         xmlns:views="using:Trama.Desktop.Views"
         x:Class="Trama.Desktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="Trama" Width="1200" Height="800" MinWidth="860" MinHeight="680"
         WindowStartupLocation="CenterScreen" Background="{DynamicResource TramaWindowBrush}">
   <Window.Resources>
+    <views:AgendaPresentationConverter x:Key="HomeAgendaPresentation" />
     <StreamGeometry x:Key="HomeIcon">M3,10 L12,3 21,10 M5,9 L5,21 10,21 10,14 14,14 14,21 19,21 19,9</StreamGeometry>
     <StreamGeometry x:Key="NotebookIcon">M7,3 L20,3 20,21 7,21 Z M9,3 L9,21 M3,6 L7,6 M3,10 L7,10 M3,14 L7,14 M3,18 L7,18</StreamGeometry>
     <StreamGeometry x:Key="CalendarIcon">M3,6 L21,6 21,21 3,21 Z M7,3 L7,9 M17,3 L17,9 M3,11 L21,11 M8,15 L11,15 M8,18 L15,18</StreamGeometry>
@@ -35,6 +36,15 @@
     <Style Selector="Window.compact-home Grid.home-art"><Setter Property="IsVisible" Value="False" /></Style>
     <Style Selector="TextBlock.home-heading"><Setter Property="FontSize" Value="44" /></Style>
     <Style Selector="Window.compact-home TextBlock.home-heading"><Setter Property="FontSize" Value="34" /></Style>
+    <Style Selector="Border.home-agenda-marker, Border.home-agenda-category">
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaAgendaPersonalBrush}" />
+    </Style>
+    <Style Selector="Border.home-agenda-marker.work, Border.home-agenda-category.work">
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaAgendaWorkBrush}" />
+    </Style>
+    <Style Selector="Border.home-agenda-marker.study, Border.home-agenda-category.study">
+      <Setter Property="BorderBrush" Value="{DynamicResource TramaAgendaStudyBrush}" />
+    </Style>
     <Style Selector="Border.home-card">
       <Setter Property="Background" Value="{StaticResource HomeCardBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource TramaBorderBrush}" />
@@ -116,7 +126,7 @@
         <StackPanel Spacing="8">
           <TextBlock Text="SEU ESPAÇO DE TRABALHO" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TramaSubtleBrush}" />
           <TextBlock Classes="home-heading" Text="O que vamos fazer hoje?" FontWeight="SemiBold" Foreground="{DynamicResource TramaTextBrush}" TextWrapping="Wrap" />
-          <TextBlock Text="Seu acervo e o planejamento da semana, no mesmo lugar." Foreground="{DynamicResource TramaMutedBrush}" FontSize="15" TextWrapping="Wrap" />
+          <TextBlock x:Name="HomeDateLabel" Text="{Binding HomeDateLabel}" Foreground="{DynamicResource TramaMutedBrush}" FontSize="15" TextWrapping="Wrap" />
         </StackPanel>
 
         <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
@@ -146,12 +156,15 @@
                   <Path Data="M6,42 L22,42 M6,55 L22,55 M6,68 L22,68 M6,81 L22,81" Stroke="{DynamicResource TramaAccentBrush}" StrokeThickness="1.4" />
                 </Grid>
               </Grid>
-              <StackPanel Grid.Row="1" Spacing="12">
+              <WrapPanel Grid.Row="1" Orientation="Horizontal">
                 <Button x:Name="OpenNotebooksButton" Classes="trama-primary" AutomationProperties.Name="Abrir acervo"
-                        Command="{Binding ShowNotebooksCommand}" HorizontalAlignment="Left" Padding="20,12">
+                        Command="{Binding ShowNotebooksCommand}" HorizontalAlignment="Left" Padding="20,12" Margin="0,0,10,4">
                   <StackPanel Orientation="Horizontal" Spacing="24"><TextBlock Text="Abrir acervo" FontWeight="SemiBold" /><Path Classes="home-icon" Data="{StaticResource ChevronIcon}" Width="12" Height="16" Stroke="{DynamicResource TramaOnAccentBrush}" /></StackPanel>
                 </Button>
-              </StackPanel>
+                  <Button x:Name="ContinueNotebookButton" IsVisible="{Binding HasNotebookToContinue}" Classes="module-nav" Command="{Binding ShowNotebooksCommand}" AutomationProperties.Name="Continuar página" Padding="6,8">
+                    <StackPanel Orientation="Horizontal" Spacing="12"><TextBlock Text="Continuar página" Foreground="{DynamicResource TramaAccentBrush}" /><Path Classes="home-icon accent-icon" Data="{StaticResource ChevronIcon}" Width="10" Height="14" /></StackPanel>
+                  </Button>
+              </WrapPanel>
             </Grid>
           </Border>
           <Border Grid.Column="1" Classes="home-card">
@@ -165,7 +178,7 @@
                   </StackPanel>
                 </StackPanel>
                 <TextBlock Text="Trabalho e estudo ao longo da semana." Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
-                <TextBlock Text="Sua rotina, tarefa por tarefa." Foreground="{DynamicResource TramaSubtleBrush}" FontSize="12" />
+                <TextBlock Text="{Binding HomeTodayCount}" IsVisible="{Binding HasHomeWeekSummary}" Foreground="{DynamicResource TramaMutedBrush}" FontSize="14" />
               </StackPanel>
               <Grid Grid.Column="1" Classes="home-art" Width="150" Height="148" VerticalAlignment="Center" IsHitTestVisible="False" Opacity="0.6">
                 <Border Margin="0,24,0,4" CornerRadius="8" BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="1" Background="{DynamicResource TramaInputBrush}" />
@@ -182,36 +195,164 @@
           </Border>
         </Grid>
 
-        <Grid ColumnDefinitions="*,*" ColumnSpacing="18">
+        <Grid ColumnDefinitions="1.3*,*" ColumnSpacing="18">
           <Border Classes="home-card">
-            <StackPanel Spacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="12"><Path Classes="home-icon" Data="{StaticResource CalendarIcon}" /><TextBlock Text="Sua rotina" FontSize="18" FontWeight="SemiBold" /></StackPanel>
+            <StackPanel Spacing="12">
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                  <Path Classes="home-icon" Data="{StaticResource CalendarIcon}" />
+                  <TextBlock Text="Hoje na agenda" FontSize="18" FontWeight="SemiBold" />
+                </StackPanel>
+                <Button Grid.Column="1" Content="Ver agenda" Classes="module-nav" Padding="8,4"
+                        Command="{Binding ShowAgendaCommand}" IsVisible="{Binding HasAgenda}" />
+              </Grid>
               <Border Height="1" Background="{DynamicResource TramaBorderBrush}" />
-              <TextBlock Text="Um lugar para planejar trabalho, estudo e tempo pessoal." Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
-              <TextBlock Text="Consulte suas tarefas por dia. A visão semanal e os resumos serão disponibilizados nas próximas etapas." Foreground="{DynamicResource TramaSubtleBrush}" FontSize="12" TextWrapping="Wrap" />
+              <TextBlock Text="Agenda indisponível." IsVisible="{Binding !HasAgenda}"
+                         Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+              <TextBlock Text="Consultando a Agenda…" IsVisible="{Binding IsHomeAgendaLoading}"
+                         Foreground="{DynamicResource TramaMutedBrush}" />
+              <TextBlock Text="Não foi possível consultar o resumo. Abra a Agenda ou volte ao Início para tentar novamente."
+                         IsVisible="{Binding HasHomeAgendaError}" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+              <TextBlock x:Name="HomeAgendaEmpty" Text="Sem tarefas para hoje ou compromissos em aberto nos próximos sete dias."
+                         IsVisible="{Binding IsHomeAgendaEmpty}" Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
+              <StackPanel Spacing="6" IsVisible="{Binding HasHomeTodayTasks}">
+                <ItemsControl x:Name="HomeAgendaTodayTasks" ItemsSource="{Binding HomeTodayTasks}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="agenda:AgendaTaskSnapshot">
+                      <Border BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,0,0,1" Padding="0,10">
+                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="10">
+                          <TextBlock MinWidth="72" VerticalAlignment="Center"
+                                     Text="{Binding Converter={StaticResource HomeAgendaPresentation}, ConverterParameter=home-start}"
+                                     Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" TextWrapping="Wrap" />
+                          <Border Grid.Column="1" Classes="home-agenda-marker" Width="9" Height="9" CornerRadius="5" BorderThickness="4.5"
+                                  Classes.work="{Binding Category, Converter={StaticResource HomeAgendaPresentation}, ConverterParameter=work}"
+                                  Classes.study="{Binding Category, Converter={StaticResource HomeAgendaPresentation}, ConverterParameter=study}" />
+                          <StackPanel Grid.Column="2" Spacing="6">
+                            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                            <WrapPanel>
+                              <Border Classes="home-agenda-category" CornerRadius="10" Padding="8,2" Margin="0,0,8,2" BorderThickness="1"
+                                      Classes.work="{Binding Category, Converter={StaticResource HomeAgendaPresentation}, ConverterParameter=work}"
+                                      Classes.study="{Binding Category, Converter={StaticResource HomeAgendaPresentation}, ConverterParameter=study}">
+                                <TextBlock Text="{Binding Category, Converter={StaticResource HomeAgendaPresentation}, ConverterParameter=category}" FontSize="11" />
+                              </Border>
+                              <TextBlock Text="{Binding Status, Converter={StaticResource HomeAgendaPresentation}, ConverterParameter=status}"
+                                         Foreground="{DynamicResource TramaMutedBrush}" FontSize="11" VerticalAlignment="Center" />
+                            </WrapPanel>
+                            <Button x:Name="HomeAgendaOpenNotesButton" Classes="module-nav" Padding="0,4"
+                                    Click="OpenHomeNotesClicked" AutomationProperties.Name="Abrir anotações"
+                                    IsEnabled="{ReflectionBinding $parent[Window].DataContext.CanNavigateModules}">
+                              <Button.IsVisible>
+                                <MultiBinding Converter="{StaticResource HomeAgendaPresentation}">
+                                  <Binding Path="Id" />
+                                  <ReflectionBinding Path="$parent[Window].DataContext.HomeTodayTasksWithPageLinks" />
+                                </MultiBinding>
+                              </Button.IsVisible>
+                              <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Classes="home-icon agenda-icon" Data="{StaticResource DocumentIcon}" Width="14" Height="16" />
+                                <TextBlock Text="Abrir anotações" Foreground="{DynamicResource TramaSyntaxKeywordBrush}" />
+                              </StackPanel>
+                            </Button>
+                          </StackPanel>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+              <StackPanel Spacing="6" IsVisible="{Binding HasHomeUpcomingTasks}">
+                <TextBlock Text="Próximos sete dias" FontWeight="SemiBold" />
+                <ItemsControl x:Name="HomeAgendaUpcomingTasks" ItemsSource="{Binding HomeUpcomingTasks}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="agenda:AgendaTaskSnapshot">
+                      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="0,0,0,6">
+                        <TextBlock Text="{Binding PlannedDate, StringFormat='{}{0:dd/MM}'}"
+                                   Foreground="{DynamicResource TramaMutedBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding Title}" TextWrapping="Wrap" />
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
             </StackPanel>
           </Border>
           <Border Grid.Column="1" Classes="home-card">
             <StackPanel Spacing="16">
-              <StackPanel Orientation="Horizontal" Spacing="12"><Path Classes="home-icon" Data="{StaticResource DocumentIcon}" /><TextBlock Text="Continue de onde parou" FontSize="18" FontWeight="SemiBold" /></StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="12"><Path Classes="home-icon" Data="{StaticResource DocumentIcon}" /><TextBlock Text="Páginas recentes" FontSize="18" FontWeight="SemiBold" /></StackPanel>
               <Border Height="1" Background="{DynamicResource TramaBorderBrush}" />
-              <StackPanel Spacing="7" IsVisible="{Binding HasNotebookToContinue}">
+              <ItemsControl x:Name="HomeRecentPages" ItemsSource="{Binding HomeRecentPages}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:HomeRecentPage">
+                    <Border BorderBrush="{DynamicResource TramaBorderBrush}" BorderThickness="0,0,0,1">
+                      <Button x:Name="HomeRecentPageButton" Classes="module-nav" HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch" Padding="0,10" Click="OpenHomeRecentPageClicked"
+                              AutomationProperties.Name="{Binding Page.Title, StringFormat='Abrir página: {0}'}"
+                              IsEnabled="{ReflectionBinding $parent[Window].DataContext.CanNavigateModules}">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                          <Border Width="42" Height="42" CornerRadius="9" BorderThickness="1"
+                                  BorderBrush="{DynamicResource TramaNotebookMarginBrush}"
+                                  Background="{DynamicResource TramaAccentSoftBrush}">
+                            <Path Classes="home-icon accent-icon" Data="{StaticResource DocumentIcon}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                          </Border>
+                          <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Page.LocationLabel}" FontSize="11"
+                                       Foreground="{DynamicResource TramaMutedBrush}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Text="{Binding Page.Title}" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TramaTextBrush}" TextTrimming="CharacterEllipsis"
+                                       ToolTip.Tip="{Binding Page.Title}" />
+                            <TextBlock Text="{ReflectionBinding $parent[Window].DataContext.ContinueNotebookStatus}"
+                                       Foreground="{DynamicResource TramaAccentBrush}" FontSize="11" TextWrapping="Wrap">
+                              <TextBlock.IsVisible>
+                                <MultiBinding Converter="{StaticResource HomeAgendaPresentation}" ConverterParameter="same-page">
+                                  <Binding Path="Page.PageId" />
+                                  <ReflectionBinding Path="$parent[Window].DataContext.HomeCurrentPageId" />
+                                </MultiBinding>
+                              </TextBlock.IsVisible>
+                            </TextBlock>
+                          </StackPanel>
+                          <TextBlock Grid.Column="2" Text="{Binding EditAge}" FontSize="11" VerticalAlignment="Center"
+                                     Foreground="{DynamicResource TramaMutedBrush}" />
+                        </Grid>
+                      </Button>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <TextBlock Text="Carregando páginas recentes…" IsVisible="{Binding IsRecentPagesLoading}"
+                         Foreground="{DynamicResource TramaMutedBrush}" />
+              <TextBlock Text="Não foi possível consultar as páginas recentes." IsVisible="{Binding HasRecentPagesError}"
+                         TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+              <TextBlock Text="Páginas salvas aparecem aqui após a próxima edição." IsVisible="{Binding IsRecentPagesEmpty}"
+                         TextWrapping="Wrap" Foreground="{DynamicResource TramaMutedBrush}" />
+              <StackPanel Spacing="7" IsVisible="{Binding ShowContinueNotebook}">
                 <TextBlock Text="{Binding ContinueNotebookLocation}" Foreground="{DynamicResource TramaSubtleBrush}" FontSize="12" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ContinueNotebookLocation}" />
                 <TextBlock Text="{Binding ContinueNotebookTitle}" Foreground="{DynamicResource TramaTextBrush}" FontSize="18" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ContinueNotebookTitle}" />
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                  <TextBlock Text="{Binding ContinueNotebookStatus}" Foreground="{DynamicResource TramaAccentBrush}" FontSize="11" VerticalAlignment="Center" TextWrapping="Wrap" />
-                  <Button x:Name="ContinueNotebookButton" Grid.Column="1" Classes="module-nav" Command="{Binding ShowNotebooksCommand}" AutomationProperties.Name="Continuar página" Padding="6,8">
-                    <StackPanel Orientation="Horizontal" Spacing="12"><TextBlock Text="Continuar página" Foreground="{DynamicResource TramaAccentBrush}" /><Path Classes="home-icon accent-icon" Data="{StaticResource ChevronIcon}" Width="10" Height="14" /></StackPanel>
-                  </Button>
-                </Grid>
-              </StackPanel>
-              <StackPanel Spacing="8" IsVisible="{Binding !HasNotebookToContinue}">
-                <TextBlock Text="Toda ideia começa com uma página." Foreground="{DynamicResource TramaMutedBrush}" TextWrapping="Wrap" />
-                <TextBlock Text="Abra o acervo para criar ou escolher uma anotação. Sua página em andamento aparecerá aqui." Foreground="{DynamicResource TramaSubtleBrush}" FontSize="12" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding ContinueNotebookStatus}" Foreground="{DynamicResource TramaAccentBrush}" FontSize="11" TextWrapping="Wrap" />
               </StackPanel>
             </StackPanel>
           </Border>
         </Grid>
+        <Border Classes="home-card" Padding="22,16" IsVisible="{Binding HasHomeWeekSummary}">
+          <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="24">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+              <Path Classes="home-icon accent-icon" Data="M4,20 L4,14 M10,20 L10,10 M16,20 L16,5" />
+              <TextBlock Text="Sua semana" FontSize="18" FontWeight="SemiBold" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="2" Margin="0,0,10,0">
+              <TextBlock x:Name="HomeAgendaWeekCompletion" Text="{Binding HomeWeekCompletion}" FontSize="28"
+                         FontWeight="SemiBold" Foreground="{DynamicResource TramaAccentBrush}" />
+              <TextBlock Text="tarefas concluídas" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" Spacing="2">
+              <TextBlock x:Name="HomeAgendaWeekPlannedHours" Text="{Binding HomeWeekPlannedHours}" FontSize="28"
+                         FontWeight="SemiBold" Foreground="{DynamicResource TramaAccentBrush}" />
+              <TextBlock Text="horas planejadas" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" />
+            </StackPanel>
+            <StackPanel Grid.Column="3" Spacing="2">
+              <TextBlock x:Name="HomeAgendaWeekActualHours" Text="{Binding HomeWeekActualHours}" FontSize="18" FontWeight="SemiBold" />
+              <TextBlock Text="horas realizadas" Foreground="{DynamicResource TramaMutedBrush}" FontSize="12" />
+            </StackPanel>
+          </Grid>
+        </Border>
         <Border Classes="home-card" Padding="22,16">
           <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
             <Path Classes="home-icon accent-icon" Data="{StaticResource DatabaseIcon}" Width="25" Height="25" />

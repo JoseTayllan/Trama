@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Interactivity;
@@ -207,6 +208,27 @@ public sealed class AgendaPageLinkTests
         }
         await f.WaitAsync(() => f.Main.IsNotebooksActive);
         Assert.Equal(f.Target.Id, f.Library.Editor.PageId);
+    }
+
+    [AvaloniaTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task CardPageShortcut_IsInsideTheSameBorderAsTheEditButton(bool weekly)
+    {
+        using var f = await Fixture.OpenAsync();
+        await f.LinkPageAsync();
+        if (weekly) Assert.True(await f.Agenda.ShowWeekAsync(f.Agenda.Today));
+
+        var shortcut = Assert.Single(f.PageShortcuts());
+        var card = Assert.Single(shortcut.GetVisualAncestors().OfType<Border>(),
+            border => border.Classes.Contains("agenda-task-card"));
+        var edit = Assert.Single(card.GetVisualDescendants().OfType<Button>(),
+            button => button.Classes.Contains(weekly ? "agenda-week-card" : "task-row"));
+        Assert.True(edit.IsEffectivelyEnabled);
+        var position = shortcut.TranslatePoint(default, card);
+        Assert.NotNull(position);
+        Assert.True(position.Value.X >= card.Bounds.Width / 2);
+        Assert.True(position.Value.X + shortcut.Bounds.Width <= card.Bounds.Width + 1);
     }
 
     private sealed class DraftPrompt : IUnsavedChangesPrompt
