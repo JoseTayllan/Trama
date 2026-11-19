@@ -1,6 +1,6 @@
 # Trama · Roadmap
 
-Atualizado em **13/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
+Atualizado em **17/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
 
 [Abrir painel HTML](roadmap.html) · gerado deste arquivo por `python tools/build_roadmap.py`.
 
@@ -11,15 +11,15 @@ Atualizado em **13/11/2026**. Acompanhe o módulo atual, as entregas disponívei
 | Foco | Reflexão semanal e fechamento da primeira versão da Agenda |
 | Última entrega validada no uso | Horas realizadas no Início, com executável Win64 atualizado pelo responsável |
 | Aviso | Em Pendências para revisar, Atual acompanha a tarefa. No fechamento e os totais guardam o registro da semana. |
-| Entrega em revisão | Resumo da Agenda e páginas recentes no Início |
-| Etapa atual | Commit 1 · horas realizadas na semana e revisão do Início |
-| Resultado novo | Dois casos de horas realizadas passaram com os testes intactos |
-| Última suíte completa | 1.355 aprovados, com 224 unitários e 1.131 de integração |
-| Última suíte estável | 1.355 aprovados com horas realizadas |
-| CI | Verificação do GitHub confirmada pelo responsável em 12/11/2026 |
-| Próxima etapa | Revisar e fazer o commit 1. Depois, validar backup e atualização de bancos anteriores. |
+| Entrega em revisão | Validação de backup, restauração e bancos anteriores |
+| Etapa atual | Commit 2 · recuperação em perfis temporários |
+| Resultado novo | Dois casos de recuperação adicionados. Os 24 testes de armazenamento de backup passaram. |
+| Última suíte completa | 1.358 aprovados no WSL, com 224 unitários e 1.134 de integração |
+| Última suíte estável | 1.358 aprovados com a validação de recuperação |
+| CI | Verify confirmado pelo responsável em 13/11/2026, após a correção da prévia de imagens |
+| Próxima etapa | Revisar e publicar o commit 2, conferir o Verify e finalizar a validação da Agenda. |
 | Referência principal | [Reflexão: SQLite implementado](docs/estudos/117-reflexao-sqlite-implementada.md) |
-| Relatório atual | [Horas realizadas](docs/reviews/139-home-actual-hours-green.md) |
+| Relatório atual | [Validação de recuperação](docs/reviews/140-backup-recovery-validation.md) |
 
 A imagem conceitual, a direção da tela Início e os 17 testes foram aprovados antes de implementar. Início e Cadernos estão integrados para revisão, preservando o editor ao alternar. A Agenda diária está habilitada, com tarefas e horários opcionais; a semana visual está implementada para revisão e os indicadores permanecem pendentes.
 
@@ -122,8 +122,9 @@ Entregar uma implementação por commit, na ordem do checklist. O responsável r
 - [x] Registrar a conclusão real ao salvar como Concluída, preservando o término planejado.
 - [x] Registrar o início real e somar as horas realizadas na semana.
 - [x] Validar horas realizadas no uso e gerar o executável Win64 atualizado.
-- [ ] Revisar o diff e fazer o commit 1.
-- [ ] Validar recuperação completa e atualização de bancos anteriores.
+- [x] Publicar o commit 1 e a correção da prévia de imagens. Verify confirmado pelo responsável.
+- [x] Validar a restauração de um perfil atual e a atualização de um backup antigo no WSL.
+- [ ] Revisar e publicar o commit 2 e conferir o Verify do GitHub no Windows.
 - [ ] Conferir Windows/WSL, executável, suíte/build/formatação e diff; Git/mesclagem pelo responsável.
 
 ### Histórico: visão semanal

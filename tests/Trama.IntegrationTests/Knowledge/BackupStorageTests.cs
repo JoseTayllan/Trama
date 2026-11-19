@@ -4,7 +4,10 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
+using Trama.Application.Agenda;
 using Trama.Application.Knowledge;
 using Trama.Application.Storage;
 using Trama.Desktop;
@@ -259,6 +262,98 @@ public sealed class BackupStorageTests
     }
 
     private static LocalBackupService Service(BackupWorkspace data) => new(data.Source);
+    [Fact]
+    public async Task AgendaRoundTrip_PreservesLinksExecutionReflectionAndRecentPage()
+    {
+        using var data = new BackupWorkspace();
+        var seed = await SeedAsync(data);
+        var monday = new DateOnly(2026, 11, 2);
+        var start = new DateTimeOffset(2026, 11, 2, 12, 0, 0, TimeSpan.Zero);
+        var clock = new ExecutionClock(start);
+        var actions = new SqliteAgendaActions(Path.Combine(data.Source, "trama.db"), clock);
+        var task = new AgendaTaskSnapshot(Guid.NewGuid(), "Revisar material", "", monday, new(9, 0), new(10, 0),
+            Status: AgendaTaskStatus.InProgress);
+        Assert.Equal(AgendaTaskSaveStatus.Saved, (await actions.SaveAsync(task)).Status);
+        await actions.AddPageLinkAsync(task.Id, seed.Page.Id);
+        clock.Now = start.AddMinutes(75);
+        var completed = task with { Status = AgendaTaskStatus.Completed };
+        Assert.Equal(AgendaTaskSaveStatus.Saved, (await actions.SaveAsync(completed)).Status);
+
+        AgendaWeekRetrospective capture;
+        AgendaWeekReflection? reflection;
+        RecentPage page;
+        using (var source = await DesktopComposition.CreateAsync(data.Source))
+        {
+            capture = await source.GetRequiredService<IAgendaRetrospectiveActions>().GetOrCloseAsync(monday);
+            var reflections = source.GetRequiredService<IAgendaReflectionActions>();
+            Assert.Equal(AgendaReflectionSaveStatus.Saved, (await reflections.SaveAsync(monday, "Funcionou", "Ajustar")).Status);
+            reflection = await reflections.GetAsync(monday);
+            Assert.NotNull(reflection);
+            var recent = Assert.IsAssignableFrom<IRecentPagesReader>(source.GetRequiredService<IKnowledgeDiscovery>());
+            page = Assert.Single(await recent.ListRecentPagesAsync(3), row => row.Page.PageId == seed.Page.Id);
+        }
+
+        await Service(data).CreateAsync(data.Archive);
+        Directory.Move(data.Source, Path.Combine(data.Root, "original-unavailable"));
+        await Service(data).RestoreAsync(data.Archive, data.Destination);
+
+        using var restored = await DesktopComposition.CreateAsync(data.Destination);
+        var agenda = restored.GetRequiredService<IAgendaActions>();
+        Assert.Equal(completed, await agenda.GetByIdAsync(task.Id));
+        var links = Assert.IsAssignableFrom<IAgendaPageLinks>(agenda);
+        Assert.Equal(seed.Page.Id, Assert.Single(await links.ListPageLinksAsync(task.Id)).PageId);
+        Assert.Equal(clock.Now, await restored.GetRequiredService<IAgendaCompletionActions>().GetLastCompletedAtAsync(task.Id));
+        var hours = Assert.IsAssignableFrom<IAgendaActualHoursReader>(agenda);
+        Assert.Equal(TimeSpan.FromMinutes(75), await hours.ReadActualHoursAsync(start.AddHours(-12), start.AddHours(-12).AddDays(7)));
+        Assert.Equal(reflection, await restored.GetRequiredService<IAgendaReflectionActions>().GetAsync(monday));
+        var restoredCapture = await restored.GetRequiredService<IAgendaRetrospectiveActions>().GetAsync(monday);
+        Assert.Equal(JsonSerializer.Serialize(capture), JsonSerializer.Serialize(restoredCapture));
+        var restoredRecent = Assert.IsAssignableFrom<IRecentPagesReader>(restored.GetRequiredService<IKnowledgeDiscovery>());
+        Assert.Contains(page, await restoredRecent.ListRecentPagesAsync(3));
+    }
+
+    [Fact]
+    public async Task OlderArchive_UpgradesWithoutInventingLinksExecutionOrEditDates()
+    {
+        using var data = new BackupWorkspace();
+        Directory.CreateDirectory(data.Source);
+        var database = Path.Combine(data.Source, "trama.db");
+        var task = new AgendaTaskSnapshot(Guid.NewGuid(), "Tarefa anterior", "", new(2026, 11, 2), Status: AgendaTaskStatus.Completed);
+        var page = new NotebookSnapshot(Guid.NewGuid(), "Página anterior", [new NotebookTextBlock(Guid.NewGuid(), "Conteúdo preservado")]);
+        await using (var context = data.Context(data.Source))
+        {
+            await context.GetService<IMigrator>().MigrateAsync("20261111005518_AgendaWeekReflections");
+            await new SqliteNotebookRepository(context).SaveAsync(page);
+        }
+        Assert.Equal(AgendaTaskSaveStatus.Saved, (await new SqliteAgendaActions(database).SaveAsync(task)).Status);
+        var original = await File.ReadAllBytesAsync(database);
+        await WriteArchiveAsync(data.Archive, new Dictionary<string, byte[]> { ["trama.db"] = original });
+
+        await Service(data).RestoreAsync(data.Archive, data.Destination);
+
+        Assert.Equal(original, await File.ReadAllBytesAsync(database));
+        await using var upgraded = data.Context(data.Destination);
+        Assert.Empty(await upgraded.Database.GetPendingMigrationsAsync());
+        using var restored = await DesktopComposition.CreateAsync(data.Destination);
+        var agenda = restored.GetRequiredService<IAgendaActions>();
+        Assert.Equal(task, await agenda.GetByIdAsync(task.Id));
+        Assert.Empty(await Assert.IsAssignableFrom<IAgendaPageLinks>(agenda).ListPageLinksAsync(task.Id));
+        Assert.Null(await Assert.IsAssignableFrom<IAgendaActualHoursReader>(agenda)
+            .ReadActualHoursAsync(new(2026, 11, 2, 0, 0, 0, TimeSpan.Zero), new(2026, 11, 9, 0, 0, 0, TimeSpan.Zero)));
+        var loaded = Assert.IsType<NotebookSnapshot>(await restored.GetRequiredService<ILibraryActions>().LoadAsync(page.Id));
+        Assert.Equal(page.Title, loaded.Title);
+        Assert.Equal(page.Blocks, loaded.Blocks);
+        Assert.Empty(await Assert.IsAssignableFrom<IRecentPagesReader>(restored.GetRequiredService<IKnowledgeDiscovery>())
+            .ListRecentPagesAsync(3));
+    }
+
+    private sealed class ExecutionClock(DateTimeOffset now) : TimeProvider
+    {
+        public DateTimeOffset Now { get; set; } = now;
+        public override DateTimeOffset GetUtcNow() => Now;
+        public override TimeZoneInfo LocalTimeZone => TimeZoneInfo.Utc;
+    }
+
     private static string Hash(byte[] bytes) => Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
 
     private static async Task<BackupSeed> SeedAsync(BackupWorkspace data)
