@@ -10,6 +10,8 @@ Os procedimentos de ambiente e distribuição ficam separados na [central de ope
 
 | Ordem | Material | O que estudar |
 | --- | --- | --- |
+| 119 | [Painel do acervo: consulta implementada](119-painel-acervo-consulta-implementada.md) | SQLite somente leitura, transação consistente, agregações e 1.377 testes aprovados |
+| 118 | [Painel do acervo: consulta](118-painel-acervo-consulta-especificacao.md) | Totais, espaços e tags; lixeira, identidades, perfis e TDD antes da interface |
 | 1 | [Arquitetura e fundação](01-arquitetura-e-fundacao.md) | Camadas, MVVM, injeção de dependências, contratos, SQLite e comandos |
 | 2 | [Primeira nota e TDD](02-primeira-nota-e-tdd.md) | Especificação executável, RED e GREEN, validação e tratamento de falhas |
 | 3 | [SQLite migrações e durabilidade](03-sqlite-migracoes-e-durabilidade.md) | Testes em disco, esquema, migrações e limites do RED atual |

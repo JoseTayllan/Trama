@@ -7,9 +7,10 @@ using Trama.Application.Knowledge;
 
 namespace Trama.Infrastructure.Persistence;
 
-public sealed class SqliteKnowledgeDiscovery : IKnowledgeDiscovery, IRecentPagesReader
+public sealed partial class SqliteKnowledgeDiscovery : IKnowledgeDiscovery, IRecentPagesReader, ILibraryOverviewReader
 {
     private readonly DbContextOptions<TramaDbContext> _options;
+    private readonly DbContextOptions<TramaDbContext> _overviewOptions;
 
     public SqliteKnowledgeDiscovery(string databasePath)
     {
@@ -18,6 +19,8 @@ public sealed class SqliteKnowledgeDiscovery : IKnowledgeDiscovery, IRecentPages
             throw new ArgumentException("An absolute database path is required.", nameof(databasePath));
         var connection = new SqliteConnectionStringBuilder { DataSource = databasePath, Pooling = false };
         _options = new DbContextOptionsBuilder<TramaDbContext>().UseSqlite(connection.ToString()).Options;
+        connection.Mode = SqliteOpenMode.ReadOnly;
+        _overviewOptions = new DbContextOptionsBuilder<TramaDbContext>().UseSqlite(connection.ToString()).Options;
     }
 
     public async Task<IReadOnlyList<RecentPage>> ListRecentPagesAsync(int limit, CancellationToken cancellationToken = default)

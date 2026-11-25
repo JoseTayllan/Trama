@@ -1,6 +1,6 @@
 # Trama · Roadmap
 
-Atualizado em **17/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
+Atualizado em **19/11/2026**. Acompanhe o módulo atual, as entregas disponíveis e os próximos passos.
 
 [Abrir painel HTML](roadmap.html) · gerado deste arquivo por `python tools/build_roadmap.py`.
 
@@ -8,37 +8,74 @@ Atualizado em **17/11/2026**. Acompanhe o módulo atual, as entregas disponívei
 
 | Item | Estado |
 | --- | --- |
-| Foco | Reflexão semanal e fechamento da primeira versão da Agenda |
-| Última entrega validada no uso | Horas realizadas no Início, com executável Win64 atualizado pelo responsável |
+| Foco | Painel do acervo · consulta dos indicadores |
+| Última entrega validada no uso | Agenda v1 e checklist final; aceite do responsável em 19/11 |
 | Aviso | Em Pendências para revisar, Atual acompanha a tarefa. No fechamento e os totais guardam o registro da semana. |
-| Entrega em revisão | Validação de backup, restauração e bancos anteriores |
-| Etapa atual | Commit 2 · recuperação em perfis temporários |
-| Resultado novo | Dois casos de recuperação adicionados. Os 24 testes de armazenamento de backup passaram. |
-| Última suíte completa | 1.358 aprovados no WSL, com 224 unitários e 1.134 de integração |
-| Última suíte estável | 1.358 aprovados com a validação de recuperação |
+| Entrega em revisão | Leitor de indicadores do acervo implementado |
+| Etapa atual | GREEN · primeira implementação para revisão e commit |
+| Resultado novo | 19 casos aprovados passaram intactos; consulta somente leitura registrada no perfil |
+| Última suíte completa | 1.377 aprovados no WSL, com 224 unitários e 1.153 de integração |
+| Última suíte estável | 1.377 aprovados com o leitor de indicadores do acervo |
 | CI | Verify confirmado pelo responsável em 13/11/2026, após a correção da prévia de imagens |
-| Próxima etapa | Revisar e publicar o commit 2, conferir o Verify e finalizar a validação da Agenda. |
-| Referência principal | [Reflexão: SQLite implementado](docs/estudos/117-reflexao-sqlite-implementada.md) |
-| Relatório atual | [Validação de recuperação](docs/reviews/140-backup-recovery-validation.md) |
+| Próxima etapa | Revisar e commitar esta implementação; depois especificar estado/navegação e interface do painel. |
+| Referência principal | [Consulta do painel implementada](docs/estudos/119-painel-acervo-consulta-implementada.md) |
+| Relatório atual | [Indicadores do acervo: GREEN](docs/reviews/143-library-overview-storage-green.md) |
 
-A imagem conceitual, a direção da tela Início e os 17 testes foram aprovados antes de implementar. Início e Cadernos estão integrados para revisão, preservando o editor ao alternar. A Agenda diária está habilitada, com tarefas e horários opcionais; a semana visual está implementada para revisão e os indicadores permanecem pendentes.
+Aceite em 19/11: o responsável confirmou “validado” após o checklist final da Agenda. O commit 2 já havia sido confirmado; esse aceite não é tratado como nova confirmação de push/Verify. O desenvolvimento segue com o painel do acervo.
 
-Em 02/11, o responsável validou previamente a ideia, mas pediu maior fidelidade ao protótipo nos ícones, informações dos cadernos e backup. A correção de rolagem e seleção foi priorizada; aceite estético final permanece pendente.
-
-A correção de rolagem foi aprovada em seguida. O refino visual está implementado para revisão, com informações reais da página aberta e estados de funcionalidades futuras. A implementação posterior da Agenda diária está em revisão; métricas ainda não estão implementadas.
+A Agenda diária, semanal e a retrospectiva estão implementadas, incluindo reflexão, lixeira, vínculos com páginas e resumo do Início. O responsável validou as entregas durante o desenvolvimento. A recuperação de perfis atuais e antigos passou em testes temporários no WSL; o aceite global e a revisão final do diff continuam separados. Os registros abaixo preservam o estado de cada entrega na época.
 
 ## Etapas do módulo atual
 
 | Ordem | Entrega | Estado | Critério para encerrar |
 | --- | --- | --- | --- |
-| 1 | Início e navegação | Implementado · revisão pendente | Validar Início, retomada, autosave e fechamento no uso; revisar o diff |
-| 2 | Tarefas com persistência | Implementado · revisão pendente | Criar, editar, reagendar e mudar estado; reabrir sem perder os dados |
-| 3 | Agenda semanal | Validado no uso · revisão formal do diff não registrada | Semana/dia, horários opcionais, categorias, cores e filtros em janela ampla/compacta |
-| 4 | Retrospectiva semanal | Painel implementado · aceite pendente | Fechamentos preservados, indicadores consistentes, comparação e painel validado |
-| 5 | Integração dos módulos | A iniciar | Vínculo com páginas, resumos reais do Início e backup/restauração da agenda |
-| 6 | Validação e aceite | A iniciar | Suíte completa, uso Windows/Linux e revisão do diff antes da mesclagem pelo responsável |
+| 1 | Consulta dos indicadores | Implementado · em revisão | Totais globais, espaços e cinco tags; excluir lixeira; preservar perfis e dados |
+| 2 | Estado e navegação | A iniciar | Carregar/atualizar sem perder rascunhos; abrir espaços, páginas e busca por tag |
+| 3 | Interface do painel | A iniciar | Seguir o protótipo, hierarquia clara e janela compacta; preservar Não organizadas |
+| 4 | Validação e aceite | A iniciar | Testes, uso Windows/WSL, diff e aceite; um commit por implementação pelo responsável |
 
-### Entrega em foco: retrospectiva semanal
+### Entrega em foco: consulta dos indicadores do acervo
+
+- [x] Registrar o aceite da Agenda v1 e iniciar o painel do acervo.
+- [x] Mapear tabelas existentes e reaproveitamento da consulta de páginas recentes.
+- [x] Criar o contrato mínimo e 19 casos executáveis.
+- [x] Executar os 19 casos RED e a base de 1.358 testes separadamente.
+- [x] Aprovar os 19 casos e o contrato ILibraryOverviewReader; confirmação explícita do responsável.
+- [x] Implementar a consulta e seu registro no perfil correto, mantendo os 19 casos aprovados intactos.
+- [x] Executar build, formatação e suíte completa; 1.377 aprovados no WSL.
+- [ ] Revisar o diff, conferir riscos e validar a entrega antes do commit pelo responsável.
+
+## Critério de conclusão desta versão
+
+- [ ] Indicadores globais, espaços, páginas recentes e tags mostram dados reais e ignoram a lixeira.
+- [ ] Navegação abre o destino correto e preserva rascunhos, histórico e autosave.
+- [ ] Painel amplo/compacto validado no uso, conforme a direção do protótipo aprovado.
+- [ ] Suíte, build/formatação, revisão do diff e aceite final registrados.
+
+## Histórico: etapas da Agenda
+
+| Ordem | Entrega | Estado | Critério para encerrar |
+| --- | --- | --- | --- |
+| 1 | Início e navegação | Implementado · aceite final pendente | Validar Início, retomada, autosave e fechamento no uso; revisar o diff |
+| 2 | Tarefas com persistência | Implementado · aceite final pendente | Criar, editar, reagendar e mudar estado; reabrir sem perder os dados |
+| 3 | Agenda semanal | Validado no uso · revisão formal do diff não registrada | Semana/dia, horários opcionais, categorias, cores e filtros em janela ampla/compacta |
+| 4 | Retrospectiva semanal | Implementado com reflexão · aceite final pendente | Fechamentos preservados, indicadores consistentes, comparação e painel validado |
+| 5 | Integração dos módulos | Implementado · recuperação testada no WSL | Vínculo com páginas, resumos reais do Início e backup/restauração da agenda |
+| 6 | Validação e aceite | Em andamento · commit 2 confirmado | Suíte completa, uso Windows/Linux e revisão do diff antes da mesclagem pelo responsável |
+
+### Histórico: aceite final da Agenda v1
+
+- [x] Implementar tarefas, semana, retrospectiva/reflexão, lixeira e vínculos com páginas.
+- [x] Integrar o Início com páginas recentes, tarefas e horas reais.
+- [x] Validar recuperação atual e atualização de banco antigo; 24 testes de backup aprovados.
+- [x] Executar build, formatação e suíte completa no WSL; 1.358 aprovados em 17/11.
+- [x] Conferir modelo sem migrações pendentes e restore travado no WSL em 19/11.
+- [x] Receber a confirmação do commit 2 pelo responsável.
+- [ ] Confirmar push e Verify do commit 2 no GitHub.
+- [x] Receber o aceite do checklist final da Agenda em 19/11; ambientes não discriminados nessa resposta.
+- [ ] Revisar o diff final e registrar o aceite global antes da integração pelo responsável.
+
+### Histórico: retrospectiva semanal
 
 - [x] Gerar protótipo visual do painel de fechamento semanal.
 - [x] Confirmar fechamento preservado, contagem única e uso da conclusão real.
@@ -124,7 +161,8 @@ Entregar uma implementação por commit, na ordem do checklist. O responsável r
 - [x] Validar horas realizadas no uso e gerar o executável Win64 atualizado.
 - [x] Publicar o commit 1 e a correção da prévia de imagens. Verify confirmado pelo responsável.
 - [x] Validar a restauração de um perfil atual e a atualização de um backup antigo no WSL.
-- [ ] Revisar e publicar o commit 2 e conferir o Verify do GitHub no Windows.
+- [x] Criar o commit 2 de recuperação; confirmado pelo responsável em 19/11.
+- [ ] Confirmar push e Verify do commit 2 no GitHub.
 - [ ] Conferir Windows/WSL, executável, suíte/build/formatação e diff; Git/mesclagem pelo responsável.
 
 ### Histórico: visão semanal
@@ -220,12 +258,16 @@ Formulário compacto e fechamento coordenado conferidos em perfis fictícios. Re
 | Portabilidade | Exportação da página em Markdown com imagens relativas |
 | Apresentação | Seleção da hierarquia, margem de blocos, painéis recolhíveis e menu Bloco |
 | Execução | Aplicativo Avalonia local, pacote Windows e desenvolvimento Ubuntu/WSL |
-| Agenda diária | Criar, editar, reagendar, concluir/reabrir; lista por dia e rascunhos protegidos; em revisão |
-| Navegação global | Início e Cadernos integrados, com retomada da página na sessão; implementação em revisão |
+| Agenda diária | Criar, editar, reagendar, concluir/reabrir, excluir/restaurar; horários digitáveis e rascunhos protegidos |
+| Agenda semanal | Sete dias, filtros de categoria/estado e tarefas que atravessam datas |
+| Retrospectiva | Fechamento preservado, comparação, reflexão gravável e estado atual das pendências |
+| Integração Agenda/Cadernos | Várias páginas por tarefa, atalhos nos cartões e recuperação por backup |
+| Início | Tarefas de hoje, páginas recentes e horas planejadas/realizadas na semana |
+| Navegação global | Início, Cadernos e Agenda integrados, preservando edição ao alternar |
 
 Cadernos e exportação foram validados no uso em Windows e Linux. A revisão formal do diff dessa entrega continua registrada separadamente no [relatório 055](docs/reviews/055-markdown-export-green.md). Iniciar o planejamento da Agenda não transforma essa revisão em aprovação implícita.
 
-## Critério de conclusão desta versão
+## Histórico: critérios da Agenda v1
 
 - [ ] Início e navegação validados, preservando a edição dos Cadernos.
 - [ ] Tarefas e agenda semanal persistentes, validadas com datas, horários e categorias.
@@ -241,7 +283,7 @@ Esses critérios se referem à primeira versão da Agenda. O histórico de aceit
 | --- | --- |
 | Agenda avançada | Recorrência, lembretes e integrações externas após a semana básica |
 | Anotações avançadas | Modelos de estudo, checklist, sublistas e relações entre páginas |
-| Painel do acervo | Protótipo aprovado; totais, espaços, últimas edições, tags e páginas não organizadas; implementar após a Agenda |
+| Painel do acervo | Consulta implementada e em revisão; navegação e interface na sequência |
 | Personalização | Editor de paletas com prévia e restauração do padrão |
 | Marco de voz | Avaliar hardware, chat local, transcrição em português, síntese e interrupção |
 | Resumo do dia | Agenda, clima e notícias com fontes, horários e estado offline |

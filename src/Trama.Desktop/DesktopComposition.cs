@@ -40,6 +40,7 @@ public static class DesktopComposition
             .AddSingleton<ILocalBackup>(new LocalBackupService(dataDirectory))
             .AddTransient<BackupViewModel>()
             .AddSingleton<IKnowledgeDiscovery>(new SqliteKnowledgeDiscovery(databasePath))
+            .AddSingleton<ILibraryOverviewReader>(services => (ILibraryOverviewReader)services.GetRequiredService<IKnowledgeDiscovery>())
             .AddSingleton<ILibraryTrashActions>(new SqliteLibraryTrashActions(databasePath))
             .AddSingleton<ILibraryManagementActions>(new SqliteLibraryManagement(databasePath))
             .AddSingleton<IUnsavedChangesPrompt>(unsavedChangesPrompt ?? new CancelUnsavedChangesPrompt())
